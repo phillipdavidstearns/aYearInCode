@@ -7,12 +7,13 @@ void setup() {
     colonies.addColony();
   }
   frameRate(60);  // set framerate);
+  background(255);
 }
 
 void draw(){
-  background(255);
+  
   colonies.run();
-  //saveFrame("output/test2/Colonies_001-######.PNG");
+  saveFrame("output/test3/Colonies_002-######.PNG");
 }
 
 

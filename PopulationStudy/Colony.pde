@@ -1,18 +1,25 @@
 class Colony{
   
+  //vectors for doing the physics of classical motion
   PVector location;
   PVector velocity;
   PVector acceleration;
   
   int population;
-  int emigrants;
-  int immigrants;
-  float radius;
-  float repulsion = .05;
+  int emigrants;   // colony members leaving
+  int immigrants;  // colony members arriving
+  float radius;    
+  float repulsion = .5;
+  float attraction = .005;
+  int age;
+  float dampening = .95;
+  int popLimit = 1000;
+  float r = 50;
+  float deathRate = .05;
   
   Colony(){
+    age = 0;
     population = int(random(255));
-    radius = 50 *(float(population)/255);
     emigrants = 0;
     immigrants = 0;
     location = new PVector(random(width),random(height));
@@ -21,6 +28,7 @@ class Colony{
   }
   
   Colony(float _x, float _y, int _population){
+    age = 0;
     population = _population;
     emigrants = 0;
     immigrants = 0;
@@ -50,12 +58,12 @@ class Colony{
     }
     
     if (death(population)){
-      population-=int(random(3)+1);
+      population-=int(random(deathRate*age));
      // print(" - 1 death");
     }
     
-    if (population > 255){
-      emigrants+=(population-255);     
+    if (population > popLimit){
+      emigrants+=(population-popLimit);     
     } else if (emigration(population)){
       emigrants+=int(random(3)+1);
     }
@@ -73,19 +81,13 @@ class Colony{
     //println(population);
     changeInPopulation = changeInPopulation - population;
     //println("changeinPopulation = " + changeinPopulation);
-    radius = 25*(float(population)/255);
-
-    locomotion(colonies, changeInPopulation);
-      //search nearby neighboring colonies
-      //randomly select a neighboring colony
-      //increment its immigrants field
-      //decrement this emigrant field
-      //until emigrants = 0
-      //if no neighbors, emigrants stay    
+    radius = r*(float(population)/255);
+    locomotion(colonies, changeInPopulation); 
+    age++;
   }
 
   void emigration(ArrayList<Colony> colonies){
-    int rNeighborhood = 50; // radius of the neighborhood
+    int rNeighborhood = 100; // radius of the neighborhood
     for (int i = colonies.size()-1; i >= 0; i--) {      
       Colony c = colonies.get(i);
       float distance = PVector.dist(c.location, location);
@@ -111,7 +113,7 @@ class Colony{
       float distance = PVector.dist(c.location, location);
       if(distance != 0.0){              
       forces[i] = PVector.sub(location, c.location);
-      float mag = repulsion * (float(c.population) * mass) / pow(distance,2);
+      float mag = (repulsion * (float(c.population)*mass) / pow(distance,2))-(attraction * (float(c.age)*age) / pow(distance,2));
       forces[i].setMag(mag);
       force.add(forces[i]);
       }
@@ -121,7 +123,7 @@ class Colony{
     velocity.add(acceleration); // Velocity changes according to acceleration
     location.add(velocity);     // Location changes according to velocity
     acceleration.mult(0);
-    velocity.mult(.95); // dampening
+    velocity.mult(dampening); // dampening
 }
   
   void newColony(int _emigrants){
@@ -129,7 +131,7 @@ class Colony{
   }
   
   void display(){
-    noStroke();
+    stroke(0);
     fill(population);
     ellipse(location.x, location.y, radius, radius);
   }

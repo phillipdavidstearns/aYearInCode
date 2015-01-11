@@ -17,7 +17,7 @@ class ColonySystem {
     for (int i = colonies.size()-1; i >= 0; i--) {
       Colony c = colonies.get(i);
       c.run(colonies);
-      if (c.population == 0) {
+      if (c.population <= 0) {
         colonies.remove(i);
       }
     }
