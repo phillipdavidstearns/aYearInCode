@@ -9,13 +9,15 @@ class Colony{
   int emigrants;   // colony members leaving
   int immigrants;  // colony members arriving
   float radius;    
-  float repulsion = .5;
-  float attraction = .005;
+  float repulsion = .025;
+  float attraction = .00025;
   int age;
-  float dampening = .95;
-  int popLimit = 1000;
-  float r = 50;
-  float deathRate = .05;
+  float dampening = .99;
+  int popLimit = 255;
+  float r = 100;
+  
+  float deathRate = .1;
+  float emigrationRate = .025;
   
   Colony(){
     age = 0;
@@ -64,8 +66,8 @@ class Colony{
     
     if (population > popLimit){
       emigrants+=(population-popLimit);     
-    } else if (emigration(population)){
-      emigrants+=int(random(3)+1);
+    } else {
+      emigrants+=int(random(emigrationRate*population));
     }
     
     population -= emigrants;    
@@ -81,7 +83,6 @@ class Colony{
     //println(population);
     changeInPopulation = changeInPopulation - population;
     //println("changeinPopulation = " + changeinPopulation);
-    radius = r*(float(population)/255);
     locomotion(colonies, changeInPopulation); 
     age++;
   }
@@ -131,8 +132,13 @@ class Colony{
   }
   
   void display(){
-    stroke(0);
-    fill(population);
+    colorMode(HSB, 255);
+    noStroke();
+    fill(velocity.mag()*255, age, population*2);
+    if(r < 0){
+      r = 0;
+    }
+    radius = r*(float(population)/255);
     ellipse(location.x, location.y, radius, radius);
   }
   
