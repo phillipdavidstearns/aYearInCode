@@ -9,15 +9,15 @@ class Colony{
   int emigrants;   // colony members leaving
   int immigrants;  // colony members arriving
   float radius;    
-  float repulsion = .025;
-  float attraction = .00025;
+  float repulsion = 0;
+  float attraction = -.125;
   int age;
-  float dampening = .99;
+  float dampening = .95;
   int popLimit = 255;
   float r = 100;
   
-  float deathRate = .1;
-  float emigrationRate = .025;
+  float deathRate = .11;
+  float emigrationRate = .05;
   
   Colony(){
     age = 0;
@@ -106,20 +106,20 @@ class Colony{
     velocity.setMag((_changeInPopulation+population)*velocity.mag() / population);
    
     PVector force = new PVector(0, 0);
-    float mass = float(population);
+    
     
     for (int i = colonies.size()-1; i >= 0; i--) {      
       PVector[] forces = new PVector[colonies.size()];
       Colony c = colonies.get(i);
       float distance = PVector.dist(c.location, location);
       if(distance != 0.0){              
-      forces[i] = PVector.sub(location, c.location);
-      float mag = (repulsion * (float(c.population)*mass) / pow(distance,2))-(attraction * (float(c.age)*age) / pow(distance,2));
+      forces[i] = PVector.sub(c.location, location);
+      float mag = (attraction * (float(c.population)*float(population) / pow(distance,2))) + (repulsion * abs(c.age-age));
       forces[i].setMag(mag);
       force.add(forces[i]);
       }
     }
-    PVector f = PVector.div(force,mass);
+    PVector f = PVector.div(force, population);
     acceleration.add(f);
     velocity.add(acceleration); // Velocity changes according to acceleration
     location.add(velocity);     // Location changes according to velocity

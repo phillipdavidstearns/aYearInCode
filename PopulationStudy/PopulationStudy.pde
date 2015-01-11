@@ -12,7 +12,7 @@ void setup() {
 }
 
 void draw(){
-  //background(255);
+  background(255);
   
   colonies.run();
   //saveFrame("output/test4/Colonies_Color-######.PNG");
