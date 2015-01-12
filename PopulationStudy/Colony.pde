@@ -10,14 +10,14 @@ class Colony{
   int immigrants;  // colony members arriving
   float radius;    
   float repulsion = 0;
-  float attraction = -.125;
+  float attraction = -.25;
   int age;
   float dampening = .95;
   int popLimit = 255;
   float r = 100;
-  
-  float deathRate = .11;
-  float emigrationRate = .05;
+  float birthRate = 3.5;
+  float deathRate = .125;
+  float emigrationRate = .25;
   
   Colony(){
     age = 0;
@@ -46,63 +46,56 @@ class Colony{
   
   void update(ArrayList<Colony> colonies) {
     float changeInPopulation = population;
+    
     emigrants = 0;
-    //print("Population of " + population + " + " + immigrants + " immigrants");
+   
+    population += immigrants; // this value should be incremented by other neighboring colonies
+    immigrants = 0;
+      
+    birth();
+    death();
+    emigration(colonies);
     
-    if (immigrants > 0){
-      population += immigrants; // this value should be incremented by other neighboring colonies
-      immigrants = 0;
-    }
-    
-    if (birth(population)){
-      population+=int(random(5)+1);
-     // print(" + 1 birth");
-    }
-    
-    if (death(population)){
-      population-=int(random(deathRate*age));
-     // print(" - 1 death");
-    }
-    
-    if (population > popLimit){
-      emigrants+=(population-popLimit);     
-    } else {
-      emigrants+=int(random(emigrationRate*population));
-    }
-    
-    population -= emigrants;    
-   // print(" = " + population + " colonists and " + emigrants + " emigrants. ");
-    if (emigrants > 0){
-     emigration(colonies);
-     if(emigrants > 0){
-       newColony(emigrants);
-     }
-    }
-    //print(" final population after emigration = " + population + " + " + emigrants + " emigrants not relocated = ");
-    population += emigrants;
-    //println(population);
     changeInPopulation = changeInPopulation - population;
-    //println("changeinPopulation = " + changeinPopulation);
+    
+    
     locomotion(colonies, changeInPopulation); 
+    
     age++;
-  }
+  
+}
 
   void emigration(ArrayList<Colony> colonies){
-    int rNeighborhood = 100; // radius of the neighborhood
-    for (int i = colonies.size()-1; i >= 0; i--) {      
-      Colony c = colonies.get(i);
-      float distance = PVector.dist(c.location, location);
-      if (distance != 0.0 && emigrants > 0 && distance < rNeighborhood){
-        if(c.immigration(c.population)){
-          c.immigrants++;
-          emigrants--;
-          colonies.set(i, c);
+    if (population > popLimit){
+      emigrants+=(population-popLimit);     
+      } else {
+        emigrants+=int(random(emigrationRate*population) * 0.5 * float(population) / 255);
+      }
+    
+    population -= emigrants;    //remove the emigrants from the total population count   
+    
+    if (emigrants > 0){
+      int rNeighborhood = 100; // radius of the neighborhood
+      for (int i = colonies.size()-1; i >= 0; i--) {      
+        Colony c = colonies.get(i);
+        float distance = PVector.dist(c.location, location);
+        if (distance != 0.0 && emigrants > 0 && distance < rNeighborhood){
+          if(c.immigration(c.population)){
+            c.immigrants++;
+            emigrants--;
+            colonies.set(i, c);
+          }
         }
+      }
+      
+      if(emigrants > 0){
+        newColony(emigrants);
       }
     }
   }
   
   void locomotion(ArrayList<Colony> colonies, float _changeInPopulation){
+    
     velocity.setMag((_changeInPopulation+population)*velocity.mag() / population);
    
     PVector force = new PVector(0, 0);
@@ -143,36 +136,20 @@ class Colony{
   }
   
   boolean immigration(int _population){
-    if(random(1000/1000) < (1 - float(_population)/255)){
+    if(random(1000/1000) < (1 - float(_population)/popLimit)){
       return true;
     } else {
       return false;
     }
   }
   
-  boolean birth(int _population){
-    //if(random(1000/1000) < (1 - float(_population)/255)){
-    if(random(1000/1000) < pow(sin(PI*(float(_population)/255)), 2)){
-      return true;
-    } else {
-      return false;
-    }
+  void birth(){
+    population+=int(random(birthRate*population*(age*.025)) * pow(sin(PI*(float(population)/popLimit)),2) / (age + 1));
   }
   
-  boolean death(int _population){
-    if(random(1000/1000) < float(_population)/255){
-      return true;
-    } else {
-      return false;
-    }
+  void death(){
+    population-=int(random(deathRate*age) * float(population)/popLimit);
   }
   
-  boolean emigration(int _population){
-    if(random(1000/1000) < 0.5 * float(_population) / 255){
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
+
 }

@@ -15,7 +15,11 @@ void draw(){
   background(255);
   
   colonies.run();
-  //saveFrame("output/test4/Colonies_Color-######.PNG");
+//  saveFrame("output/color02/Colonies_Color02-######.PNG");
+//  if(frameCount >= 3600){
+//    exit();
+//  }
+  
 }
 
 
