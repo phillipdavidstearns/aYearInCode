@@ -5,19 +5,18 @@ class Colony{
   PVector velocity;
   PVector acceleration;
   
-  int population;
+  float population;
   int emigrants;   // colony members leaving
   int immigrants;  // colony members arriving
   float radius;    
-  float repulsion = 0;
-  float attraction = -.25;
+  float affinity = -.125;
   int age;
   float dampening = .95;
-  int popLimit = 255;
-  float r = 100;
-  float birthRate = 3.5;
-  float deathRate = .125;
-  float emigrationRate = .25;
+  float popLimit = 255;
+  float r = 50;
+  float birthRate = 1.5;
+  float deathRate = .5;
+  float emigrationRate = 2;
   
   Colony(){
     age = 0;
@@ -29,7 +28,7 @@ class Colony{
     acceleration = new PVector(0,0);
   }
   
-  Colony(float _x, float _y, int _population){
+  Colony(float _x, float _y, float _population){
     age = 0;
     population = _population;
     emigrants = 0;
@@ -46,44 +45,38 @@ class Colony{
   
   void update(ArrayList<Colony> colonies) {
     float changeInPopulation = population;
-    
     emigrants = 0;
-   
     population += immigrants; // this value should be incremented by other neighboring colonies
     immigrants = 0;
-      
     birth();
     death();
     emigration(colonies);
-    
     changeInPopulation = changeInPopulation - population;
-    
-    
     locomotion(colonies, changeInPopulation); 
-    
     age++;
   
 }
 
   void emigration(ArrayList<Colony> colonies){
-    if (population > popLimit){
-      emigrants+=(population-popLimit);     
-      } else {
-        emigrants+=int(random(emigrationRate*population) * 0.5 * float(population) / 255);
-      }
-    
-    population -= emigrants;    //remove the emigrants from the total population count   
+    emigrants=int( emigrationRate * population/popLimit );
+    population -= emigrants;  
+    if(population > popLimit){
+      emigrants += int (population - popLimit);
+      population -= emigrants;
+    }
     
     if (emigrants > 0){
-      int rNeighborhood = 100; // radius of the neighborhood
-      for (int i = colonies.size()-1; i >= 0; i--) {      
-        Colony c = colonies.get(i);
+      int rNeighborhood = 75; // radius of the neighborhood
+      int colonyCount = colonies.size();
+      while(colonyCount > 0 && emigrants > 0){
+        colonyCount--;
+        Colony c = colonies.get(colonyCount);
         float distance = PVector.dist(c.location, location);
         if (distance != 0.0 && emigrants > 0 && distance < rNeighborhood){
           if(c.immigration(c.population)){
             c.immigrants++;
             emigrants--;
-            colonies.set(i, c);
+            colonies.set(colonyCount, c);
           }
         }
       }
@@ -105,9 +98,9 @@ class Colony{
       PVector[] forces = new PVector[colonies.size()];
       Colony c = colonies.get(i);
       float distance = PVector.dist(c.location, location);
-      if(distance != 0.0){              
+      if(distance >= 0.5){              
       forces[i] = PVector.sub(c.location, location);
-      float mag = (attraction * (float(c.population)*float(population) / pow(distance,2))) + (repulsion * abs(c.age-age));
+      float mag = (affinity * (c.population*population / pow(distance,2))) ;
       forces[i].setMag(mag);
       force.add(forces[i]);
       }
@@ -131,12 +124,12 @@ class Colony{
     if(r < 0){
       r = 0;
     }
-    radius = r*(float(population)/255);
+    radius = r*(population/255);
     ellipse(location.x, location.y, radius, radius);
   }
   
-  boolean immigration(int _population){
-    if(random(1000/1000) < (1 - float(_population)/popLimit)){
+  boolean immigration(float _population){
+    if(random(1000/1000) < .5 * (1 - _population/popLimit)){
       return true;
     } else {
       return false;
@@ -144,11 +137,11 @@ class Colony{
   }
   
   void birth(){
-    population+=int(random(birthRate*population*(age*.025)) * pow(sin(PI*(float(population)/popLimit)),2) / (age + 1));
+    population +=  int((birthRate * population) * pow(sin(PI*(population/popLimit)),2)) ;
   }
   
   void death(){
-    population-=int(random(deathRate*age) * float(population)/popLimit);
+    population -= int((deathRate * (age) * population/popLimit)) + 1;
   }
   
 
