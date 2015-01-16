@@ -137,11 +137,11 @@ class Colony{
   }
   
   void birth(){
-    population +=  int((birthRate * population) * pow(sin(PI*(population/popLimit)),2)) ;
+    population +=  int(birthRate * population * random(1000/1000) * pow(sin(PI*(population/popLimit)),2)) ;
   }
   
   void death(){
-    population -= int((deathRate * (age) * population/popLimit)) + 1;
+    population -= int((deathRate * (age) * random(1000/1000) * population/popLimit)) + 1;
   }
   
 
