@@ -26,8 +26,9 @@ void draw() {
       destImg.loadPixels();
       critters[i].run(destImg.pixels);
       destImg.pixels[critters[i].y*width + critters[i].x]=critters[i].pixel;
-      //critters[i].display();
       destImg.updatePixels();
+      //critters[i].display();
+      
     }
   }
 }
@@ -41,14 +42,20 @@ class Critter {
   color pixel;
   int type;
   color strokeColor;
+  color nextPixel;
+  int nextX;
+  int nextY;
 
   Critter() {
     type = int(random(6));
     x = int(random(width));
     y = int(random(height));
+    nextX = x;
+    nextY = y;
     //direction = directions[int(random(1))];
     age = 0;
     lifeSpan = 10000;
+    
     switch(type) {
     case 0:
       strokeColor=#FF0000;
@@ -78,6 +85,9 @@ class Critter {
   void run(color[] _pixels) {
     int food = 0;
     int foodfood = 0;
+    
+    x=nextX;
+    y=nextY;
     pixel = _pixels[y*width + x];
 
     int r = (pixel >> 16) & 0xFF;
@@ -86,41 +96,68 @@ class Critter {
 
     switch(type) {
     case 0:
-      r-=2;
-      g++;
-      b++;
-      food = r;
+      if(r<2){
+        food = 0;
+      } else{
+        r-=2;
+        g++;
+        b++;
+        food = r;
+      }
       break;
     case 1:
-      r++;
-      g-=2;
-      b++;
-      food = g;
-      break;
+      if(g<2){
+        food = 0;
+      } else{
+        r++;
+        g-=2;
+        b++;
+        food = g;
+      }
     case 2:
-      r++;
-      g++;
-      b-=2;
-      food = b;
+      if(b<2){
+        food = 0;
+      } else{
+        r++;
+        g++;
+        b-=2;
+        food = b;
+      }
       break;
     case 3:
-      r--;
-      g--;
-      b+=2;
-      food = r+g;
+      if(r+g<2){
+        food = 0;
+      } else{
+        r--;
+        g--;
+        b+=2;
+        food = r+g;
+      }
       break;
     case 4:
-      r--;
-      g+=2;
-      b--;
-      food = r+b;
+      if(r+b<2){
+        food = 0;
+      } else{
+        r--;
+        g+=2;
+        b--;
+        food = r+b;
+      }
       break; 
     case 5:
-      r+=2;
-      g--;
-      b--;
-      food = b+g;
+      if(g+b<2){
+        food = 0;
+      } else{
+        r+=2;
+        g--;
+        b--;
+        food = g+b;
+      }
       break;
+    }
+    
+    if (food <= 0){
+      lifeSpan = 0;
     }
 
     pixel = color(r, g, b);
@@ -128,39 +165,39 @@ class Critter {
     int xx=x;
     int yy=y;
 
-    int i = int(random(4));
+    int i = 2;
     switch(i) {
     case 0: //left neighbor
       if ( x - 1 < 0) {
         xx = width-1;
       } else {
         xx = x - 1;
-        yy = y;
       }
+      yy = y;
       break;
     case 1: //right neighbor
       if ( x + 1 >= width) {
         xx = 0;
       } else {
         xx = x + 1;
-        yy = y;
       }
+      yy = y;
       break;
     case 2: //top neighbor
       if ( y - 1 < 0) {
         yy = height-1;
       } else {
         yy = y - 1;
-        xx = x;
       }
+      xx = x;
       break;
     case 3: //bottom neighbor
       if ( y + 1 >= height) {
         yy = 0;
       } else {
         yy = y + 1;
-        xx = x;
       }
+      xx = x;
       break;
     }
 
@@ -192,12 +229,12 @@ class Critter {
     }
 
     if (foodfood > food) {
-      x = xx;
-      y = yy;
-      pixel = _pixels[yy*width + xx];
+      nextX = xx;
+      nextY = yy;
+    }else{
+      nextX = x;
+      nextY = y;
     }
-
-
 
 
 
