@@ -1,24 +1,31 @@
 PImage srcImg;
 PImage destImg;
 String inputPath = "input/";
-String outputPath = "output/test/";
+String outputPath = "output/test_eatup/";
 String filename = "cheeseburgerpizza";
 String inputExtension = ".jpg";
 String outputExtension = ".png";
 
-Critter[] critters;
-
+Critter[] critters1;
+Critter[] critters2;
+Critter[] critters3;
+Critter[] critters4;
 void setup() {
-  //srcImg = loadImage(inputPath+filename+inputExtension);
-  srcImg = createImage(10,10 ,RGB);
-  for(int i = 0 ; i < srcImg.pixels.length ; i++){
-    srcImg.pixels[i]=color(random(255));
-  }
+  srcImg = loadImage(inputPath+filename+inputExtension);
+  
   size(srcImg.width, srcImg.height);  
   destImg = srcImg;
-  critters = new Critter[6];
-  for (int i = 0; i < critters.length; i++) {
-    critters[i] = new Critter(i,0,i);
+  critters1 = new Critter[width];
+  critters2 = new Critter[width];
+  critters3 = new Critter[height];
+  critters4 = new Critter[height];
+  for (int i = 0; i < critters1.length; i++) {
+    critters1[i] = new Critter(i,height-1,int(random(6)), 2);
+    critters2[i] = new Critter(i,0,int(random(6)), 3);
+  }
+  for (int i = 0; i < critters3.length; i++) {
+    critters3[i] = new Critter(width-1,i,int(random(6)), 0);
+    critters4[i] = new Critter(0,i,int(random(6)), 1);
   }
   frameRate(60);
   
@@ -26,17 +33,48 @@ void setup() {
 
 void draw() {
   image(destImg, 0, 0);
-  for (int i = 0; i < critters.length; i++) {
+  for (int i = 0; i < critters1.length; i++) {
     //if (critters[i].isAlive()) {
       destImg.loadPixels();
-      critters[i].run(destImg.pixels);
-      destImg.pixels[critters[i].y*width + critters[i].x]=critters[i].pixel;
+      critters1[i].run(destImg.pixels);
+      destImg.pixels[critters1[i].y*width + critters1[i].x]=critters1[i].pixel;
       destImg.updatePixels();
-      critters[i].display();
+      //critters[i].display(0);
       
     //}
   }
-  saveFrame(outputPath+filename+"_####"+outputExtension);
+  for (int i = 0; i < critters2.length; i++) {
+    //if (critters[i].isAlive()) {
+      destImg.loadPixels();
+      critters2[i].run(destImg.pixels);
+      destImg.pixels[critters2[i].y*width + critters2[i].x]=critters2[i].pixel;
+      destImg.updatePixels();
+      //critters[i].display(0);
+      
+    //}
+  }
+  for (int i = 0; i < critters3.length; i++) {
+    //if (critters[i].isAlive()) {
+      destImg.loadPixels();
+      critters3[i].run(destImg.pixels);
+      destImg.pixels[critters3[i].y*width + critters3[i].x]=critters3[i].pixel;
+      destImg.updatePixels();
+      //critters[i].display(0);
+      
+    //}
+  }
+  for (int i = 0; i < critters4.length; i++) {
+    //if (critters[i].isAlive()) {
+      destImg.loadPixels();
+      critters4[i].run(destImg.pixels);
+      destImg.pixels[critters4[i].y*width + critters4[i].x]=critters4[i].pixel;
+      destImg.updatePixels();
+      //critters[i].display(0);
+      
+    //}
+  }
+  
+  destImg.save(outputPath+filename+"_"+nf(frameCount,6)+outputExtension);
   if(frameCount >= 10000){
     exit();
   }
@@ -55,6 +93,7 @@ class Critter {
   int nextX;
   int nextY;
   int hunger=25;
+  int direction;
 
   Critter() {
     type = int(random(6));
@@ -88,7 +127,7 @@ class Critter {
     }
   }
   
-  Critter(int _x, int _y, int _type) {
+  Critter(int _x, int _y, int _type, int _direction) {
     type = _type;
     x = _x;
     y = _y;
@@ -97,6 +136,7 @@ class Critter {
     //direction = directions[int(random(1))];
     age = 0;
     lifeSpan = 10000;
+    direction = _direction;
     
     switch(type) {
     case 0:
@@ -207,7 +247,7 @@ class Critter {
     int xx=x;
     int yy=y;
 
-    int i = int(random(6));
+    int i = direction;
     switch(i) {
     case 0: //left neighbor
       if ( x - 1 < 0) {
@@ -283,14 +323,18 @@ class Critter {
     age++;
   }
 
-  void display() {
-    /*
-    stroke(strokeColor);
-    fill(pixel);
-    ellipse(x, y, 10, 10);
-    */
-    stroke(255);
-    point(x,y);
+  void display(int _mode) {
+    switch(_mode){
+      case 0:
+        stroke(strokeColor);
+        fill(pixel);
+        ellipse(x, y, 10, 10);
+        break;
+      case 1:
+        stroke(255);
+        point(x,y);
+        break;
+    }
   }
 }
 
