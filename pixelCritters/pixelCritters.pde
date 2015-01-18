@@ -1,7 +1,7 @@
 PImage srcImg;
 PImage destImg;
 String inputPath = "input/";
-String outputPath = "output/";
+String outputPath = "output/test/";
 String filename = "cheeseburgerpizza";
 String inputExtension = ".jpg";
 String outputExtension = ".png";
@@ -9,27 +9,36 @@ String outputExtension = ".png";
 Critter[] critters;
 
 void setup() {
-  srcImg = loadImage(inputPath+filename+inputExtension);
+  //srcImg = loadImage(inputPath+filename+inputExtension);
+  srcImg = createImage(10,10 ,RGB);
+  for(int i = 0 ; i < srcImg.pixels.length ; i++){
+    srcImg.pixels[i]=color(random(255));
+  }
   size(srcImg.width, srcImg.height);  
   destImg = srcImg;
-  critters = new Critter[5000];
+  critters = new Critter[6];
   for (int i = 0; i < critters.length; i++) {
-    critters[i] = new Critter();
+    critters[i] = new Critter(i,0,i);
   }
   frameRate(60);
+  
 }
 
 void draw() {
   image(destImg, 0, 0);
   for (int i = 0; i < critters.length; i++) {
-    if (critters[i].isAlive()) {
+    //if (critters[i].isAlive()) {
       destImg.loadPixels();
       critters[i].run(destImg.pixels);
       destImg.pixels[critters[i].y*width + critters[i].x]=critters[i].pixel;
       destImg.updatePixels();
-      //critters[i].display();
+      critters[i].display();
       
-    }
+    //}
+  }
+  saveFrame(outputPath+filename+"_####"+outputExtension);
+  if(frameCount >= 10000){
+    exit();
   }
 }
 
@@ -45,11 +54,44 @@ class Critter {
   color nextPixel;
   int nextX;
   int nextY;
+  int hunger=25;
 
   Critter() {
     type = int(random(6));
     x = int(random(width));
     y = int(random(height));
+    nextX = x;
+    nextY = y;
+    //direction = directions[int(random(1))];
+    age = 0;
+    lifeSpan = 10000;
+    
+    switch(type) {
+    case 0:
+      strokeColor=#FF0000;
+      break;
+    case 1:
+      strokeColor=#00FF00;
+      break;
+    case 2:
+      strokeColor=#0000FF;
+      break;
+    case 3:
+      strokeColor=#FFFF00;
+      break;
+    case 4:
+      strokeColor=#FF00FF;
+      break; 
+    case 5:
+      strokeColor=#00FFFF;
+      break;
+    }
+  }
+  
+  Critter(int _x, int _y, int _type) {
+    type = _type;
+    x = _x;
+    y = _y;
     nextX = x;
     nextY = y;
     //direction = directions[int(random(1))];
@@ -96,61 +138,61 @@ class Critter {
 
     switch(type) {
     case 0:
-      if(r<2){
+      if(r<hunger*2){
         food = 0;
       } else{
-        r-=2;
-        g++;
-        b++;
+        r-=hunger*2;
+        g+=hunger;
+        b+=hunger;
         food = r;
       }
       break;
     case 1:
-      if(g<2){
+      if(g<hunger*2){
         food = 0;
       } else{
-        r++;
-        g-=2;
-        b++;
+        r+=hunger;
+        g-=hunger*2;
+        b+=hunger;
         food = g;
       }
     case 2:
-      if(b<2){
+      if(b<hunger*2){
         food = 0;
       } else{
-        r++;
-        g++;
-        b-=2;
+        r+=hunger;
+        g+=hunger;
+        b-=hunger*2;
         food = b;
       }
       break;
     case 3:
-      if(r+g<2){
+      if(r+g<hunger*2){
         food = 0;
       } else{
-        r--;
-        g--;
-        b+=2;
+        r-=hunger;
+        g-=hunger;
+        b+=hunger*2;
         food = r+g;
       }
       break;
     case 4:
-      if(r+b<2){
+      if(r+b<hunger*2){
         food = 0;
       } else{
-        r--;
-        g+=2;
-        b--;
+        r-=hunger;
+        g+=hunger*2;
+        b-=hunger;
         food = r+b;
       }
       break; 
     case 5:
-      if(g+b<2){
+      if(g+b<hunger*2){
         food = 0;
       } else{
-        r+=2;
-        g--;
-        b--;
+        r+=hunger*2;
+        g-=hunger;
+        b-=hunger;
         food = g+b;
       }
       break;
@@ -165,7 +207,7 @@ class Critter {
     int xx=x;
     int yy=y;
 
-    int i = 2;
+    int i = int(random(6));
     switch(i) {
     case 0: //left neighbor
       if ( x - 1 < 0) {
@@ -242,9 +284,13 @@ class Critter {
   }
 
   void display() {
+    /*
     stroke(strokeColor);
     fill(pixel);
     ellipse(x, y, 10, 10);
+    */
+    stroke(255);
+    point(x,y);
   }
 }
 
