@@ -2,7 +2,7 @@ PImage srcImg;
 PImage destImg;
 String inputPath = "input/";
 String outputPath = "output/test_eatup/";
-String filename = "cheeseburgerpizza";
+String filename = "noise";
 String inputExtension = ".jpg";
 String outputExtension = ".png";
 
@@ -11,8 +11,11 @@ Critter[] critters2;
 Critter[] critters3;
 Critter[] critters4;
 void setup() {
-  srcImg = loadImage(inputPath+filename+inputExtension);
-  
+  //srcImg = loadImage(inputPath+filename+inputExtension);
+  srcImg = createImage(50,50,RGB);
+  for(int i = 0 ; i < srcImg.pixels.length ; i++){
+    srcImg.pixels[i] = color(int(random(255)));
+  }
   size(srcImg.width, srcImg.height);  
   destImg = srcImg;
   critters1 = new Critter[width];
@@ -39,7 +42,7 @@ void draw() {
       critters1[i].run(destImg.pixels);
       destImg.pixels[critters1[i].y*width + critters1[i].x]=critters1[i].pixel;
       destImg.updatePixels();
-      //critters[i].display(0);
+      critters1[i].display(1);
       
     //}
   }
@@ -49,7 +52,7 @@ void draw() {
       critters2[i].run(destImg.pixels);
       destImg.pixels[critters2[i].y*width + critters2[i].x]=critters2[i].pixel;
       destImg.updatePixels();
-      //critters[i].display(0);
+      critters2[i].display(1);
       
     //}
   }
@@ -59,7 +62,7 @@ void draw() {
       critters3[i].run(destImg.pixels);
       destImg.pixels[critters3[i].y*width + critters3[i].x]=critters3[i].pixel;
       destImg.updatePixels();
-      //critters[i].display(0);
+      critters3[i].display(1);
       
     //}
   }
@@ -69,7 +72,7 @@ void draw() {
       critters4[i].run(destImg.pixels);
       destImg.pixels[critters4[i].y*width + critters4[i].x]=critters4[i].pixel;
       destImg.updatePixels();
-      //critters[i].display(0);
+      critters4[i].display(1);
       
     //}
   }
