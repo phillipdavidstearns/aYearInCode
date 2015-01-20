@@ -1,63 +1,72 @@
 PImage srcImg;
-PImage block;
-int block_size = 16;
-int sample_pos_x;
-int sample_pos_y;
-PVector block_pos;
-PVector block_velocity;
+Block[] blocks;
 
 void setup(){
   srcImg = loadImage("input/yungjake.png");
   size(srcImg.width, srcImg.height);
-  block = createImage(block_size, block_size, RGB);
-  sample_pos_x = int(random(width-block_size-2));
-  sample_pos_y = int(random(height-block_size-2));
-  block_pos = new PVector(width/2,height/2);
-  block_velocity = new PVector(random(.5),random(.5));
-  //copy part of the image to the block... can be written as a function later...
-  for(int y = 0 ; y < block_size ; y++){
-    for(int x = 0 ; x < block_size ; x++){
-      block.pixels[block_size*y+x] = srcImg.pixels[(sample_pos_x + x) + ((sample_pos_y + y ) * width)];
+  image(srcImg, 0, 0);
+  loadPixels();
+  int block_size=32;
+  blocks = new Block[int(width/block_size) * int(height/block_size)];
+  int index = 0;
+  for(int x = 0 ; x < width/block_size  ; x++){
+    for(int y = 0 ; y < height/block_size ; y++){
+      blocks[index] = new Block(block_size, int(x*block_size), int(y*block_size));
+      index++;
     }
   }
-  image(srcImg, 0, 0);
 }
 
 void draw(){
   
-  
-  
-  
-  moveBlock();
-  image(block, block_pos.x,  block_pos.y);
-  
-}
-
-void moveBlock(){
-  block_velocity = new PVector(random(4)-2,random(4)-2);
-
-  block_pos.add(block_velocity);
-  if(block_pos.x > width-block_size && block_pos.x < 0 ){
-    block_pos.x = 0;
+  for(int i = 0 ; i < blocks.length ; i++){
+    blocks[i].move();
+    blocks[i].display();
   }
-  if(block_pos.y > height-block_size && block_pos.y < 0 ){
-    block_pos.y = 0;
+  
+  saveFrame("output/block_class_test/block_class_test_####.PNG");
+  if(frameCount > 20){
+    exit();
   }
 }
-  
+
+
 void mousePressed() {
-    sample_pos_x = int(random(width-(block_size*2)));
-    sample_pos_y = int(random(height-(block_size*2)));
-  for(int y = 0 ; y < block_size ; y++){
-    for(int x = 0 ; x < block_size ; x++){
-      block.pixels[block_size*y+x] = srcImg.pixels[(sample_pos_x + x) + ((sample_pos_y + y ) * width)];
+}
+  
+class Block {
+  int size;
+  PImage img;
+  PVector location;
+  PVector velocity;
+  PVector acceleration;
+  float dampening;
+  float hue;
+  float saturation;
+  float brightness;
+  
+  Block(int _size, int _x, int _y){
+    size=_size;
+    location = new PVector(_x, _y);
+    velocity = new PVector(random(4)-2, random(4)-2);
+    acceleration = new PVector(0,0);
+    
+    img = createImage(size, size, HSB);
+    img.loadPixels();
+    for(int y = 0 ; y < size ; y++){
+      for(int x = 0 ; x < size ; x++){
+        img.pixels[(size*y)+x]=pixels[(int(location.x) + x) + ((int(location.y)+y) * width)];
+      }
     }
+    img.updatePixels();
   }
-    block_pos.x=mouseX;
-    block_pos.y=mouseY;
-    for(int y = 0 ; y < block_size ; y++){
-    for(int x = 0 ; x < block_size ; x++){
-      block[block_size*y+x] = srcImg.pixels[(sample_pos_x + x) + ((sample_pos_y + y ) * width)];
-    }
+  
+  void move(){ 
+  velocity.add(acceleration);
+  location.add(velocity);
+}
+  void display(){
+    image(img, location.x, location.y);
   }
-  }
+  
+}
