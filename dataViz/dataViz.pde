@@ -2,8 +2,8 @@ byte[] raw_bytes;
 byte[] raw_bits;
 
 String input_path = "input/";
-String input_filename = "GoogleChromeFramework";
-String input_ext = ".bin";
+String input_filename = "AdobePhotoshopCC2014";
+String input_ext = "";
 
 String output_path = "output/test/";
 String output_filename = "test";
@@ -12,7 +12,7 @@ String output_ext = ".PNG";
 int offset=0; // skips bits 
 
 void setup(){
- size(128, 128);
+ size(384, 512);
  raw_bytes = loadBytes(input_path + input_filename + input_ext);
  raw_bits = new byte[raw_bytes.length*8];
  bytes_to_bits();
@@ -47,9 +47,9 @@ void bits_to_pixels(){
   int[] chan3 = new int[pixels.length];
   
   // sets number of bits to be packed into color channel values
-  int chan1_depth = 1; //defaul = red channel
+  int chan1_depth = 0; //defaul = red channel
   int chan2_depth = 1; //default = green channel
-  int chan3_depth = 1; //default = blue channel
+  int chan3_depth = 2; //default = blue channel
   
   int pixel_depth = chan1_depth + chan2_depth + chan3_depth; //this is the total number of bits used to create a pixel
   
@@ -78,6 +78,6 @@ void bits_to_pixels(){
   }
   
   updatePixels();
-  offset+=512; //causes scrolling
+  offset+=384*10; //causes scrolling
   
 }
