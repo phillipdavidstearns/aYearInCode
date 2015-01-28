@@ -22,7 +22,7 @@ class Block {
   float shift_velocity_scalar = 1.5;
   float shift_acceleration_scalar = 0;
   
-  float maxspeed=1;
+  float maxspeed=.5;
   float maxforce=.0125;
   
   //for  manipulation of pixels inside the block
@@ -44,8 +44,9 @@ class Block {
     //acceleration.mult(acceleration_scalar);
     
     shift_location = new PVector(_x, _y);
-    shift_velocity = new PVector(random(-1,1), random(-1,1));
-    shift_velocity.mult(shift_velocity_scalar);
+    shift_velocity = new PVector(0, 0);
+    //shift_velocity = new PVector(random(-1,1), random(-1,1));
+    //shift_velocity.mult(shift_velocity_scalar);
     shift_acceleration = new PVector(random(-1,1), random(-1,1));
     shift_acceleration.mult(shift_acceleration_scalar);
     
@@ -58,10 +59,9 @@ class Block {
   void run(int[] _pixels, ArrayList<Block> blocks){
     loadPixels();
     capture(_pixels);
-    //rotateHue();
+    rotateHue(0,0,0);
     flock(blocks); //need to create arrayList blocks
     update();
-    borders();
     display();
   }
   
@@ -111,6 +111,8 @@ class Block {
     
     velocity.add(acceleration);
     location.add(velocity);
+    
+    borders();
   }
 
   // A method that calculates and applies a steering force towards a target
@@ -130,6 +132,7 @@ class Block {
     steer.limit(maxforce);  // Limit to maximum steering force
     return steer;
   }
+  
   // Wraparound
   void borders() {
     if (location.x < 0) location.x = width;
@@ -147,7 +150,7 @@ class Block {
   // Separation
   // Method checks for nearby blocks and steers away
   PVector separate (ArrayList<Block> blocks) {
-    float desiredseparation = size*.25;
+    float desiredseparation = size;
     PVector steer = new PVector(0, 0, 0);
     int count = 0;
     // For every boid in the system, check if it's too close
@@ -186,7 +189,7 @@ class Block {
   // Alignment
   // For every nearby boid in the system, calculate the average velocity
   PVector align (ArrayList<Block> blocks) {
-    float neighbordist = size*.5;
+    float neighbordist = size;
     PVector sum = new PVector(0, 0);
     int count = 0;
     for (Block other : blocks) {
@@ -217,7 +220,7 @@ class Block {
   // Cohesion
   // For the average location (i.e. center) of all nearby blocks, calculate steering vector towards that location
   PVector cohesion (ArrayList<Block> blocks) {
-    float neighbordist = size*.25;
+    float neighbordist = size*.5;
     PVector sum = new PVector(0, 0);   // Start with empty vector to accumulate all locations
     int count = 0;
     for (Block other : blocks) {
@@ -251,7 +254,7 @@ class Block {
     image(img, displacement.x, displacement.y);
   }
   
-  void rotateHue(){
+  void rotateHue(float _hShift, float _sShift, float _bShift){
     img.loadPixels();
     for(int i = 0 ; i < img.pixels.length ; i++){
       colorMode(HSB,360,255,255);
@@ -259,19 +262,19 @@ class Block {
       saturation = saturation(img.pixels[i]);
       brightness = brightness(img.pixels[i]);
       
-      hue+=0;
+      hue+=_hShift;
       if(hue < 0){
         hue += 360;
       }
       hue %= 360; 
       
-      saturation+=0;
+      saturation+=_sShift;
       if(saturation < 0){
         saturation += 255;
       }
       saturation %= 256; 
       
-      brightness+=0;
+      brightness+=_bShift;
       if(brightness < 0){
         brightness += 255;
       }
