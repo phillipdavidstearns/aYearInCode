@@ -1,44 +1,32 @@
 class Block {
-
   int size;
   PImage img;
-  
-  //physics variables
   PVector location;
   PVector velocity;
   PVector acceleration;
-  
   PVector shift_location;
   PVector shift_velocity;
   PVector shift_acceleration;
-  
   PVector displacement;
-  
-  float dampening;
   
   float velocity_scalar = 1;
   float acceleration_scalar = 0;
-  
   float shift_velocity_scalar = 1.5;
-  float shift_acceleration_scalar = 0;
+  float shift_acceleration_scalar = 1;
+  float maxspeed=1;
+  float maxforce=.125;
   
-  float maxspeed=.5;
-  float maxforce=.0125;
-  
-  //for  manipulation of pixels inside the block
   float hue;
   float saturation;
   float brightness;
   
   //constuctor requires args = size, and x, y coordinates
   Block(int _size, int _x, int _y){
-    
     size=_size;
-    
     location = new PVector(_x, _y);
     displacement = new PVector(_x, _y);
-    //velocity = new PVector(0, 0);
-    velocity = new PVector(random(-1,1), random(-1,1));
+    velocity = new PVector(0, 0);
+    //velocity = new PVector(random(-1,1), random(-1,1));
     velocity.mult(velocity_scalar);
     acceleration = new PVector(0, 0);
     //acceleration.mult(acceleration_scalar);
@@ -51,7 +39,6 @@ class Block {
     shift_acceleration.mult(shift_acceleration_scalar);
     
     img = createImage(size, size, RGB);
-    
     capture(pixels);
   }
   
@@ -59,14 +46,14 @@ class Block {
   void run(int[] _pixels, ArrayList<Block> blocks){
     loadPixels();
     capture(_pixels);
-    rotateHue(0,0,0);
-    flock(blocks); //need to create arrayList blocks
+    //rotateHue(0,0,0);
+    flock(blocks);
     update();
     display();
   }
   
-  void capture(int[] _pixels){
-    
+  // capture pixels at the input location
+  void capture(int[] _pixels){ 
     for(int y = 0 ; y < size ; y++){
       for(int x = 0 ; x < size ; x++){
         int capture_x = (int(location.x) + x)%(width);
@@ -102,13 +89,13 @@ class Block {
   
   // Method to update location
   void update() {  
+    
     shift_velocity.add(shift_acceleration);
     shift_velocity.limit(maxspeed);
     shift_location.add(shift_velocity);
     shift_acceleration.mult(0);
     
     displacement = PVector.add(location, shift_velocity);
-    
     velocity.add(acceleration);
     location.add(velocity);
     
@@ -120,12 +107,7 @@ class Block {
   PVector seek(PVector target) {
     PVector desired = PVector.sub(target, shift_location);  // A vector pointing from the location to the target
     // Scale to maximum speed
-    desired.normalize();
-    desired.mult(maxspeed);
-
-    // Above two lines of code below could be condensed with new PVector setMag() method
-    // Not using this method until Processing.js catches up
-    // desired.setMag(maxspeed);
+    desired.setMag(maxspeed);
 
     // Steering = Desired minus Velocity
     PVector steer = PVector.sub(desired, shift_velocity);
@@ -173,13 +155,9 @@ class Block {
 
     // As long as the vector is greater than 0
     if (steer.mag() > 0) {
-      // First two lines of code below could be condensed with new PVector setMag() method
-      // Not using this method until Processing.js catches up
-      // steer.setMag(maxspeed);
 
       // Implement Reynolds: Steering = Desired - Velocity
-      steer.normalize();
-      steer.mult(maxspeed);
+      steer.setMag(maxspeed);
       steer.sub(shift_velocity);
       steer.limit(maxforce);
     }
@@ -201,13 +179,9 @@ class Block {
     }
     if (count > 0) {
       sum.div((float)count);
-      // First two lines of code below could be condensed with new PVector setMag() method
-      // Not using this method until Processing.js catches up
-      // sum.setMag(maxspeed);
 
       // Implement Reynolds: Steering = Desired - Velocity
-      sum.normalize();
-      sum.mult(maxspeed);
+      sum.setMag(maxspeed);
       PVector steer = PVector.sub(sum, shift_velocity);
       steer.limit(maxforce);
       return steer;
@@ -220,7 +194,7 @@ class Block {
   // Cohesion
   // For the average location (i.e. center) of all nearby blocks, calculate steering vector towards that location
   PVector cohesion (ArrayList<Block> blocks) {
-    float neighbordist = size*.5;
+    float neighbordist = size*2;
     PVector sum = new PVector(0, 0);   // Start with empty vector to accumulate all locations
     int count = 0;
     for (Block other : blocks) {
