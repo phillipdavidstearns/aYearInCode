@@ -1,6 +1,14 @@
 
+<<<<<<< HEAD
 *.bin
 
 *.GIF
 
 *.PNG
+=======
+*.PNG
+
+*.GIF
+
+*.prproj
+>>>>>>> FETCH_HEAD
