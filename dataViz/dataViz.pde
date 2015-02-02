@@ -24,6 +24,7 @@ int def;
 byte[] raw_bytes;
 byte[] raw_bits;
 
+//you will have to specify your own path for files you want to render
 String input_path = "input/";
 String input_filename = "iAdCore";
 String input_ext = "";
