@@ -1,83 +1,196 @@
+/**
+ * ControlP5 Controlframe
+ * with controlP5 2.0 all java.awt dependencies have been removed
+ * as a consequence the option to display controllers in a separate
+ * window had to be removed as well. 
+ * this example shows you how to create a java.awt.frame and use controlP5
+ *
+ * by Andreas Schlegel, 2012
+ * www.sojamo.de/libraries/controlp5
+ *
+ */
+
+import java.awt.Frame;
+import java.awt.BorderLayout;
+import controlP5.*;
+
+private ControlP5 cp5;
+
+//for the GUI window
+ControlFrame cf;
+
+int def;
+
 byte[] raw_bytes;
 byte[] raw_bits;
 
 String input_path = "input/";
-String input_filename = "AdobePhotoshopCC2014";
+String input_filename = "iAdCore";
 String input_ext = "";
 
 String output_path = "output/test/";
 String output_filename = "test";
 String output_ext = ".PNG";
 
-int offset=0; // skips bits 
+int bit_offset=0; // skips bits 
+int pixel_offset=0; // skips pixels
+
+// sets number of bits to be packed into color channel values
+int chan1_depth = 5; //defaul = red channel
+int chan2_depth = 6; //default = green channel
+int chan3_depth = 5; //default = blue channel
+
+int pixel_depth = chan1_depth + chan2_depth + chan3_depth; //this is the total number of bits used to create a pixel
+
+
+// 0 - RGB (no swap)
+// 1 - GBR
+// 2 - BRG
+// 3 - BGR
+// 4 - GRB
+// 5 - RBG
+
+int swap_mode;
+
+boolean red_invert=false;
+boolean green_invert=false;
+boolean blue_invert=false;
+
+int screen_width = 384;
+int screen_height = 512;
 
 void setup(){
- size(384, 512);
- raw_bytes = loadBytes(input_path + input_filename + input_ext);
- raw_bits = new byte[raw_bytes.length*8];
- bytes_to_bits();
- 
+  size(screen_width, screen_height);
+  if (frame != null) {
+    frame.setResizable(true);
+  }
+  raw_bytes = loadBytes(input_path + input_filename + input_ext);
+  raw_bits = new byte[raw_bytes.length*8];
+  bytes_to_bits();
+  
+  cp5 = new ControlP5(this); 
+  
+  // by calling function addControlFrame() a
+  // new frame is created and an instance of class
+  // ControlFrame is instanziated.
+  cf = addControlFrame("GUI", 500 ,200);
+  
+  // add Controllers to the 'extra' Frame inside 
+  // the ControlFrame class setup() method below.
 }
 
 void draw(){
   bits_to_pixels();
   //saveFrame(output_path + output_filename +"_####"+  output_ext);
-  if(frameCount>1000){
-    exit();
-  }
+//    if(frameCount>1000){
+//      exit();
+//    }
 }
 
-void bytes_to_bits(){
-  
+void bytes_to_bits(){ 
   for(int i = 0 ; i < raw_bytes.length ; i++){    
     for(int j = 0 ; j < 8 ; j++){    
       raw_bits[(i*8)+j] = byte((raw_bytes[i] >> j) & 1); 
     }  
   }
-  
 }
 
 void bits_to_pixels(){
-  
   loadPixels();
-  color[] pixel_values = new color[pixels.length];
-  
-  int[] chan1 = new int[pixels.length]; 
-  int[] chan2 = new int[pixels.length];
-  int[] chan3 = new int[pixels.length];
-  
-  // sets number of bits to be packed into color channel values
-  int chan1_depth = 0; //defaul = red channel
-  int chan2_depth = 1; //default = green channel
-  int chan3_depth = 2; //default = blue channel
-  
-  int pixel_depth = chan1_depth + chan2_depth + chan3_depth; //this is the total number of bits used to create a pixel
-  
+
+//  may need to use these later?
+//  color[] pixel_values = new color[pixels.length];
+//
+//  int[] chan1 = new int[pixels.length]; 
+//  int[] chan2 = new int[pixels.length];
+//  int[] chan3 = new int[pixels.length];
+
   for(int i = 0 ; i < pixels.length ; i++){
     
-    int chan1_value = 0;
-    int chan2_value = 0; 
-    int chan3_value = 0; 
+    int chan1 = 0;
+    int chan2 = 0; 
+    int chan3 = 0; 
     
-    //using some bit shifting voodoo to pack bits into channel values
+    int red = 0;
+    int green = 0; 
+    int blue = 0; 
     
-    for(int x = 0 ; x < chan1_depth ; x++){
-      chan1_value |=  (raw_bits[((i+offset)*pixel_depth)+x] << x);
-    }
-  
-    for(int y = 0 ; y < chan2_depth ; y++){
-      chan2_value |=  (raw_bits[((i+offset)*pixel_depth)+chan1_depth+y] << y);
-    }
-  
-    for(int z = 0 ; z < chan3_depth ; z++){
-      chan3_value |=  (raw_bits[((i+offset)*pixel_depth)+chan1_depth+chan2_depth+z] << z);       
-    }
+    //using some bit shifting voodoo to pack bits into channel values  
     
-    pixels[i] = color(chan1_value*(255/(pow(2,(chan1_depth))-1)), chan2_value*(255/(pow(2,(chan2_depth))-1)), chan3_value*(255/(pow(2,(chan3_depth))-1)));
-  
+    if((i+pixel_offset)*pixel_depth+pixel_depth+bit_offset < raw_bits.length){
+    
+      for(int x = 0 ; x < chan1_depth ; x++){
+        chan1 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+x+bit_offset] << x);
+      }
+      chan1*=(255/(pow(2,(chan1_depth))-1)); //scale to 0-255
+    
+      for(int y = 0 ; y < chan2_depth ; y++){
+        chan2 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+y+bit_offset] << y);
+      }
+      chan2*=(255/(pow(2,(chan2_depth))-1)); //scale to 0-255
+    
+      for(int z = 0 ; z < chan3_depth ; z++){
+        chan3 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+chan2_depth+z+bit_offset] << z);       
+      }
+      chan3*=(255/(pow(2,(chan3_depth))-1)); //scale to 0-255
+      
+      //channel swap
+      switch(swap_mode){
+        case 0:
+          red = chan1;
+          green = chan2 ;
+          blue = chan3;
+          break;
+        case 1:
+          red = chan3;
+          green = chan1;
+          blue = chan2;
+          break;
+        case 2:
+          red = chan2;
+          green = chan3;
+          blue = chan1;
+          break;
+        case 3:
+          red = chan3;
+          green = chan2;
+          blue = chan1;
+          break;
+        case 4:
+          red = chan1;
+          green = chan3;
+          blue = chan2;
+          break;
+        case 5:
+          red = chan2;
+          green = chan1;
+          blue = chan3;
+          break;
+      }
+      
+      //channel invert
+      if(red_invert == true){
+        red^=0xFF;
+      }
+      if(green_invert == true){
+        green^=0xFF;
+      }
+      if(blue_invert == true){
+        blue^=0xFF;
+      }
+      
+      pixels[i] = color(red, green, blue);
+    } else {
+      pixels[i] = color(0);
+    }
   }
-  
   updatePixels();
-  offset+=384*10; //causes scrolling
-  
+  //offset+=384*10; //causes scrolling 
 }
+ 
+
+
+
+
+
+  
