@@ -25,25 +25,17 @@ public class ControlFrame extends PApplet {
     frameRate(25);
     cp5 = new ControlP5(this);
 
-// controls for skipping bits    
+// controls for skipping bits 
+
     cp5.addSlider("bit_offset")
       .plugTo(parent,"bit_offset")
       .setRange(0, 24)
       .setSize(100, 20)
       .setPosition(10,10)
+      .setNumberOfTickMarks(25)
       ;
       
-    cp5.addBang("bit_inc")
-     .setPosition(175, 10)
-     .setSize(20, 20)
-     .setLabel("Inc")
-     ;
-     
-   cp5.addBang("bit_dec")
-     .setPosition(205, 10)
-     .setSize(20, 20)
-     .setLabel("Dec")
-     ;
+   
      
 // controls for skipping pixels     
    cp5.addSlider("pixel_offset")
@@ -85,7 +77,27 @@ for (int i=0;i<6;i++) {
      
 
 // controls for color channel depth
-//number boxes go here
+
+  cp5.addSlider("chan1_depth")
+    .setPosition(300,10)
+    .setSize(100,20)
+    .setRange(0,8)
+    .setNumberOfTickMarks(9)
+    ;
+     
+  cp5.addSlider("chan2_depth")
+    .setPosition(300,40)
+    .setSize(100, 20)
+    .setRange(0,8)
+    .setNumberOfTickMarks(9)
+    ;
+     
+  cp5.addSlider("chan3_depth")
+    .setPosition(300,70)
+    .setSize(100, 20)
+    .setRange(0,8)
+    .setNumberOfTickMarks(9)
+    ; 
 
 
     cp5.addToggle("R_INV")
@@ -122,12 +134,27 @@ for (int i=0;i<6;i++) {
 //    cp5.getController("B_INV").setValue(invert);
 //  }
   
+  public void chan1_depth(int value){
+    chan1_depth = value;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+  }
+  
+  public void chan2_depth(int value){
+    chan2_depth = value;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+  }
+  
+  public void chan3_depth(int value){
+    chan3_depth = value;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+  }
+  
   public void controlEvent(ControlEvent theEvent) {
     /* events triggered by controllers are automatically forwarded to 
        the controlEvent method. by checking the id of a controller one can distinguish
        which of the controllers has been changed.
     */
-    println("got a control event from controller with id "+theEvent.getController().getId());
+//    println("got a control event from controller with id "+theEvent.getController().getId());
     if(theEvent.getController().getId() != -1){
       swap_mode = theEvent.getController().getId();
     }
@@ -137,16 +164,6 @@ for (int i=0;i<6;i++) {
   
   public void quit(){
     exit();
-  }
-  
-  public void bit_inc(){
-    if(bit_offset < 24)  bit_offset++;
-    cp5.getController("bit_offset").setValue(bit_offset);
-  }
-  
-  public void bit_dec(){
-    if(bit_offset > 0)  bit_offset--;
-    cp5.getController("bit_offset").setValue(bit_offset);
   }
   
   public void pixel_inc(){
