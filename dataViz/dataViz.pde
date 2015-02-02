@@ -1,12 +1,13 @@
-/**
- * ControlP5 Controlframe
+/* dataViz by Phillip Stearns 2015 for aYearInCode();
+ * http://ayearincode.tumblr.com
+ *
+ * USES code from the ControlP5 Controlframe Example by Andreas Schlegel, 2012
  * with controlP5 2.0 all java.awt dependencies have been removed
  * as a consequence the option to display controllers in a separate
  * window had to be removed as well. 
  * this example shows you how to create a java.awt.frame and use controlP5
  *
- * by Andreas Schlegel, 2012
- * www.sojamo.de/libraries/controlp5
+ * Requires controlP5 library available at www.sojamo.de/libraries/controlp5
  *
  */
 
