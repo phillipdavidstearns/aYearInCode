@@ -27,8 +27,8 @@ byte[] raw_bits;
 
 //you will have to specify your own path for files you want to render
 String input_path = "input/";
-String input_filename = "iAdCore";
-String input_ext = "";
+String input_filename = "GoogleChromeFramework";
+String input_ext = ".bin";
 
 String output_path = "output/test/";
 String output_filename = "test";
@@ -38,20 +38,14 @@ int bit_offset=0; // skips bits
 int pixel_offset=0; // skips pixels
 
 // sets number of bits to be packed into color channel values
-int chan1_depth = 5; //defaul = red channel
-int chan2_depth = 6; //default = green channel
-int chan3_depth = 5; //default = blue channel
+int chan1_depth = 8; //defaul = red channel
+int chan2_depth = 8; //default = green channel
+int chan3_depth = 8; //default = blue channel
 
-int pixel_depth = chan1_depth + chan2_depth + chan3_depth; //this is the total number of bits used to create a pixel
+// this is the total number of bits used to create a pixel
+int pixel_depth = chan1_depth + chan2_depth + chan3_depth;
 
-
-// 0 - RGB (no swap)
-// 1 - GBR
-// 2 - BRG
-// 3 - BGR
-// 4 - GRB
-// 5 - RBG
-
+// used to swap RGB channels
 int swap_mode;
 
 boolean red_invert=false;
@@ -62,7 +56,7 @@ int screen_width = 384;
 int screen_height = 512;
 
 void setup(){
-  size(screen_width, screen_height);
+  setScreenSize(screen_width, screen_height);
   if (frame != null) {
     frame.setResizable(true);
   }
@@ -83,10 +77,22 @@ void setup(){
 
 void draw(){
   bits_to_pixels();
-  //saveFrame(output_path + output_filename +"_####"+  output_ext);
-//    if(frameCount>1000){
-//      exit();
-//    }
+}
+
+public int sketchWidth() {
+    return displayWidth;
+  }
+
+  public int sketchHeight() {
+    return displayHeight;
+  }
+
+  public String sketchRenderer() {
+    return P2D; 
+  }
+
+void setScreenSize(int x, int y){
+  frame.setSize(x,y);
 }
 
 void bytes_to_bits(){ 
@@ -99,13 +105,6 @@ void bytes_to_bits(){
 
 void bits_to_pixels(){
   loadPixels();
-
-//  may need to use these later?
-//  color[] pixel_values = new color[pixels.length];
-//
-//  int[] chan1 = new int[pixels.length]; 
-//  int[] chan2 = new int[pixels.length];
-//  int[] chan3 = new int[pixels.length];
 
   for(int i = 0 ; i < pixels.length ; i++){
     
@@ -169,6 +168,7 @@ void bits_to_pixels(){
           blue = chan3;
           break;
       }
+
       
       //channel invert
       if(red_invert == true){
@@ -182,12 +182,12 @@ void bits_to_pixels(){
       }
       
       pixels[i] = color(red, green, blue);
+      
     } else {
       pixels[i] = color(0);
     }
   }
   updatePixels();
-  //offset+=384*10; //causes scrolling 
 }
  
 

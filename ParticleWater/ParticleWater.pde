@@ -8,7 +8,7 @@
  * 1/30/2015
  */
  
-Ball[] balls = new Ball[50000];
+Ball[] balls = new Ball[10000];
 
 void setup() {
   size(500, 500);
@@ -31,7 +31,7 @@ void draw() {
       }
     }
   }
-  saveFrame("output/particles_50000-####.PNG");
+  saveFrame("output/particles_10000-####.PNG");
 }
 
 

@@ -17,8 +17,6 @@ ControlFrame addControlFrame(String theName, int theWidth, int theHeight) {
 public class ControlFrame extends PApplet {
 
   int w, h;
-  int GUI = 0;
-  String names[]={"RGB" , "GBR" , "BRG" , "BGR" , "GRB" , "RBG"};
   
   public void setup() {
     size(w, h);
@@ -31,109 +29,112 @@ public class ControlFrame extends PApplet {
       .plugTo(parent,"bit_offset")
       .setRange(0, 24)
       .setSize(100, 20)
-      .setPosition(10,10)
+      .setPosition(10,110)
       .setNumberOfTickMarks(25)
       ;
-      
-   
      
 // controls for skipping pixels     
    cp5.addSlider("pixel_offset")
      .plugTo(parent,"pixel_offset")
-     .setPosition(10, 45)
+     .setPosition(10, 140)
      .setRange(0, raw_bits.length/pixel_depth)
      .setSize(100, 20)
      ;
       
     cp5.addBang("pixel_inc")
-     .setPosition(175, 45)
+     .setPosition(175, 140)
      .setSize(20, 20)
-     .setLabel("Inc")
+     .setLabel("px+")
      ;
      
    cp5.addBang("pixel_dec")
-     .setPosition(205, 45)
+     .setPosition(205, 140)
      .setSize(20, 20)
-     .setLabel("Dec")
+     .setLabel("px-")
+     ;
+     
+   cp5.addBang("line_inc")
+     .setPosition(235, 140)
+     .setSize(20, 20)
+     .setLabel("ln+")
+     ;
+     
+   cp5.addBang("line_dec")
+     .setPosition(265, 140)
+     .setSize(20, 20)
+     .setLabel("ln-")
      ;
        
 // exits program       
     cp5.addBang("quit")
-     .setPosition(250, 120)
+     .setPosition(400, 130)
      .setSize(20, 20)
      .setLabel("EXIT")
      ;
-     
-// controls for color channel swap mode
-//makes a row of buttons
-for (int i=0;i<6;i++) { 
-    cp5.addBang(names[i])
-       .setPosition(10+i*30, 80)
-       .setSize(20, 20)
-       .setId(i)
-       ;
-}
+
+  cp5.addRadioButton("swap_mode")
+         .setPosition(10,10)
+         .setSize(20,20)
+         .setItemsPerRow(2)
+         .setSpacingColumn(30)
+         .addItem("RGB", 0)
+         .addItem("GBR", 1)
+         .addItem("BRG", 2)
+         .addItem("BGR", 3)
+         .addItem("GRB", 4)
+         .addItem("RBG", 5)
+         ;
 
      
 
 // controls for color channel depth
 
   cp5.addSlider("chan1_depth")
-    .setPosition(300,10)
-    .setSize(100,20)
+    .setPosition(240,10)
+    .setSize(50,20)
     .setRange(0,8)
+    .setValue(8)
     .setNumberOfTickMarks(9)
     ;
      
   cp5.addSlider("chan2_depth")
-    .setPosition(300,40)
-    .setSize(100, 20)
+    .setPosition(240,40)
+    .setSize(50, 20)
     .setRange(0,8)
+    .setValue(8)
     .setNumberOfTickMarks(9)
     ;
      
   cp5.addSlider("chan3_depth")
-    .setPosition(300,70)
-    .setSize(100, 20)
+    .setPosition(240,70)
+    .setSize(50, 20)
     .setRange(0,8)
+    .setValue(8)
     .setNumberOfTickMarks(9)
     ; 
 
-
-    cp5.addToggle("R_INV")
-       .setPosition(10+(0*30), 120)
-       .setSize(20, 20)
-       .plugTo(parent,"red_invert")
-       ;
-     cp5.addToggle("G_INV")
-       .setPosition(10+(1*30), 120)
-       .setSize(20, 20)
-       .plugTo(parent,"green_invert")
-       ;
-     cp5.addToggle("B_INV")
-       .setPosition(10+(2*30), 120)
-       .setSize(20, 20)
-       .plugTo(parent,"blue_invert")
-       ;
-//     cp5.addToggle("INV_ALL")
-//       .setPosition(10+(3*30), 120)
-//       .setSize(20, 20)
-//       ;
-
-    
+  cp5.addToggle("R_INV")
+     .setPosition(10+(0*30), 70)
+     .setSize(20, 20)
+     .plugTo(parent,"red_invert")
+     ;
+   cp5.addToggle("G_INV")
+     .setPosition(10+(1*30), 70)
+     .setSize(20, 20)
+     .plugTo(parent,"green_invert")
+     ;
+   cp5.addToggle("B_INV")
+     .setPosition(10+(2*30), 70)
+     .setSize(20, 20)
+     .plugTo(parent,"blue_invert")
+     ;
+     
   }
 
   public void draw() {
-      background(GUI);
+      background(0);
   }
-  
-//haven't figured out how to get this to work...  
-//  public void INV_ALL(boolean invert){
-//    cp5.getController("R_INV").setValue(invert);
-//    cp5.getController("G_INV").setValue(invert);
-//    cp5.getController("B_INV").setValue(invert);
-//  }
-  
+
   public void chan1_depth(int value){
     chan1_depth = value;
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
@@ -149,18 +150,12 @@ for (int i=0;i<6;i++) {
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
   }
   
-  public void controlEvent(ControlEvent theEvent) {
-    /* events triggered by controllers are automatically forwarded to 
-       the controlEvent method. by checking the id of a controller one can distinguish
-       which of the controllers has been changed.
-    */
-//    println("got a control event from controller with id "+theEvent.getController().getId());
-    if(theEvent.getController().getId() != -1){
-      swap_mode = theEvent.getController().getId();
+  public void swap_mode(int id) {
+   if(id!= -1){
+      swap_mode = id;
     }
    
   }
-
   
   public void quit(){
     exit();
@@ -173,6 +168,16 @@ for (int i=0;i<6;i++) {
   
   public void pixel_dec(){
     if(pixel_offset > 0)  pixel_offset--;
+    cp5.getController("pixel_offset").setValue(pixel_offset);
+  }
+  
+  public void line_inc(){
+    if(pixel_offset+screen_width < raw_bits.length)  pixel_offset+=screen_width;
+    cp5.getController("pixel_offset").setValue(pixel_offset);
+  }
+  
+  public void line_dec(){
+    if(pixel_offset-screen_width > 0)  pixel_offset-=screen_width;
     cp5.getController("pixel_offset").setValue(pixel_offset);
   }
   
