@@ -2,10 +2,6 @@
  * http://ayearincode.tumblr.com
  *
  * USES code from the ControlP5 Controlframe Example by Andreas Schlegel, 2012
- * with controlP5 2.0 all java.awt dependencies have been removed
- * as a consequence the option to display controllers in a separate
- * window had to be removed as well. 
- * this example shows you how to create a java.awt.frame and use controlP5
  *
  * Requires controlP5 library available at www.sojamo.de/libraries/controlp5
  *
@@ -20,15 +16,12 @@ private ControlP5 cp5;
 //for the GUI window
 ControlFrame cf;
 
-int def;
-
-byte[] raw_bytes;
-byte[] raw_bits;
+byte[] raw_bytes, raw_bits;
 
 //you will have to specify your own path for files you want to render
-String input_path = "input/";
-String input_filename = "GoogleChromeFramework";
-String input_ext = ".bin";
+String input_path = "";
+String input_filename = "dataViz";
+String input_ext = ".pde";
 
 String output_path = "output/test/";
 String output_filename = "test";
@@ -38,15 +31,8 @@ int bit_offset=0; // skips bits
 int pixel_offset=0; // skips pixels
 
 // sets number of bits to be packed into color channel values
-int chan1_depth = 8; //defaul = red channel
-int chan2_depth = 8; //default = green channel
-int chan3_depth = 8; //default = blue channel
-
-// this is the total number of bits used to create a pixel
-int pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-
-// used to swap RGB channels
-int swap_mode;
+int chan1_depth, chan2_depth, chan3_depth, pixel_depth, swap_mode;
+int line_multiplier = 1;
 
 boolean red_invert=false;
 boolean green_invert=false;
@@ -60,9 +46,8 @@ void setup(){
   if (frame != null) {
     frame.setResizable(true);
   }
-  raw_bytes = loadBytes(input_path + input_filename + input_ext);
-  raw_bits = new byte[raw_bytes.length*8];
-  bytes_to_bits();
+  
+  loadData(input_path + input_filename + input_ext);
   
   cp5 = new ControlP5(this); 
   
@@ -75,8 +60,25 @@ void setup(){
   // the ControlFrame class setup() method below.
 }
 
+void initializeDepth(int depth1, int depth2, int depth3){
+    chan1_depth=depth1;
+    chan2_depth=depth2;
+    chan3_depth=depth3;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+}
+
 void draw(){
   bits_to_pixels();
+}
+
+void loadData(String thePath){
+  raw_bytes = loadBytes(thePath);
+  raw_bits = new byte[raw_bytes.length*8];
+  bytes_to_bits();
+}
+
+void saveData(String thePath){
+  saveFrame(thePath+".TIF");
 }
 
 public int sketchWidth() {
@@ -91,8 +93,8 @@ public int sketchWidth() {
     return P2D; 
   }
 
-void setScreenSize(int x, int y){
-  frame.setSize(x,y);
+void setScreenSize(int _width, int _height){
+  frame.setSize(_width, _height);
 }
 
 void bytes_to_bits(){ 
@@ -168,8 +170,7 @@ void bits_to_pixels(){
           blue = chan3;
           break;
       }
-
-      
+  
       //channel invert
       if(red_invert == true){
         red^=0xFF;
@@ -181,10 +182,10 @@ void bits_to_pixels(){
         blue^=0xFF;
       }
       
-      pixels[i] = color(red, green, blue);
+      pixels[i] = 255 <<24 |red << 16 | green << 8 | blue;
       
     } else {
-      pixels[i] = color(0);
+      pixels[i] = 0x00000000;
     }
   }
   updatePixels();
