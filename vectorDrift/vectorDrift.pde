@@ -16,21 +16,21 @@ PImage srcImg;
 Flock input_flock;
 Flock output_flock;
 
-int block_size =  64;
+int block_size =  32;
 
 void setup(){
   //srcImg = loadImage("input/yungjake.png"); //loads source image
   //size(250, 250); //set window size to source image dimensions 
   srcImg = loadImage("input/windows_xp_bliss-wide.jpg"); //loads source image
-  size(1280, 720); //set window size to source image dimensions 
-  srcImg.resize(1280,720);
+  size(250, 250); //set window size to source image dimensions 
+  srcImg.resize(400,250);
   image(srcImg, 0, 0); //draw source image
   loadPixels();
   updatePixels();
   input_flock = new Flock();
   output_flock = new Flock();
   // Add an initial set of boids into the system
-  for (int i = 0; i < 512; i++) {
+  for (int i = 0; i < 256; i++) {
     input_flock.addBlock(new Block(int(random(width-block_size-1)), int(random(height-block_size-1))));
     output_flock.addBlock(new Block(int(random(width-block_size-1)), int(random(height-block_size-1))));
   }
@@ -48,7 +48,7 @@ void draw(){
   if(frameCount > 3600){
     exit();
   }
-  saveFrame("output/pixelFlock_v2_test_001-####.PNG");
+  saveFrame("output/pixelFlockingGIF/pixelFlock_v2_test_GIF_001-####.PNG");
 }
 
 //not currently implemented... something about setting a point of gravity or adding another block when clicked...
