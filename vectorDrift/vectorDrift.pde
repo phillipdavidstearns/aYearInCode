@@ -16,39 +16,29 @@ PImage srcImg;
 Flock input_flock;
 Flock output_flock;
 
-int block_size =  32;
+int block_size = 32;
+ArrayList<int[]> images = new ArrayList<int[]>();
 
 void setup(){
-  //srcImg = loadImage("input/yungjake.png"); //loads source image
-  //size(250, 250); //set window size to source image dimensions 
-  srcImg = loadImage("input/windows_xp_bliss-wide.jpg"); //loads source image
+ 
+  srcImg = loadImage("input/4718Beef.jpg"); //loads source image
   size(250, 250); //set window size to source image dimensions 
-  srcImg.resize(400,250);
-  image(srcImg, 0, 0); //draw source image
+  image(srcImg, -500, -350); //draw source image
   loadPixels();
-  updatePixels();
   input_flock = new Flock();
   output_flock = new Flock();
   // Add an initial set of boids into the system
   for (int i = 0; i < 256; i++) {
-    input_flock.addBlock(new Block(int(random(width-block_size-1)), int(random(height-block_size-1))));
-    output_flock.addBlock(new Block(int(random(width-block_size-1)), int(random(height-block_size-1))));
+    input_flock.addBlock(new Block(int(random(width)), int(random(height))));
+    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
   }
 }
 
 void draw(){
-  
-//image(srcImg, 0, 0); //draw source image
-  loadPixels();
-  input_flock.run(); 
-  output_flock.run();
+  //input_flock.run(); 
+  output_flock.run();  
   displacePixels(input_flock, output_flock);
-  //displacePixels(input_flock, input_flock);
-  //displacePixels(output_flock, output_flock);
-  if(frameCount > 3600){
-    exit();
-  }
-  saveFrame("output/pixelFlockingGIF/pixelFlock_v2_test_GIF_001-####.PNG");
+//  saveFrame("output/pixelFlockingGIF/pixelFlock_v2_test_GIF_002-####.PNG");
 }
 
 //not currently implemented... something about setting a point of gravity or adding another block when clicked...
@@ -59,30 +49,60 @@ void mousePressed() {
 void displacePixels(Flock _input, Flock _output){
   Block input_block;
   Block output_block;
-  PImage[] block_images = new PImage[_input.blocks.size()];
+  images.clear();
   for(int i = 0 ; i < _input.blocks.size() ; i++){
     input_block = _input.blocks.get(i);
-    block_images[i] = new PImage(block_size, block_size, RGB);
-    block_images[i] = capture(pixels, input_block.location);
+    images.add(i, capture(pixels, input_block.location));
   }
   for(int i = 0 ; i < _input.blocks.size() ; i++){
     input_block = _input.blocks.get(i);
     output_block = _output.blocks.get(i);
-    //image(block_images[i], output_block.location.x, output_block.location.y);
-      
-//    image(block_images[i], output_block.location.x+input_block.velocity.x, output_block.location.y+input_block.velocity.y);
-    image(block_images[i], input_block.location.x+output_block.velocity.x, input_block.location.y+output_block.velocity.y);
+    int[] _image = images.get(i);
+    for(int k = 0 ; k < block_size ; k++){
+      for(int j = 0 ; j < block_size ; j++){
+       int _x=0;
+       int _y=0;
+        switch(1){
+          case 0:
+          _x = int(output_block.location.x + k)%width;
+          _y = int(output_block.location.y + j)%height;
+          break;
+           
+          case 1: 
+          _x = int(input_block.location.x+output_block.velocity.x + k)%width;
+          _y = int(input_block.location.y+output_block.velocity.y + j)%height;
+          break;
+        
+          case 2:
+          _x = int(input_block.location.x+input_block.velocity.x + k)%width;
+          _y = int(input_block.location.y+input_block.velocity.y + j)%height;
+          break;
+        }
+        
+        if(_x < 0){
+          _x += width - 1;
+        }
+        if(_y < 0){
+          _y += height - 1;
+        }
+        pixels[_x + (_y*width)]=_image[k+(j*block_size)];
+      }
+    }
+    updatePixels();  
   }
 }
+
+
+
 
   // capture pixels at the input location
   // pulled out of the Block class for reworking of code
   //inprogress: reworking for function to pull location info from a Block object and create a PImage
 
-PImage capture(int[] _pixels, PVector _location){
+int[] capture(int[] _pixels, PVector _location){
   int _width = block_size;
   int _height = block_size;
-  PImage img = createImage( _width, _height, RGB);
+  int[] img = new int[_width * _height];
   //img.loadPixels();
   for(int y = 0 ; y < _width ; y++){
     for(int x = 0 ; x < _height ; x++){
@@ -90,25 +110,12 @@ PImage capture(int[] _pixels, PVector _location){
       if(x < 0 ) capture_x = capture_x + width - 1;
       int capture_y = (int(_location.y) + y)%(height);
       if(y < 0 ) capture_y = capture_y + height - 1;
-        img.pixels[(block_size*y)+x]=_pixels[capture_x + (capture_y * width)];
+        img[(block_size*y)+x]=_pixels[capture_x + (capture_y * width)];
     }
   }
   //img.updatePixels();
   return img;
 }
-
-//void display(){
-//  stroke(0);
-//  noFill();
-//  rect(location.x, location.y, size, size);
-//  
-//  stroke(#FFFFFF);
-//  strokeWeight(0);
-//  noFill();
-//  rect(shift_location.x, shift_location.y, size, size);
-//  image(img, shift_location.x, shift_location.y);
-//  image(img, displacement.x, displacement.y);
-//}
 
 //void rotateHue(float _hShift, float _sShift, float _bShift){
 //  img.loadPixels();

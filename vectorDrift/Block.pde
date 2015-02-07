@@ -11,7 +11,7 @@ class Block {
   PVector acceleration;
   
   float maxspeed=2;
-  float maxforce=.25;
+  float maxforce=.125;
   
   float hue;
   float saturation;
@@ -36,9 +36,9 @@ class Block {
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-    sep.mult(1);
-    ali.mult(1);
-    coh.mult(1);
+    sep.mult(1.5);
+    ali.mult(.75);
+    coh.mult(1.25);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ali);
