@@ -1,12 +1,11 @@
 PVector gravity = new PVector(0,1);
 ArrayList<Node> nodes = new ArrayList<Node>();
-int qtyNodes = 10;
+int qtyNodes = 5;
 
 void setup(){
   size(500,500);
-  
   for(int i = 0 ; i < qtyNodes ; i++){
-    nodes.add(new Node());
+    nodes.add(new Node(i));
   }
 }
 

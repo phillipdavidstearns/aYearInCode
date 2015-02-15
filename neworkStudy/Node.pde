@@ -1,4 +1,7 @@
 class Node{
+  float g = 1;
+  float maxforce = 25;
+  float maxspeed = 5;
   float m, r;  
   int ID;
   PVector location, velocity, acceleration;
@@ -20,7 +23,8 @@ class Node{
     acceleration = new PVector(0, 0);
   }
   
-  Node(){
+  Node(int _ID){
+    ID = _ID;
     location = new PVector(random(width),random(height));
     m = 50;
     r = 25;
@@ -35,7 +39,7 @@ class Node{
   }
   
   void run(ArrayList<Node> _nodes){
-    calcForces(_nodes);
+//    calcGravity(_nodes);
     update();
 //    nodeCollision(_nodes);
     boundaryCollision();
@@ -43,32 +47,46 @@ class Node{
   }
   
   void run(Node _node){
-    calcForces(_node);
+//    calcGravity(_node);
     update();
 //    nodeCollision(_node);
     boundaryCollision();
     display();
   }
   
-  void calcForces(Node _node){
-//    //A = F/M
-
+  void calcGravity(ArrayList<Node> _nodes){
+    //A = F/M1
+    //F = G*M1*M2/R^2
+    //therefore A = G*M2/R^2;
+    
 
     PVector force = new PVector(0,0);
-    pow(location.dist(_node.location), 2);
+    for(int i = 0 ; i < _nodes.size() ; i++){
+      
+      Node n = _nodes.get(i);
+      float dist = location.dist(n.location);
+      if (dist != 0){
+        force = PVector.sub(n.location, location);
+        force.setMag(g*n.m/(pow(location.dist(n.location),2)));
+        applyForce(force);
+      }
+    }
+    
+    
+//    pow(location.dist(_node.location), 2);
   }
   
   
-  void applyForce(PVector force) {
+  void applyForce(PVector _force) {
     // We could add mass here if we want A = F / M
-    force.div(m);
-    acceleration.add(force);
+    _force.limit(maxforce);
+    acceleration.add(_force);
   }
   
   // Method to update location
   void update() {  
     velocity.add(acceleration);
-    //velocity.limit(maxspeed);
+    velocity.limit(maxspeed);
     location.add(velocity);
     acceleration.mult(0);
   }
@@ -114,6 +132,9 @@ class Node{
         
         // calculate magnitude of the vector separating the balls
       float bVectMag = bVect.mag();
+      if(bVectMag == 0){
+        println(i);
+      }
       if(bVectMag != 0){
         if (bVectMag < r + other.r) {
           // get angle of bVect
