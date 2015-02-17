@@ -1,7 +1,11 @@
 class Node{
+  
+  //rather than have a separate
+  ArrayList<Edge> edges;
   float g = 1;
   float maxforce = 25;
   float maxspeed = 5;
+  float formBond = 25;
   float m, r;  
   int ID;
   PVector location, velocity, acceleration;
@@ -13,6 +17,7 @@ class Node{
     r = _r;
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
+    edges = new ArrayList<Edge>();
   }
   
   Node(PVector _location, float _m, float _r){
@@ -21,15 +26,17 @@ class Node{
     r = _r;
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
+    edges = new ArrayList<Edge>();
   }
   
   Node(int _ID){
     ID = _ID;
     location = new PVector(random(width),random(height));
     m = 50;
-    r = 25;
+    r = 2;
     velocity = new PVector(random(-5, 5),random(-5, 5));
     acceleration = new PVector(0, 0);
+    edges = new ArrayList<Edge>();
   }
   
   void run(){
@@ -41,9 +48,9 @@ class Node{
   void run(ArrayList<Node> _nodes){
 //    calcGravity(_nodes);
     update();
+    calcEdges(_nodes);
 //    nodeCollision(_nodes);
     boundaryCollision();
-    display();
   }
   
   void run(Node _node){
@@ -52,6 +59,18 @@ class Node{
 //    nodeCollision(_node);
     boundaryCollision();
     display();
+  }
+  
+  void calcEdges(ArrayList<Node> _nodes){
+    edges.clear();
+    for(int i = _nodes.size() - 1 ; i >= 0 ; i--){
+      Node n = _nodes.get(i);
+      float dist = location.dist(n.location);
+      if (dist != 0 && dist < formBond){
+        Edge e = new Edge(location, n.location);
+        edges.add(e);
+      }
+    }
   }
   
   void calcGravity(ArrayList<Node> _nodes){
@@ -66,7 +85,7 @@ class Node{
       Node n = _nodes.get(i);
       float dist = location.dist(n.location);
       if (dist != 0){
-        force = PVector.sub(n.location, location);
+        force = PVector.sub(location, n.location);
         force.setMag(g*n.m/(pow(location.dist(n.location),2)));
         applyForce(force);
       }
@@ -86,24 +105,25 @@ class Node{
   // Method to update location
   void update() {  
     velocity.add(acceleration);
-    velocity.limit(maxspeed);
+    //velocity.limit(maxspeed);
     location.add(velocity);
     acceleration.mult(0);
   }
   
-  void display(){
-//    stroke(0);
-//    noFill();
-//    rect(location.x, location.y, size, size);
-//    
-    stroke(#FFFFFF);
+  void display(){  
+    stroke(0);
+    strokeWeight(0);
+    for(int i = edges.size() - 1 ; i >= 0 ; i--){
+      Edge e = edges.get(i);
+      line(e.head.x, e.head.y, e.tail.x, e.tail.y);
+    }
+    
+    stroke(0);
     strokeWeight(1);
-    fill(0);
+    fill(128);
     ellipse(location.x,location.y, 2*r, 2*r);
-
   }
     
- 
   void boundaryCollision() {
     if (location.x < 0  + r ) {
       velocity.x *= -1;
@@ -123,18 +143,16 @@ class Node{
     }
   }
   
-  void nodeCollision(ArrayList<Node> nodes) {
-    for (int i = nodes.size()-1; i >= 0; i--) {
-      Node other = nodes.get(i);
+  void nodeCollision(ArrayList<Node> _nodes) {
+    for (int i = _nodes.size()-1; i >= 0; i--) {
+      Node other = _nodes.get(i);
       
       // get distances between the balls components
       PVector bVect = PVector.sub(other.location, location);
         
         // calculate magnitude of the vector separating the balls
       float bVectMag = bVect.mag();
-      if(bVectMag == 0){
-        println(i);
-      }
+      
       if(bVectMag != 0){
         if (bVectMag < r + other.r) {
           // get angle of bVect
@@ -203,7 +221,7 @@ class Node{
           // update balls to screen position
           other.location.x = location.x + bFinal[1].x;
           other.location.y = location.y + bFinal[1].y;
-    
+          
           location.add(bFinal[0]);
     
           // update velocities
@@ -211,6 +229,7 @@ class Node{
           velocity.y = cosine * vFinal[0].y + sine * vFinal[0].x;
           other.velocity.x = cosine * vFinal[1].x - sine * vFinal[1].y;
           other.velocity.y = cosine * vFinal[1].y + sine * vFinal[1].x;
+          
           nodes.remove(i);
           nodes.add(other);
         }
