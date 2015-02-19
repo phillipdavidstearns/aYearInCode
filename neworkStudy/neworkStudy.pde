@@ -3,7 +3,7 @@ PVector gravity = new PVector(0, 1);
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
 
-int qtyNodes = 10;
+int qtyNodes = 50;
 
 void setup() {
   size(500, 500);
@@ -15,21 +15,21 @@ void setup() {
 
 void draw() {
   background(255);
-  for (int i = nodes.size ()-1; i >= 0; i--) {
+  
+  for (int i = nodes.size()-1; i >= 0; i--) {
     Node n = nodes.get(i);
-    n.run(nodes);
+    n.run(nodes, edges);
   }
-
   updateEdges(nodes);
 
-  for (int i = edges.size ()-1; i >= 0; i--) {
+  for (int i = edges.size()-1; i >= 0; i--) {
     Edge e = edges.get(i);
     e.display();
   }
 
   
-  if (frameCount >= 250 &&  frameCount <= 300) {
-//    saveFrame("output/2015-02-18/dynamic_edges_text_01_####.PNG");
+  if (frameCount > 300 && frameCount < 400) {
+   saveFrame("output/2015-02-18/002/dynamic_edges_springs_####.PNG");
   }
 }
 

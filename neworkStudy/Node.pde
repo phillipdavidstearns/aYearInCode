@@ -1,12 +1,13 @@
 class Node {
-
-  float k = -0.01;
+  float dampening = .99;
+  float s = 1.5; //spring constant
+  float k = 0.01; //friction coeff
   float g = 1;
   float maxforce = 25;
   float maxspeed = 5;
   int maxconnections = 5;
-  float formBond =25;
-  float breakBond = formBond + 275;
+  float formBond = 50;
+  float breakBond = formBond + 100;
   float m, r;  
   int ID;
   PVector location, velocity, acceleration;
@@ -31,18 +32,20 @@ class Node {
   Node(int _ID) {
     ID = _ID;
     location = new PVector(random(width), random(height));
-    m = 50;
+    m = 20;
     r = 5;
-    velocity = new PVector(random(-5, 5), random(-5, 5));
+    velocity = new PVector(random(-1, 1), random(-1, 1));
     acceleration = new PVector(0, 0);
   }
 
-  void run(ArrayList<Node> _nodes) {
-//    nodeCollision(_nodes);
-    gravity(_nodes);
+  void run(ArrayList<Node> _nodes, ArrayList<Edge> _edges) {
+    //nodeCollision(_nodes);
+    //gravity(_nodes);
+    edges(_edges);
     drag();
     update();
     boundaryCollision();
+//    boundaryWrap();
     display();
   }
 
@@ -71,15 +74,27 @@ class Node {
     applyForce(force);
   }
   
-//  void edges(ArrayList<Edge> _edges){
-//    PVector force = new PVector(0, 0);
-//    for(int i = _edges.size() - 1 ; i >= 0 ; i--{
-//      if(_edges.get(k).head_ID == ID  || _edges.get(k).tail_ID == ID ){
-//        if(_edges.get(k).l
-//        
-//      }
-//    }
-//  }
+  void edges(ArrayList<Edge> _edges){
+    PVector force = new PVector(0, 0);
+    for(int i = _edges.size() - 1 ; i >= 0 ; i--){
+      if(_edges.get(i).head_ID == ID){
+        force = new PVector(0, 0);
+        velocity.mult(dampening);
+        force = PVector.sub(_edges.get(i).head, _edges.get(i).tail);
+        float dist = _edges.get(i).head.dist(_edges.get(i).tail);
+        force.setMag(-s*(dist-_edges.get(i).l));
+      }
+      if(_edges.get(i).tail_ID == ID){
+        force = new PVector(0, 0);
+        velocity.mult(dampening);
+        force = PVector.sub(_edges.get(i).tail, _edges.get(i).head);
+        float dist = _edges.get(i).head.dist(_edges.get(i).tail);
+        force.setMag(-s*(dist-_edges.get(i).l));
+      }
+      force.div(m);
+      applyForce(force);
+    }
+  }
 
 
   void applyForce(PVector _force) {
@@ -98,13 +113,15 @@ class Node {
 
   void display() {  
 
-
     stroke(0);
-    strokeWeight(1);
-    fill(0);
+    strokeWeight(0);
+    noFill();
     ellipse(location.x, location.y, 2*r, 2*r);
+//    textSize(10);
+//    text(ID, location.x+r, location.y-r);
+
     textSize(10);
-    text(ID, location.x+r, location.y-r);
+    text(velocity.mag(), location.x+r, location.y-r);
   }
 
   void boundaryCollision() {
@@ -123,6 +140,25 @@ class Node {
     if (location.y > height - r) {
       velocity.y *= -1;
       location.y = height-r;
+    }
+  }
+  
+  void boundaryWrap() {
+    if (location.x < 0) {
+      
+      location.x = width + location.x;
+    }
+    if (location.x > width) {
+      
+      location.x %= width;
+    }
+    if (location.y < 0) {
+      
+      location.y = height + location.y;
+    }
+    if (location.y > height) {
+      
+      location.y %= height;
     }
   }
 

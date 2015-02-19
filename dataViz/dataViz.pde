@@ -18,6 +18,8 @@ ControlFrame cf;
 
 byte[] raw_bytes, raw_bits;
 
+int mode=0;
+
 //you will have to specify your own path for files you want to render
 String input_path = "";
 String input_filename = "dataViz";
@@ -31,12 +33,13 @@ int bit_offset=0; // skips bits
 int pixel_offset=0; // skips pixels
 
 // sets number of bits to be packed into color channel values
-int chan1_depth, chan2_depth, chan3_depth, pixel_depth, swap_mode;
+int depth, chan1_depth, chan2_depth, chan3_depth, pixel_depth, swap_mode;
 int line_multiplier = 1;
 
 boolean red_invert=false;
 boolean green_invert=false;
 boolean blue_invert=false;
+boolean invert=false;
 
 int screen_width = 384;
 int screen_height = 512;
@@ -109,84 +112,108 @@ void bits_to_pixels(){
   loadPixels();
 
   for(int i = 0 ; i < pixels.length ; i++){
-    
-    int chan1 = 0;
-    int chan2 = 0; 
-    int chan3 = 0; 
-    
-    int red = 0;
-    int green = 0; 
-    int blue = 0; 
-    
-    //using some bit shifting voodoo to pack bits into channel values  
-    
-    if((i+pixel_offset)*pixel_depth+pixel_depth+bit_offset < raw_bits.length){
-    
-      for(int x = 0 ; x < chan1_depth ; x++){
-        chan1 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+x+bit_offset] << x);
-      }
-      chan1*=(255/(pow(2,(chan1_depth))-1)); //scale to 0-255
-    
-      for(int y = 0 ; y < chan2_depth ; y++){
-        chan2 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+y+bit_offset] << y);
-      }
-      chan2*=(255/(pow(2,(chan2_depth))-1)); //scale to 0-255
-    
-      for(int z = 0 ; z < chan3_depth ; z++){
-        chan3 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+chan2_depth+z+bit_offset] << z);       
-      }
-      chan3*=(255/(pow(2,(chan3_depth))-1)); //scale to 0-255
+    switch(mode){
+      case 0:
+        int chan1 = 0;
+        int chan2 = 0; 
+        int chan3 = 0; 
+        
+        int red = 0;
+        int green = 0; 
+        int blue = 0; 
+        
+        //using some bit shifting voodoo to pack bits into channel values  
+        
+        if((i+pixel_offset)*pixel_depth+pixel_depth+bit_offset < raw_bits.length){
+        
+          for(int x = 0 ; x < chan1_depth ; x++){
+            chan1 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+x+bit_offset] << x);
+          }
+          chan1*=(255/(pow(2,(chan1_depth))-1)); //scale to 0-255
+        
+          for(int y = 0 ; y < chan2_depth ; y++){
+            chan2 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+y+bit_offset] << y);
+          }
+          chan2*=(255/(pow(2,(chan2_depth))-1)); //scale to 0-255
+        
+          for(int z = 0 ; z < chan3_depth ; z++){
+            chan3 |=  (raw_bits[((i+pixel_offset)*pixel_depth)+chan1_depth+chan2_depth+z+bit_offset] << z);       
+          }
+          chan3*=(255/(pow(2,(chan3_depth))-1)); //scale to 0-255
+          
+          //channel swap
+          switch(swap_mode){
+            case 0:
+              red = chan1;
+              green = chan2 ;
+              blue = chan3;
+              break;
+            case 1:
+              red = chan3;
+              green = chan1;
+              blue = chan2;
+              break;
+            case 2:
+              red = chan2;
+              green = chan3;
+              blue = chan1;
+              break;
+            case 3:
+              red = chan3;
+              green = chan2;
+              blue = chan1;
+              break;
+            case 4:
+              red = chan1;
+              green = chan3;
+              blue = chan2;
+              break;
+            case 5:
+              red = chan2;
+              green = chan1;
+              blue = chan3;
+              break;
+          }
       
-      //channel swap
-      switch(swap_mode){
-        case 0:
-          red = chan1;
-          green = chan2 ;
-          blue = chan3;
-          break;
-        case 1:
-          red = chan3;
-          green = chan1;
-          blue = chan2;
-          break;
-        case 2:
-          red = chan2;
-          green = chan3;
-          blue = chan1;
-          break;
-        case 3:
-          red = chan3;
-          green = chan2;
-          blue = chan1;
-          break;
-        case 4:
-          red = chan1;
-          green = chan3;
-          blue = chan2;
-          break;
-        case 5:
-          red = chan2;
-          green = chan1;
-          blue = chan3;
-          break;
-      }
-  
-      //channel invert
-      if(red_invert == true){
-        red^=0xFF;
-      }
-      if(green_invert == true){
-        green^=0xFF;
-      }
-      if(blue_invert == true){
-        blue^=0xFF;
-      }
+          //channel invert
+          if(red_invert == true){
+            red^=0xFF;
+          }
+          if(green_invert == true){
+            green^=0xFF;
+          }
+          if(blue_invert == true){
+            blue^=0xFF;
+          }
+          
+          pixels[i] = 255 <<24 |red << 16 | green << 8 | blue;
+          
+        } else {
+          pixels[i] = 0x00000000;
+        }
+        break;
       
-      pixels[i] = 255 <<24 |red << 16 | green << 8 | blue;
-      
-    } else {
-      pixels[i] = 0x00000000;
+      case 1:
+        int pixel = 0;
+        if((i+pixel_offset)*depth+depth+bit_offset < raw_bits.length){
+        
+          for(int x = 0 ; x < depth ; x++){
+            pixel |=  (raw_bits[((i+pixel_offset)*depth)+x+bit_offset] << x);
+          }
+          pixel*=(255/(pow(2,(depth))-1)); //scale to 0-255
+          
+          if(invert == true){
+            pixel^=0xFF;
+          }
+          
+          pixels[i] = color(pixel);
+        } else {
+          pixels[i] = 0x00000000;
+        }
+      break;
     }
+      
+    
   }
   updatePixels();
 }

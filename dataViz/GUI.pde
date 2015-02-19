@@ -119,6 +119,20 @@ public class ControlFrame extends PApplet {
             .setValue(1)
               .setNumberOfTickMarks(9)
                 ; 
+                
+     cp5.addSlider("depth")
+      .setPosition(400, 45)
+        .setSize(50, 20)
+          .setRange(0, 8)
+            .setValue(1)
+              .setNumberOfTickMarks(9)
+                ;
+                
+    cp5.addToggle("mode")
+      .setPosition(400, 10)
+        .setSize(20, 20)
+           .setLabel("GRAY")
+              ;
 
     cp5.addToggle("R_INV")
       .setPosition(10+(0*30), 75)
@@ -139,6 +153,13 @@ public class ControlFrame extends PApplet {
         .setSize(20, 20)
           .plugTo(parent, "blue_invert")
             .setLabel("!B")
+              ;
+              
+     cp5.addToggle("INV")
+      .setPosition(430, 10)
+        .setSize(20, 20)
+          .plugTo(parent, "invert")
+            .setLabel("!")
               ;
 
     //controls for changing the screen size
@@ -187,6 +208,15 @@ public class ControlFrame extends PApplet {
 
   public void draw() {
     background(25);
+  }
+  
+  void keyPressed(){
+    println(keyCode);
+    if(keyCode == 38){
+      line_inc();
+    } else if(keyCode == 40){
+      line_dec();
+    }
   }
 
   public void open_file() {
@@ -263,6 +293,20 @@ public class ControlFrame extends PApplet {
       cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
+  
+  public void mode(int value){
+    mode = value;
+  }
+  
+  public void depth(int value) {
+    depth = value;
+    if(mode == 1){
+      pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+    }
+    if(pixel_depth != 0){
+      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    }
+  }
 
   public void swap_mode(int id) {
     if (id!= -1) {
@@ -287,7 +331,7 @@ public class ControlFrame extends PApplet {
       cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-1);
     }
   }
-
+  
   public void line_inc() {
     cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*line_multiplier));
   }
