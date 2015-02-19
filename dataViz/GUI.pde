@@ -211,7 +211,7 @@ public class ControlFrame extends PApplet {
   }
   
   void keyPressed(){
-    println(keyCode);
+//    println(keyCode);
     if(keyCode == 38){
       line_inc();
     } else if(keyCode == 40){
@@ -340,9 +340,6 @@ public class ControlFrame extends PApplet {
     if (pixel_offset-(screen_width*line_multiplier) >= 0) {
       cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*line_multiplier));
     }
-  }
-
-  private ControlFrame() {
   }
 
   public ControlFrame(Object theParent, int theWidth, int theHeight) {

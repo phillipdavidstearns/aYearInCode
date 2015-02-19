@@ -82,6 +82,11 @@ void loadData(String thePath){
 
 void saveData(String thePath){
   saveFrame(thePath+".TIF");
+//  PImage output = createImage(width, height, RGB);
+//  for(int i = 0 ; i < output.pixels.length ; i++){
+//    output.pixels[i] = pixels[i];
+//  }
+//  output.save(thePath+".TIF");
 }
 
 public int sketchWidth() {
@@ -97,7 +102,7 @@ public int sketchWidth() {
   }
 
 void setScreenSize(int _width, int _height){
-  frame.setSize(_width, _height);
+  frame.setSize(_width, _height+22);
 }
 
 void bytes_to_bits(){ 
