@@ -3,7 +3,7 @@ PVector gravity = new PVector(0, 1);
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
 
-int qtyNodes = 50;
+int qtyNodes = 150;
 
 void setup() {
   size(500, 500);
@@ -16,16 +16,21 @@ void setup() {
 void draw() {
   background(255);
   
+  updateEdges(nodes);
+  
   for (int i = nodes.size()-1; i >= 0; i--) {
     Node n = nodes.get(i);
     n.run(nodes, edges);
   }
-  updateEdges(nodes);
-
+  
   for (int i = edges.size()-1; i >= 0; i--) {
     Edge e = edges.get(i);
     e.display();
   }
+  
+
+
+  
 
   
   if (frameCount > 300 && frameCount < 400) {
