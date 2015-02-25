@@ -22,23 +22,35 @@ ArrayList<int[]> images = new ArrayList<int[]>();
 void setup(){
  
   srcImg = loadImage("input/4718Beef.jpg"); //loads source image
-  size(250, 250); //set window size to source image dimensions 
-  image(srcImg, -500, -350); //draw source image
+  srcImg.resize(256, 192);
+  size(srcImg.width, srcImg.height); //set window size to source image dimensions 
+  image(srcImg, 0, 0); //draw source image
   loadPixels();
   input_flock = new Flock();
   output_flock = new Flock();
   // Add an initial set of boids into the system
-  for (int i = 0; i < 256; i++) {
-    input_flock.addBlock(new Block(int(random(width)), int(random(height))));
-    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
+//  for (int i = 0; i < 1024; i++) {
+//    input_flock.addBlock(new Block(int(random(width)), int(random(height))));
+//    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
+//  }
+  
+  for(int x = 0 ; x < int(width/block_size + 1); x++){
+    for(int y = 0 ; y < int(height/block_size + 1); y++){
+      input_flock.addBlock(new Block(block_size * x, block_size * y));
+      output_flock.addBlock(new Block(block_size * x, block_size * y));
+
+    }
   }
 }
 
 void draw(){
-  //input_flock.run(); 
+//  input_flock.run(); 
   output_flock.run();  
   displacePixels(input_flock, output_flock);
-//  saveFrame("output/pixelFlockingGIF/pixelFlock_v2_test_GIF_002-####.PNG");
+//  saveFrame("output/2015_02_22/001/Meat-####.PNG");
+  if(frameCount >= 9000){
+    exit();
+  }
 }
 
 //not currently implemented... something about setting a point of gravity or adding another block when clicked...
