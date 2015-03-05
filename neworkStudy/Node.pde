@@ -1,7 +1,7 @@
 class Node {
   float dampening = .99;
   float s = 1; //spring constant
-  float k = 0.01; //friction coeff
+  float k = 0.0; //friction coeff
   float g = 1;
   float maxforce = 25;
   float maxspeed = 5;
@@ -33,7 +33,7 @@ class Node {
     ID = _ID;
     location = new PVector(random(width), random(height));
     m = 20;
-    r = 5;
+    r = 1;
     velocity = new PVector(random(-1, 1), random(-1, 1));
     acceleration = new PVector(0, 0);
   }
@@ -42,10 +42,10 @@ class Node {
     //nodeCollision(_nodes);
     //gravity(_nodes);
     drag();
-    update();
     edges(_edges);
-    boundaryCollision();
-//    boundaryWrap();
+    update();
+//    boundaryCollision();
+    boundaryWrap();
     display();
   }
 

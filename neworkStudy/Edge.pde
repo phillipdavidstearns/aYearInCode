@@ -10,7 +10,7 @@ class Edge{
     tail_ID=_node2.ID;
     head = _node1.location;
     tail = _node2.location;
-    l = 75;
+    l = 20;
     d = head.dist(tail);
   }
   

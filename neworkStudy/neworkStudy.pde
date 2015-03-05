@@ -1,79 +1,98 @@
 PVector gravity = new PVector(0, 1);
-
+boolean[][] edgeCatalog;
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
 
-int qtyNodes = 150;
+int qtyNodes = 2500;
+
+float make_bond = 20;
+float break_bond = 20;
 
 void setup() {
   size(500, 500);
+  
   for (int i = 0; i < qtyNodes; i++) {
     nodes.add(new Node(i));
   }
+  
+  edgeCatalog = new boolean[qtyNodes][qtyNodes];
+  
+  for(int a = 0; a < qtyNodes ; a++){
+    for(int b = 0; b < qtyNodes ; b++){
+      edgeCatalog[a][b]=false;
+    }
+  }
+  
   frameRate(30);
 }
 
 void draw() {
   background(255);
+  updateEdges();
   
-  updateEdges(nodes);
-  
-  for (int i = nodes.size()-1; i >= 0; i--) {
-    Node n = nodes.get(i);
-    n.run(nodes, edges);
+  for(int i = 0; i < nodes.size() ; i++){
+    nodes.get(i).run(nodes,edges);
+  }
+  for(int i = 0; i < edges.size() ; i++){
+    edges.get(i).display();
   }
   
-  for (int i = edges.size()-1; i >= 0; i--) {
-    Edge e = edges.get(i);
-    e.display();
-  }
-  
-
-
-  
-
-  
-  if (frameCount > 300 && frameCount < 400) {
-   saveFrame("output/2015-02-18/002/dynamic_edges_springs_####.PNG");
-  }
 }
 
-void updateEdges(ArrayList<Node> _nodes) {
-  // check every node in the system against every other node
-  for (int i = _nodes.size () - 1; i >= 0; i--) {
-    Node n1 = _nodes.get(i);
-    for (int j = _nodes.size () - 1; j >= 0; j--) {
-      Node n2 = _nodes.get(j);
-      float dist = n1.location.dist(n2.location);
-      boolean edgeExists = false;
-      //ignore itself
-      if (i!=j) {
-        // if there are no edges (initial condition, for instance)
-        if (edges.isEmpty()) {
-          if (dist < n1.formBond | dist < n2.formBond ) {
+void updateEdges(){
+  
+  ArrayList<Edge> newEdges = new ArrayList<Edge>();
+  
+  for(int a = 0; a < qtyNodes ; a++){
+    for(int b = 0; b < qtyNodes ; b++){
+      edgeCatalog[a][b]=false;
+    }
+  }
+  
+  //the creates initial bonds if none exist
+  if(edges.size() == 0){
+    for (int i = 0; i < nodes.size() ; i++){
+      Node n1 = nodes.get(i);
+      for (int j = i; j < nodes.size() ; j++){
+        Node n2 = nodes.get(j);
+        if ( j != i ){
+          if (PVector.dist(n1.location, n2.location) <= make_bond) {
             Edge e = new Edge(n1, n2);
-            edges.add(e);
-          }
-        } else {
-          // check each edge to see if it already exists
-          for ( int k = edges.size () - 1; k >= 0; k--) {
-            // the case wehre the edge exists
-            if (( edges.get(k).head_ID == n1.ID && edges.get(k).tail_ID == n2.ID )||(edges.get(k).head_ID == n2.ID && edges.get(k).tail_ID == n1.ID )) {
-              //remove the edge if there is too much distance between
-              if (dist >= n1.breakBond || dist >= n2.breakBond) {
-                edges.remove(k);
-              }
-              edgeExists = true;
-            }
-          }
-          // if there isn't an edge connecting the two nodes, make one
-          if (!edgeExists && dist < n1.formBond | dist < n2.formBond ) {
-            Edge e = new Edge(n1, n2);
-            edges.add(e);
+            newEdges.add(e);
           }
         }
       }
     }
+    edges=newEdges;
+  } else {
+    //update existing bonds and add to new_edges, bonds greater than the breaking length are left behind
+    for(int k = 0 ; k < edges.size() ; k++){
+      Edge e = edges.get(k);
+      Node head = nodes.get(e.head_ID);
+      Node tail = nodes.get(e.tail_ID);
+      if(PVector.dist(head.location, tail.location) < break_bond){
+        Edge newEdge = new Edge(head, tail);
+        newEdges.add(newEdge);
+        edgeCatalog[e.head_ID][e.tail_ID] = true;
+        edgeCatalog[e.tail_ID][e.head_ID] = true;      
+      }
+    }
+    //if there's not already an edge for a pair of nodes within the make_bond distance, make one in new_edges
+    for (int i = 0; i < nodes.size() ; i++){
+      for (int j = i; j < nodes.size() ; j++){
+        if ( j != i ){
+          if(edgeCatalog[i][j] != true){
+            Node n1 = nodes.get(i);
+            Node n2 = nodes.get(j);
+            if (PVector.dist(n1.location, n2.location) <= make_bond) {
+              Edge e = new Edge(n1, n2);
+              newEdges.add(e);
+            }
+          }
+        }
+      }
+    }
+    edges=newEdges;
   }
 }
 
