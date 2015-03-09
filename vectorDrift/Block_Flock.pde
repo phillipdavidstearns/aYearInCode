@@ -7,7 +7,7 @@ class Flock {
 
   void run() {
     for (Block b : blocks) {
-      b.run(pixels, blocks);  // Passing the entire list of boids to each boid individually
+      b.run(blocks);  // Passing the entire list of boids to each boid individually
     }
   }
 

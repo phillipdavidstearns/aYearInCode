@@ -22,7 +22,7 @@ ArrayList<int[]> images = new ArrayList<int[]>();
 void setup(){
  
   srcImg = loadImage("input/4718Beef.jpg"); //loads source image
-  srcImg.resize(256, 192);
+  srcImg.resize(1280, 720);
   size(srcImg.width, srcImg.height); //set window size to source image dimensions 
   image(srcImg, 0, 0); //draw source image
   loadPixels();
@@ -34,8 +34,8 @@ void setup(){
 //    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
 //  }
   
-  for(int x = 0 ; x < int(width/block_size + 1); x++){
-    for(int y = 0 ; y < int(height/block_size + 1); y++){
+  for(int x = 0 ; x < int(width/block_size+1); x++){
+    for(int y = 0 ; y < int(height/block_size+1); y++){
       input_flock.addBlock(new Block(block_size * x, block_size * y));
       output_flock.addBlock(new Block(block_size * x, block_size * y));
 
@@ -44,13 +44,15 @@ void setup(){
 }
 
 void draw(){
+  background(255);
 //  input_flock.run(); 
   output_flock.run();  
   displacePixels(input_flock, output_flock);
+  updatePixels();
 //  saveFrame("output/2015_02_22/001/Meat-####.PNG");
-  if(frameCount >= 9000){
-    exit();
-  }
+//  if(frameCount >= 9000){
+//    exit();
+//  }
 }
 
 //not currently implemented... something about setting a point of gravity or adding another block when clicked...
@@ -59,16 +61,14 @@ void mousePressed() {
 
 
 void displacePixels(Flock _input, Flock _output){
-  Block input_block;
-  Block output_block;
+  
   images.clear();
+  
   for(int i = 0 ; i < _input.blocks.size() ; i++){
-    input_block = _input.blocks.get(i);
-    images.add(i, capture(pixels, input_block.location));
+    images.add(i, capture(pixels, _input.blocks.get(i).location));
   }
+  
   for(int i = 0 ; i < _input.blocks.size() ; i++){
-    input_block = _input.blocks.get(i);
-    output_block = _output.blocks.get(i);
     int[] _image = images.get(i);
     for(int k = 0 ; k < block_size ; k++){
       for(int j = 0 ; j < block_size ; j++){
@@ -76,18 +76,18 @@ void displacePixels(Flock _input, Flock _output){
        int _y=0;
         switch(1){
           case 0:
-          _x = int(output_block.location.x + k)%width;
-          _y = int(output_block.location.y + j)%height;
+          _x = int(_output.blocks.get(i).location.x + k)%width;
+          _y = int(_output.blocks.get(i).location.y + j)%height;
           break;
            
           case 1: 
-          _x = int(input_block.location.x+output_block.velocity.x + k)%width;
-          _y = int(input_block.location.y+output_block.velocity.y + j)%height;
+          _x = int(_input.blocks.get(i).location.x+_output.blocks.get(i).velocity.x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+_output.blocks.get(i).velocity.y + j)%height;
           break;
         
           case 2:
-          _x = int(input_block.location.x+input_block.velocity.x + k)%width;
-          _y = int(input_block.location.y+input_block.velocity.y + j)%height;
+          _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
           break;
         }
         
@@ -100,7 +100,6 @@ void displacePixels(Flock _input, Flock _output){
         pixels[_x + (_y*width)]=_image[k+(j*block_size)];
       }
     }
-    updatePixels();  
   }
 }
 
@@ -115,7 +114,6 @@ int[] capture(int[] _pixels, PVector _location){
   int _width = block_size;
   int _height = block_size;
   int[] img = new int[_width * _height];
-  //img.loadPixels();
   for(int y = 0 ; y < _width ; y++){
     for(int x = 0 ; x < _height ; x++){
       int capture_x = (int(_location.x) + x)%(width);
@@ -125,7 +123,6 @@ int[] capture(int[] _pixels, PVector _location){
         img[(block_size*y)+x]=_pixels[capture_x + (capture_y * width)];
     }
   }
-  //img.updatePixels();
   return img;
 }
 

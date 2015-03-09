@@ -10,7 +10,7 @@ class Block {
   PVector velocity;
   PVector acceleration;
   
-  float maxspeed=1;
+  float maxspeed=5;
   float maxforce=1;
   
   float hue;
@@ -24,10 +24,10 @@ class Block {
     acceleration = new PVector(0, 0);
   }
   
-  void run(int[] _pixels, ArrayList<Block> blocks){
-    flock(blocks);
+  void run( ArrayList<Block> _blocks){
+    flock(_blocks);
     update();
-    //display();
+//    display();
   }
   
   // We accumulate a new acceleration each time based on three rules
@@ -168,9 +168,9 @@ class Block {
 //    noFill();
 //    rect(location.x, location.y, size, size);
 //    
-    stroke(#FFFFFF);
+    stroke(0);
     strokeWeight(1);
-    fill(0);
+    fill(255);
     rect(location.x,location.y, block_size, block_size);
 
   }
