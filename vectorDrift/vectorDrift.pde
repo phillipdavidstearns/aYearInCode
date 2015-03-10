@@ -16,9 +16,10 @@ PImage srcImg;
 Flock input_flock;
 Flock output_flock;
 
-int block_size = 32;
+int block_size = 128;
 ArrayList<int[]> images = new ArrayList<int[]>();
-
+int mode = 1;
+PVector[] rando;
 void setup(){
  
   srcImg = loadImage("input/4718Beef.jpg"); //loads source image
@@ -29,18 +30,15 @@ void setup(){
   input_flock = new Flock();
   output_flock = new Flock();
   // Add an initial set of boids into the system
-//  for (int i = 0; i < 1024; i++) {
+//  for (int i = 0; i < 50; i++) {
 //    input_flock.addBlock(new Block(int(random(width)), int(random(height))));
 //    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
 //  }
+//  
+  makeGrid(block_size);
+  makeRando();
   
-  for(int x = 0 ; x < int(width/block_size+1); x++){
-    for(int y = 0 ; y < int(height/block_size+1); y++){
-      input_flock.addBlock(new Block(block_size * x, block_size * y));
-      output_flock.addBlock(new Block(block_size * x, block_size * y));
-
-    }
-  }
+  
 }
 
 void draw(){
@@ -55,9 +53,77 @@ void draw(){
 //  }
 }
 
-//not currently implemented... something about setting a point of gravity or adding another block when clicked...
-void mousePressed() {
+void mouseReleased() {
+  
 }
+
+void makeRando(){
+  rando = new PVector[input_flock.blocks.size()];
+  for(int p = 0 ; p < input_flock.blocks.size(); p++){
+    rando[p] = new PVector(random(-1,1),random(-1,1));
+    rando[p].mult(2);
+  }
+}
+
+void keyPressed(){
+  char k = key;
+  switch(k){
+    case'q':
+      mode = 0;
+    break;
+    case'w':
+      mode = 1;
+    break;
+    case'e':
+      mode = 2;
+    break;
+    case'r':
+      mode = 3;
+    break;
+    case 't':
+      image(srcImg, 0, 0);
+      loadPixels();
+    break;
+    case '1':
+      makeGrid(16);
+    break;
+    case '2':   
+      makeGrid(32);
+    break;
+    case '3':   
+      makeGrid(64);
+    break;
+    case '4':   
+      makeGrid(128);
+    break;
+    case '5':
+      makeGrid(256);
+    break;
+    case '6':   
+      makeGrid(512);
+    break;
+    case '7':   
+      makeGrid(1024);
+    break;
+    case '8':   
+      makeGrid(2048);
+    break;
+  }
+}
+
+void makeGrid(int _block_size){
+  input_flock = new Flock();
+  output_flock = new Flock();
+  block_size=_block_size;
+  for(int x = 0 ; x < int(width/block_size+1); x++){
+    for(int y = 0 ; y < int(height/block_size+1); y++){
+    input_flock.addBlock(new Block(block_size * x, block_size * y));
+    output_flock.addBlock(new Block(block_size * x, block_size * y));
+    }
+  }
+  makeRando();
+}
+
 
 
 void displacePixels(Flock _input, Flock _output){
@@ -74,7 +140,7 @@ void displacePixels(Flock _input, Flock _output){
       for(int j = 0 ; j < block_size ; j++){
        int _x=0;
        int _y=0;
-        switch(1){
+        switch(mode){
           case 0:
           _x = int(_output.blocks.get(i).location.x + k)%width;
           _y = int(_output.blocks.get(i).location.y + j)%height;
@@ -88,6 +154,11 @@ void displacePixels(Flock _input, Flock _output){
           case 2:
           _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
           _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
+          break;
+        
+          case 3:  
+          _x = int(_input.blocks.get(i).location.x+rando[i].x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+rando[i].y + j)%height;
           break;
         }
         

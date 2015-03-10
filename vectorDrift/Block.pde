@@ -11,7 +11,7 @@ class Block {
   PVector acceleration;
   
   float maxspeed=5;
-  float maxforce=1;
+  float maxforce=.25;
   
   float hue;
   float saturation;
