@@ -2,15 +2,15 @@ PVector gravity = new PVector(0, 1);
 boolean[][] edgeCatalog;
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
-PVector[][] edgeForces;
+
 PVector[] forces;
 
-int qtyNodes = 2000;
+int qtyNodes = 1500;
 
-float make_bond = 15;
-float break_bond = 15;
-float spring_length = 15;
-float spring_constant = 1;
+float make_bond = 30;
+float break_bond = 30;
+float spring_length = 25;
+float spring_constant = 1.25;
 
 void setup() {
   size(500,500);
@@ -18,14 +18,14 @@ void setup() {
   for (int i = 0; i < qtyNodes; i++) {
     nodes.add(new Node(i));
   }
-  edgeForces = new PVector[qtyNodes][qtyNodes];
+  
+  forces = new PVector[qtyNodes];
   edgeCatalog = new boolean[qtyNodes][qtyNodes];
   
   for(int a = 0; a < qtyNodes ; a++){
+    forces[a]= new PVector(0,0);
     for(int b = 0; b < qtyNodes ; b++){
       edgeCatalog[a][b]=false;
-      edgeForces[a][b]= new PVector(0,0);
-      
     }
   }
   
@@ -34,18 +34,40 @@ void setup() {
 
 void draw() {
   background(255);
+  
+  
+  
   updateEdges();
+  calculateForces();
+  
+  for(int i = 0; i < forces.length ; i++){
+    nodes.get(i).applyForce(forces[i]);
+  }
   
   for(int i = 0; i < nodes.size() ; i++){
-    nodes.get(i).run(nodes,edges);
+    nodes.get(i).run(nodes);
   }
   for(int i = 0; i < edges.size() ; i++){
     edges.get(i).display();
   }
   
-    //saveFrame("output/2015_03_05/003/networkFun-####.PNG");
-  if(frameCount >= 3600){
+  
+    saveFrame("output/2015_03_10/001/2015_03_10_001_networkFun-####.PNG");
+  if(frameCount >= 60){
     exit();
+  }
+}
+
+void step(){
+
+}
+
+void keyPressed(){
+  char k = key;
+  switch(k){
+    case '1':
+      step();
+    break;
   }
 }
 
@@ -69,6 +91,8 @@ void updateEdges(){
           if (PVector.dist(n1.location, n2.location) <= make_bond) {
             Edge e = new Edge(n1, n2);
             newEdges.add(e);
+            edgeCatalog[n1.ID][n2.ID] = true;
+            edgeCatalog[n2.ID][n1.ID] = true; 
           }
         }
       }
@@ -108,16 +132,20 @@ void updateEdges(){
 
 void calculateForces() {
   
-  //clear the array of forces. 
-  for (int i = 0 ; i < forces.length ; i++) {
-    forces[i].set(0, 0);
-  }
 
+  for (int i = 0 ; i < nodes.size() ; i++) {
+    forces[i].set(0, 0);
+    Node n = nodes.get(i);
+    forces[i] = n.velocity.get();
+    forces[i].mult(0);
+    forces[i].y -= n.location.x*100/pow(height-n.location.y,2);
+    forces[i].y += (width-n.location.x)*100/pow(n.location.y,2);
+    forces[i].x -= (height-n.location.y)*100/pow(width-n.location.x,2);
+    forces[i].x += n.location.y*100/pow(n.location.x,2);
+  }
   
   for (int i = 0 ; i < edges.size() ; i++) {
-    
     Edge e = edges.get(i);
-    
     //create force vectors for each node defining the edge 
     PVector _forceA = PVector.sub(e.head, e.tail);
     PVector _forceB = PVector.sub(e.tail, e.head);

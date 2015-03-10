@@ -16,7 +16,7 @@ class Edge{
   
   void display(){
     stroke(0);
-    strokeWeight(0);
+    strokeWeight(1);
     line(head.x, head.y, tail.x, tail.y);
     textSize(10);
 //    text(head.dist(tail), (head.x+tail.x)/2, (head.y+tail.y)/2);
