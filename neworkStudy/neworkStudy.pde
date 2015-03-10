@@ -2,24 +2,30 @@ PVector gravity = new PVector(0, 1);
 boolean[][] edgeCatalog;
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
+PVector[][] edgeForces;
+PVector[] forces;
 
-int qtyNodes = 2500;
+int qtyNodes = 2000;
 
-float make_bond = 20;
-float break_bond = 20;
+float make_bond = 15;
+float break_bond = 15;
+float spring_length = 15;
+float spring_constant = 1;
 
 void setup() {
-  size(500, 500);
+  size(500,500);
   
   for (int i = 0; i < qtyNodes; i++) {
     nodes.add(new Node(i));
   }
-  
+  edgeForces = new PVector[qtyNodes][qtyNodes];
   edgeCatalog = new boolean[qtyNodes][qtyNodes];
   
   for(int a = 0; a < qtyNodes ; a++){
     for(int b = 0; b < qtyNodes ; b++){
       edgeCatalog[a][b]=false;
+      edgeForces[a][b]= new PVector(0,0);
+      
     }
   }
   
@@ -37,6 +43,10 @@ void draw() {
     edges.get(i).display();
   }
   
+    //saveFrame("output/2015_03_05/003/networkFun-####.PNG");
+  if(frameCount >= 3600){
+    exit();
+  }
 }
 
 void updateEdges(){
@@ -95,4 +105,34 @@ void updateEdges(){
     edges=newEdges;
   }
 }
+
+void calculateForces() {
+  
+  //clear the array of forces. 
+  for (int i = 0 ; i < forces.length ; i++) {
+    forces[i].set(0, 0);
+  }
+
+  
+  for (int i = 0 ; i < edges.size() ; i++) {
+    
+    Edge e = edges.get(i);
+    
+    //create force vectors for each node defining the edge 
+    PVector _forceA = PVector.sub(e.head, e.tail);
+    PVector _forceB = PVector.sub(e.tail, e.head);
+    
+    //calculate the magnitude of force exterted by the edge's springy properties
+    float _mag = spring_constant * (spring_length - PVector.dist(e.head, e.tail));
+    
+    //set the magnitude of the force vectors
+    _forceA.setMag(_mag);
+    _forceB.setMag(_mag);
+    
+    //add the new forces to those in the array
+    forces[e.head_ID] = PVector.add(_forceA, forces[e.head_ID]);
+    forces[e.tail_ID] = PVector.add(_forceB, forces[e.tail_ID]);
+  }
+}
+
 

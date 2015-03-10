@@ -1,12 +1,12 @@
 class Node {
-  float dampening = .99;
+  float dampening = 1;
   float s = 1; //spring constant
-  float k = 0.0; //friction coeff
+  float k = 0.25; //friction coeff
   float g = 1;
   float maxforce = 25;
   float maxspeed = 5;
   int maxconnections = 5;
-  float formBond = 50;
+  float formBond = 30;
   float breakBond = formBond * 2;
   float m, r;  
   int ID;
@@ -44,8 +44,8 @@ class Node {
     drag();
     edges(_edges);
     update();
-//    boundaryCollision();
-    boundaryWrap();
+    boundaryCollision();
+//    boundaryWrap();
     display();
   }
 
@@ -69,9 +69,15 @@ class Node {
   
   void drag(){
   //apply drag
-    PVector force = new PVector(0, 0);
-    force = PVector.mult(velocity, -k);
-    applyForce(force);
+    
+    
+    // Magnitude is coefficient * speed squared
+    
+    PVector drag = velocity.get();
+    // Direction is inverse of velocity
+    drag.setMag(-k*pow(velocity.mag(),2));
+    
+    applyForce(drag);
   }
   
   void edges(ArrayList<Edge> _edges){
@@ -91,7 +97,7 @@ class Node {
         float dist = _edges.get(i).head.dist(_edges.get(i).tail);
         force.setMag(-s*(dist-(_edges.get(i).l)));
       }
-      force.div(m);
+      
       applyForce(force);
     }
   }
@@ -100,6 +106,7 @@ class Node {
   void applyForce(PVector _force) {
     // We could add mass here if we want A = F / M
 //    _force.limit(maxforce);
+    _force.div(m);
     acceleration.add(_force);
   }
 
@@ -113,15 +120,14 @@ class Node {
 
   void display() {  
 
-    stroke(0);
-    strokeWeight(0);
-    noFill();
+    noStroke();
+    fill(0);
     ellipse(location.x, location.y, 2*r, 2*r);
 //    textSize(10);
 //    text(ID, location.x+r, location.y-r);
 
-    textSize(10);
-    text(velocity.mag(), location.x+r, location.y-r);
+//    textSize(10);
+//    text(velocity.mag(), location.x+r, location.y-r);
   }
 
   void boundaryCollision() {
