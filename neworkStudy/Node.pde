@@ -1,7 +1,7 @@
 class Node {
   
   float s = 1; //spring constant
-  float k = 0.50; //friction coeff
+  float k = 0.25; //friction coeff
   float g = 1;
   float maxforce = 100;
   float maxspeed = 5;
@@ -28,6 +28,16 @@ class Node {
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
   }
+  
+  Node(float _x, float _y, int _ID) {
+    location = new PVector(0, 0);
+    location.x = _x + random(-100,100);
+    location.y = _y + random(-100,100);
+    m = 50;
+    r = 1;
+    velocity = new PVector(0, 0);
+    acceleration = new PVector(0, 0);
+  }
 
   Node(int _ID) {
     ID = _ID;
@@ -41,7 +51,7 @@ class Node {
 
   void run(ArrayList<Node> _nodes) {
     //nodeCollision(_nodes);
-    //gravity(_nodes);
+//    gravity(_nodes);
     drag();
     update();
     boundaryCollision();
