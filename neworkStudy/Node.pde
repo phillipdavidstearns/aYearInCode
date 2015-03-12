@@ -1,7 +1,7 @@
 class Node {
-  float dampening = 1;
+  
   float s = 1; //spring constant
-  float k = 0.02; //friction coeff
+  float k = 0.50; //friction coeff
   float g = 1;
   float maxforce = 100;
   float maxspeed = 5;

@@ -5,12 +5,13 @@ ArrayList<Edge> edges = new ArrayList<Edge>();
 
 PVector[] forces;
 
-int qtyNodes = 1500;
+int qtyNodes = 2000;
 
-float make_bond = 30;
-float break_bond = 30;
-float spring_length = 25;
-float spring_constant = 1.25;
+float make_bond = 20;
+float break_bond = 25;
+float spring_length = 20;
+float spring_constant = 1;
+float dampening = 0.1;
 
 void setup() {
   size(500,500);
@@ -52,10 +53,10 @@ void draw() {
   }
   
   
-    saveFrame("output/2015_03_10/001/2015_03_10_001_networkFun-####.PNG");
-  if(frameCount >= 60){
-    exit();
-  }
+//    saveFrame("output/2015_03_10/001/2015_03_10_001_networkFun-####.PNG");
+//  if(frameCount >= 60){
+//    exit();
+//  }
 }
 
 void step(){
@@ -131,21 +132,29 @@ void updateEdges(){
 }
 
 void calculateForces() {
-  
+    Node n;
 
-  for (int i = 0 ; i < nodes.size() ; i++) {
-    forces[i].set(0, 0);
-    Node n = nodes.get(i);
-    forces[i] = n.velocity.get();
-    forces[i].mult(0);
-    forces[i].y -= n.location.x*100/pow(height-n.location.y,2);
-    forces[i].y += (width-n.location.x)*100/pow(n.location.y,2);
-    forces[i].x -= (height-n.location.y)*100/pow(width-n.location.x,2);
-    forces[i].x += n.location.y*100/pow(n.location.x,2);
-  }
+//  for (int i = 0 ; i < nodes.size() ; i++) {
+//    forces[i].set(0, 0);
+//    n = nodes.get(i);
+//    forces[i].y -= n.location.x*100/pow(height-n.location.y,2);
+//    forces[i].y += (width-n.location.x)*100/pow(n.location.y,2);
+//    forces[i].x -= (height-n.location.y)*100/pow(width-n.location.x,2);
+//    forces[i].x += n.location.y*100/pow(n.location.x,2);
+//  }
   
   for (int i = 0 ; i < edges.size() ; i++) {
+    PVector temp_force = new PVector(0,0);
     Edge e = edges.get(i);
+    Node n1 = nodes.get(e.head_ID);
+    Node n2 = nodes.get(e.tail_ID);
+    temp_force = n1.velocity.get();
+    temp_force.mult(dampening);
+    forces[n1.ID].add(temp_force);
+    temp_force = n2.velocity.get();
+    temp_force.mult(dampening);
+    forces[n2.ID].add(temp_force);
+    
     //create force vectors for each node defining the edge 
     PVector _forceA = PVector.sub(e.head, e.tail);
     PVector _forceB = PVector.sub(e.tail, e.head);
@@ -158,8 +167,8 @@ void calculateForces() {
     _forceB.setMag(_mag);
     
     //add the new forces to those in the array
-    forces[e.head_ID] = PVector.add(_forceA, forces[e.head_ID]);
-    forces[e.tail_ID] = PVector.add(_forceB, forces[e.tail_ID]);
+    forces[e.head_ID].add(_forceA);
+    forces[e.tail_ID].add(_forceB);
   }
 }
 
