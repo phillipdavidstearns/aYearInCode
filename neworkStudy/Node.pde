@@ -51,7 +51,7 @@ class Node {
 
   void run(ArrayList<Node> _nodes) {
     //nodeCollision(_nodes);
-//    gravity(_nodes);
+    gravity(_nodes);
     drag();
     update();
     boundaryCollision();

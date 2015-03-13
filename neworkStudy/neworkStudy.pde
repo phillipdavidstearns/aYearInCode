@@ -5,13 +5,13 @@ ArrayList<Edge> edges = new ArrayList<Edge>();
 
 PVector[] forces;
 
-int qtyNodes = 150;
+int qtyNodes = 250;
 
 float make_bond = 25;
 float break_bond = 27;
 float spring_length = 20;
 float spring_constant = 1.5;
-float dampening = -.25;
+float dampening = -.125;
 
 void setup() {
   size(500,500);
@@ -35,16 +35,13 @@ void setup() {
 
 void draw() {
   background(255);
-  
-  
-  
   updateEdges();
+  
   calculateForces();
   
   for(int i = 0; i < forces.length ; i++){
     nodes.get(i).applyForce(forces[i]);
   }
-  
   for(int i = 0; i < nodes.size() ; i++){
     nodes.get(i).run(nodes);
   }
@@ -58,6 +55,7 @@ void draw() {
   if(frameCount >= 2149){
 //    exit();
   }
+  println(edges.size());
 }
 
 void step(){
@@ -71,6 +69,17 @@ void keyPressed(){
       step();
     break;
   }
+}
+
+void mousePressed(){
+  PVector click = new PVector(mouseX, mouseY);
+  
+  for(int i = 0 ; i < nodes.size() ; i++){
+    PVector force = PVector.sub(nodes.get(i).location, click);
+    force.setMag(100000/pow(PVector.dist(nodes.get(i).location, click),2));
+    nodes.get(i).applyForce(force);
+  }
+  
 }
 
 void updateEdges(){
@@ -106,8 +115,6 @@ void updateEdges(){
       Node head = nodes.get(e.head_ID);
       Node tail = nodes.get(e.tail_ID);
       if(PVector.dist(head.location, tail.location) < break_bond){
-        Edge newEdge = new Edge(head, tail);
-        edges.set(k, newEdge);
         edgeCatalog[e.head_ID][e.tail_ID] = true;
         edgeCatalog[e.tail_ID][e.head_ID] = true;      
       } else if(PVector.dist(head.location, tail.location) >= break_bond){
@@ -129,7 +136,6 @@ void updateEdges(){
         }
       }
     }
-    //edges=newEdges;
   }
 }
 
