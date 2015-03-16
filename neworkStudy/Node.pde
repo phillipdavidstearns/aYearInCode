@@ -5,7 +5,8 @@ class Node {
   float g = 1;
   float maxforce = 100;
   float maxspeed = 5;
-  int maxconnections = 5;
+  int edgeCount = 0;
+  int maxconnections = 4;
   float formBond = 30;
   float breakBond = formBond * 2;
   float m, r;  
@@ -31,10 +32,11 @@ class Node {
   
   Node(float _x, float _y, int _ID) {
     location = new PVector(0, 0);
-    location.x = _x + random(-100,100);
-    location.y = _y + random(-100,100);
+    location.x = _x ;
+    location.y = _y ;
     m = 50;
-    r = 1;
+    r = 5;
+    ID= _ID;
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
   }
@@ -51,7 +53,7 @@ class Node {
 
   void run(ArrayList<Node> _nodes) {
     //nodeCollision(_nodes);
-    gravity(_nodes);
+//    gravity(_nodes);
     drag();
     update();
     boundaryCollision();
@@ -103,8 +105,9 @@ class Node {
 
   void display() {  
 
-    noStroke();
-    fill(0);
+    stroke(0);
+    strokeWeight(1);
+    noFill();
     ellipse(location.x, location.y, 2*r, 2*r);
 
   }
