@@ -22,3 +22,5 @@ dataViz/input/Terminal
 *.mov
 
 *.jpg
+
+image_displace/sketch.properties
