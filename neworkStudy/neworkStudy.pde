@@ -1,5 +1,7 @@
 PVector gravity = new PVector(0, 1);
+
 int[][] edgeCatalog;
+
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<Edge> edges = new ArrayList<Edge>();
 
@@ -8,13 +10,12 @@ ArrayList<PVector> NodesToRemove = new ArrayList<PVector>();
 
 PVector[] forces;
 
+int qtyNodes = 00;
 
-int qtyNodes = 0;
-
-float make_bond = 25;
-float break_bond = 30;
-float spring_length = 25;
-float spring_constant = 1.5;
+float make_bond = 150;
+float break_bond = 200;
+float spring_length = 125;
+float spring_constant = 1;
 float dampening = -.125;
 
 void setup() {
@@ -50,7 +51,6 @@ void draw() {
   }
   NodesToRemove.clear();
   
-  
   updateEdges();
   calculateForces();
   
@@ -67,37 +67,25 @@ void draw() {
   }
   
   if(frameCount >= 1000 && frameCount <= 1149){  
-//    saveFrame("output/2015_03_16/002/2015_03_16_002_networkFun-####.PNG");
+//   saveFrame("output/2015_03_16/002/2015_03_16_002_networkFun-####.PNG");
   }
-  if(frameCount >= 1149){
+  if(frameCount >= 100){
 //    exit();
   }
-//  println("edges: " + edges.size());
-//  println("nodes: "+ nodes.size());
 }
-
-void step(){
-
-}
-
 
 void keyPressed(){
-  char k = key;
-  switch(k){
-    case '1':
-      step();
-    break;
-  }
 }
 
 void mousePressed(){
-//  PVector click = new PVector(mouseX, mouseY);
-//  
-//  for(int i = 0 ; i < nodes.size() ; i++){
-//    PVector force = PVector.sub(nodes.get(i).location, click);
-//    force.setMag(100000/pow(PVector.dist(nodes.get(i).location, click),2));
-//    nodes.get(i).applyForce(force);
-//  }
+  
+//    PVector click = new PVector(mouseX, mouseY);
+//    
+//    for(int i = 0 ; i < nodes.size() ; i++){
+//      PVector force = PVector.sub(nodes.get(i).location, click);
+//      force.setMag(100000/pow(PVector.dist(nodes.get(i).location, click),2));
+//      nodes.get(i).applyForce(force);
+//    }
   
   
   PVector clickLocation = new PVector(mouseX,mouseY);
@@ -113,7 +101,6 @@ void mousePressed(){
 
 void addNode(PVector _location){
     Node n = new Node( _location.x, _location.y, nodes.size());
-    println("Adding node " + n.ID);
     nodes.add(n);
 }
 
@@ -145,20 +132,18 @@ void updateEdges(){
       edgeCatalog[a][b]=0;
     }
   }
-  
   //the creates initial bonds if none exist
   if(edges.size() == 0){
-//    println("No Edges Found. Generating Initial Edges...");
     for (int i = 0; i < nodes.size() ; i++){
       Node n1 = nodes.get(i);
       for (int j = i; j < nodes.size() ; j++){
         Node n2 = nodes.get(j);
         if ( j != i ){
-          if (PVector.dist(n1.location, n2.location) <= make_bond) {
-//            println("...Creating between node " + n1.ID + " and node " + n2.ID );
+          if (PVector.dist(n1.location, n2.location) <= make_bond && n1.edgeCount < n1.maxconnections && n2.edgeCount < n2.maxconnections) {
             Edge e = new Edge(n1, n2);
             edges.add(e);
             edgeCatalog[n1.ID][n2.ID]++;
+            edgeCatalog[n2.ID][n1.ID]++;
             n1.edgeCount++;
             n2.edgeCount++;
           }
@@ -166,34 +151,28 @@ void updateEdges(){
       }
     }
   } else {
-    //update existing bonds and add to new_edges, bonds greater than the breaking length are left behind
+    //update existing bonds
     for(int k = 0 ; k < edges.size() ; k++){
-//      println("Edges Found. Updating existing edges...");
       Edge e = edges.get(k);
-//      Node head = nodes.get(e.head_ID);
-//      Node tail = nodes.get(e.tail_ID);
+      //count existing valid edges and remove invalid ones
       if(PVector.dist(e.head, e.tail) < break_bond){
-//        println("edge between node " + e.head_ID + " and node " + e.tail_ID + " updated.");
         edgeCatalog[e.head_ID][e.tail_ID]++;     
       } else if(PVector.dist(e.head, e.tail) >= break_bond){
-//        println("edge between node " + e.head_ID + " and node " + e.tail_ID + " updated.");
         edges.remove(k); 
         edgeCatalog[e.head_ID][e.tail_ID]--;
+        edgeCatalog[e.tail_ID][e.head_ID]--;
         nodes.get(e.head_ID).edgeCount--;
         nodes.get(e.tail_ID).edgeCount--;
       }
     }
     //if there's not already an edge for a pair of nodes within the make_bond distance, make one
     for (int i = 0; i < nodes.size() ; i++){
-      
       for (int j = i; j < nodes.size() ; j++){
         if ( j != i ){
-          
-//          println("catalog index: " + i + " x " + j + " = " + edgeCatalog[i][j]);
           if(edgeCatalog[i][j] == 0){
             Node n1 = nodes.get(i);
             Node n2 = nodes.get(j);
-            if (PVector.dist(n1.location, n2.location) <= make_bond && nodes.get(j).edgeCount < nodes.get(j).maxconnections && nodes.get(i).edgeCount < nodes.get(i).maxconnections) {
+            if (PVector.dist(n1.location, n2.location) <= make_bond && n1.edgeCount < n1.maxconnections && n2.edgeCount < n2.maxconnections) {
               Edge e = new Edge(n1, n2);
               edges.add(e);
               n1.edgeCount++;
@@ -217,42 +196,42 @@ void calculateForces() {
   
   for (int i = 0 ; i < edges.size() ; i++) {
     PVector temp_force = new PVector(0,0);
+    
     Edge e = edges.get(i);
     Node n1 = nodes.get(e.head_ID);
     Node n2 = nodes.get(e.tail_ID);
-    temp_force = n1.velocity.get();
     
     
     //create force vectors for each node defining the edge 
     PVector _forceA = PVector.sub(e.head, e.tail);
     PVector _forceB = PVector.sub(e.tail, e.head);
     
+    //calculate the magnitude of force exterted by the edge's springy properties
+    float _mag = spring_constant * (spring_length - PVector.dist(e.head, e.tail));
+    
+    _forceA.setMag(_mag);
+    _forceB.setMag(_mag);
+    
+    forces[e.head_ID].add(_forceA);
+    forces[e.tail_ID].add(_forceB);
+    
+    //calculates the projection of velocity onto the vector describing the edge
+    //used to calculate and apply dampening force for the edge
     float theta = 0; 
     
     theta = _forceA.heading() - n1.velocity.heading();
-    
     temp_force = _forceA.get();
     temp_force.setMag(n1.velocity.mag()*cos(theta));
     temp_force.mult(dampening);
     forces[n1.ID].add(temp_force);
     
     theta = _forceB.heading() - n2.velocity.heading();
-    
     temp_force = _forceB.get();
-    temp_force.setMag(n2.velocity.mag()*sin(theta));
+    temp_force.setMag(n2.velocity.mag()*cos(theta));
     temp_force.mult(dampening);
     forces[n2.ID].add(temp_force);
     
-    //calculate the magnitude of force exterted by the edge's springy properties
-    float _mag = spring_constant * (spring_length - PVector.dist(e.head, e.tail));
     
-    //set the magnitude of the force vectors
-    _forceA.setMag(_mag);
-    _forceB.setMag(_mag);
-    
-    //add the new forces to those in the array
-    forces[e.head_ID].add(_forceA);
-    forces[e.tail_ID].add(_forceB);
   }
 }
 

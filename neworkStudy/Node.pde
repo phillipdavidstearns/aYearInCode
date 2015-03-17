@@ -1,14 +1,18 @@
 class Node {
   
   float s = 1; //spring constant
-  float k = 0.25; //friction coeff
-  float g = 1;
+  float k = 0.125; //friction coeff
+  float g = 1; //gravitational constant
   float maxforce = 100;
   float maxspeed = 5;
-  int edgeCount = 0;
+  int edgeCount = 0; // # of connections
   int maxconnections = 4;
+  
+/*  these aren't used yet
   float formBond = 30;
   float breakBond = formBond * 2;
+*/
+  
   float m, r;  
   int ID;
   PVector location, velocity, acceleration;
@@ -52,7 +56,7 @@ class Node {
   }
 
   void run(ArrayList<Node> _nodes) {
-    //nodeCollision(_nodes);
+
 //    gravity(_nodes);
     drag();
     update();
@@ -90,7 +94,7 @@ class Node {
   void applyForce(PVector _force) {
     //A = F / M
     
-    _force.limit(maxforce);
+    //_force.limit(maxforce);
     _force.div(m);
     acceleration.add(_force);
   }
