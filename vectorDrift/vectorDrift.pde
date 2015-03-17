@@ -11,8 +11,8 @@
 //will be paring down the Block class to make this a reality...
 //WOOT!
 
-PImage srcImg;
-
+PImage src;
+PImage buffer;
 Flock input_flock;
 Flock output_flock;
 
@@ -22,10 +22,10 @@ int mode = 1;
 PVector[] rando;
 void setup(){
  
-  srcImg = loadImage("input/4718Beef.jpg"); //loads source image
-  srcImg.resize(1280, 720);
-  size(srcImg.width, srcImg.height); //set window size to source image dimensions 
-  image(srcImg, 0, 0); //draw source image
+  src = loadImage("input/nude.jpg"); //loads source image
+  src.resize(1280, 720);
+  size(src.width, src.height); //set window size to source image dimensions 
+  image(src, 0, 0); //draw source image
   loadPixels();
   input_flock = new Flock();
   output_flock = new Flock();
@@ -43,7 +43,7 @@ void setup(){
 
 void draw(){
   background(255);
-//  input_flock.run(); 
+  input_flock.run(); 
   output_flock.run();  
   displacePixels(input_flock, output_flock);
   updatePixels();
@@ -128,50 +128,53 @@ void makeGrid(int _block_size){
 
 void displacePixels(Flock _input, Flock _output){
   
-  images.clear();
   
-  for(int i = 0 ; i < _input.blocks.size() ; i++){
-    images.add(i, capture(pixels, _input.blocks.get(i).location));
-  }
   
-  for(int i = 0 ; i < _input.blocks.size() ; i++){
-    int[] _image = images.get(i);
-    for(int k = 0 ; k < block_size ; k++){
-      for(int j = 0 ; j < block_size ; j++){
-       int _x=0;
-       int _y=0;
-        switch(mode){
-          case 0:
-          _x = int(_output.blocks.get(i).location.x + k)%width;
-          _y = int(_output.blocks.get(i).location.y + j)%height;
-          break;
-           
-          case 1: 
-          _x = int(_input.blocks.get(i).location.x+_output.blocks.get(i).velocity.x + k)%width;
-          _y = int(_input.blocks.get(i).location.y+_output.blocks.get(i).velocity.y + j)%height;
-          break;
-        
-          case 2:
-          _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
-          _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
-          break;
-        
-          case 3:  
-          _x = int(_input.blocks.get(i).location.x+rando[i].x + k)%width;
-          _y = int(_input.blocks.get(i).location.y+rando[i].y + j)%height;
-          break;
-        }
-        
-        if(_x < 0){
-          _x += width - 1;
-        }
-        if(_y < 0){
-          _y += height - 1;
-        }
-        pixels[_x + (_y*width)]=_image[k+(j*block_size)];
-      }
-    }
-  }
+  
+//  images.clear();
+  
+//  for(int i = 0 ; i < _input.blocks.size() ; i++){
+//    images.add(i, capture(pixels, _input.blocks.get(i).location));
+//  }
+  
+//  for(int i = 0 ; i < _input.blocks.size() ; i++){
+//    int[] _image = images.get(i);
+//    for(int k = 0 ; k < block_size ; k++){
+//      for(int j = 0 ; j < block_size ; j++){
+//       int _x=0;
+//       int _y=0;
+//        switch(mode){
+//          case 0:
+//          _x = int(_output.blocks.get(i).location.x + k)%width;
+//          _y = int(_output.blocks.get(i).location.y + j)%height;
+//          break;
+//           
+//          case 1: 
+//          _x = int(_input.blocks.get(i).location.x+_output.blocks.get(i).velocity.x + k)%width;
+//          _y = int(_input.blocks.get(i).location.y+_output.blocks.get(i).velocity.y + j)%height;
+//          break;
+//        
+//          case 2:
+//          _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
+//          _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
+//          break;
+//        
+//          case 3:  
+//          _x = int(_input.blocks.get(i).location.x+rando[i].x + k)%width;
+//          _y = int(_input.blocks.get(i).location.y+rando[i].y + j)%height;
+//          break;
+//        }
+//        
+//        if(_x < 0){
+//          _x += width - 1;
+//        }
+//        if(_y < 0){
+//          _y += height - 1;
+//        }
+//        pixels[_x + (_y*width)]=_image[k+(j*block_size)];
+//      }
+//    }
+//  }
 }
 
 
