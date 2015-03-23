@@ -23,9 +23,10 @@ PVector[] rando;
 void setup(){
  
   src = loadImage("input/nude.jpg"); //loads source image
-  src.resize(1280, 720);
+  src.resize(800,1200);
   size(src.width, src.height); //set window size to source image dimensions 
   image(src, 0, 0); //draw source image
+  buffer = createImage(width, height, RGB);
   loadPixels();
   input_flock = new Flock();
   output_flock = new Flock();
@@ -39,14 +40,17 @@ void setup(){
   makeRando();
   
   
+  frameRate(30);
+  
+  
 }
 
 void draw(){
-  background(255);
+//  background(255);
   input_flock.run(); 
   output_flock.run();  
   displacePixels(input_flock, output_flock);
-  updatePixels();
+//  image(buffer, 0, 0);
 //  saveFrame("output/2015_02_22/001/Meat-####.PNG");
 //  if(frameCount >= 9000){
 //    exit();
@@ -81,7 +85,7 @@ void keyPressed(){
       mode = 3;
     break;
     case 't':
-      image(srcImg, 0, 0);
+      image(src, 0, 0);
       loadPixels();
     break;
     case '1':
@@ -112,7 +116,7 @@ void keyPressed(){
 }
 
 void makeGrid(int _block_size){
-  input_flock = new Flock();
+//  input_flock = new Flock();
   output_flock = new Flock();
   block_size=_block_size;
   for(int x = 0 ; x < int(width/block_size+1); x++){
@@ -127,54 +131,94 @@ void makeGrid(int _block_size){
 
 
 void displacePixels(Flock _input, Flock _output){
-  
-  
-  
-  
-//  images.clear();
-  
-//  for(int i = 0 ; i < _input.blocks.size() ; i++){
-//    images.add(i, capture(pixels, _input.blocks.get(i).location));
+  //for every block in the flock
+//  loadPixels();
+//  
+//  for(int i = 0 ; i < pixels.length ; i++){
+//    buffer.pixels[i]=pixels[i];
 //  }
-  
-//  for(int i = 0 ; i < _input.blocks.size() ; i++){
-//    int[] _image = images.get(i);
-//    for(int k = 0 ; k < block_size ; k++){
-//      for(int j = 0 ; j < block_size ; j++){
-//       int _x=0;
-//       int _y=0;
-//        switch(mode){
-//          case 0:
-//          _x = int(_output.blocks.get(i).location.x + k)%width;
-//          _y = int(_output.blocks.get(i).location.y + j)%height;
-//          break;
-//           
-//          case 1: 
-//          _x = int(_input.blocks.get(i).location.x+_output.blocks.get(i).velocity.x + k)%width;
-//          _y = int(_input.blocks.get(i).location.y+_output.blocks.get(i).velocity.y + j)%height;
-//          break;
-//        
-//          case 2:
-//          _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
-//          _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
-//          break;
-//        
-//          case 3:  
-//          _x = int(_input.blocks.get(i).location.x+rando[i].x + k)%width;
-//          _y = int(_input.blocks.get(i).location.y+rando[i].y + j)%height;
-//          break;
-//        }
-//        
-//        if(_x < 0){
-//          _x += width - 1;
-//        }
-//        if(_y < 0){
-//          _y += height - 1;
-//        }
-//        pixels[_x + (_y*width)]=_image[k+(j*block_size)];
+//  
+//  
+//  for(int i = 0 ; i < _input.blocks.size() ; i++ ){
+//    
+//    Block input_block = _input.blocks.get(i);
+//    Block output_block = _output.blocks.get(i);
+//    
+//    PVector copy = new PVector(0,0);
+//    PVector paste = new PVector(0,0);
+//    
+//    copy.set(input_block.location);
+//    //paste.set(input_block.location.x-1, input_block.location.y-1);
+//    
+//    int _width = block_size;
+//    int _height = block_size;
+//  
+//    for (int y = 0; y < _width; y++) {
+//      for (int x = 0; x < _height; x++) {
+//        int capture_x = (int(copy.x) + x)%(width);
+//        //if (capture_x < 0 ) capture_x += width - 1;
+//        int capture_y = (int(copy.y) + y)%(height);
+//        //if (capture_y < 0 ) capture_y += height - 1;
+//  
+//        int displacment_x = (int(copy.x) + x + 1)%(width);
+//        //if (displacment_x < 0 ) displacment_x = displacment_x + width - 1;
+//        int displacement_y = (int(copy.y) + y + 1)%(height);
+//        //if (displacement_y < 0 ) displacement_y = displacement_y + height - 1;
+//  
+//        buffer.pixels[displacment_x+(width*displacement_y)]=pixels[capture_x + (capture_y * width)];
 //      }
 //    }
+//    buffer.updatePixels();
 //  }
+ 
+
+  
+  
+  
+  images.clear();
+  
+  for(int i = 0 ; i < _input.blocks.size() ; i++){
+    images.add(i, capture(pixels, _input.blocks.get(i).location));
+  }
+  
+  for(int i = 0 ; i < _input.blocks.size() ; i++){
+    int[] _image = images.get(i);
+    for(int k = 0 ; k < block_size ; k++){
+      for(int j = 0 ; j < block_size ; j++){
+       int _x=0;
+       int _y=0;
+        switch(mode){
+          case 0:
+          _x = int(_output.blocks.get(i).location.x + k)%width;
+          _y = int(_output.blocks.get(i).location.y + j)%height;
+          break;
+           
+          case 1: 
+          _x = int(_input.blocks.get(i).location.x+_output.blocks.get(i).velocity.x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+_output.blocks.get(i).velocity.y + j)%height;
+          break;
+        
+          case 2:
+          _x = int(_input.blocks.get(i).location.x+_input.blocks.get(i).velocity.x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+_input.blocks.get(i).velocity.y + j)%height;
+          break;
+        
+          case 3:  
+          _x = int(_input.blocks.get(i).location.x+rando[i].x + k)%width;
+          _y = int(_input.blocks.get(i).location.y+rando[i].y + j)%height;
+          break;
+        }
+        
+        if(_x < 0){
+          _x += width - 1;
+        }
+        if(_y < 0){
+          _y += height - 1;
+        }
+        pixels[_x + (_y*width)]=_image[k+(j*block_size)];
+      }
+    }
+  }
 }
 
 
