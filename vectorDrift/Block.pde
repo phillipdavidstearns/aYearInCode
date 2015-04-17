@@ -1,8 +1,8 @@
 //cleaning up Block class
 
 float cohesion_coef = block_size*2;
-float separate_coef = block_size*1;
-float align_coef = block_size*2;
+float separate_coef = block_size*2;
+float align_coef = block_size*1;
 
 class Block {
 
@@ -10,8 +10,8 @@ class Block {
   PVector velocity;
   PVector acceleration;
   
-  float maxspeed=1;
-  float maxforce=.25;
+  float maxspeed=10;
+  float maxforce=2.5;
   
   float hue;
   float saturation;
