@@ -1,0 +1,70 @@
+<html>
+	<head>
+		<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.4/p5.js"></script>
+		<!-- uncomment lines below to include extra p5 libraries -->
+		<!--<script language="javascript" src="../addons/p5.dom.js"></script>-->
+		<!--<script language="javascript" src="../addons/p5.sound.js"></script>-->
+		<!-- this line removes any default padding and style. you might only need one of these values set. -->
+		<style> body {padding: 0; margin: 0;} </style>
+	</head>
+
+	<body>
+		<script language="javascript" type="text/javascript">
+
+		var img;  // Declare variable 'img'.
+		// var position = createVector(0.0,0.0);
+		// var velocity = createVector(0.0,0.0);
+		// var acceleration = createVector(0.0,0.0);
+
+		function setup() {
+			createCanvas(800, 600);
+			img = loadImage("http://www.bet.com/topics/s/slim-thug/_jcr_content/topicintro.topicintro.dimg/0211-topic-slim-thug.jpg");  // Load the image
+		   
+		}
+
+		function draw() {
+
+
+			var sourceX = int(random(img.width));
+			var sourceY = int(random(img.height));
+
+
+			var destX = int(random(img.width));
+			var destY = int(random(img.height));
+
+			// var destX = mouseX;
+			// var destY = mouseY;
+
+			img.loadPixels();
+
+
+			var bufferR = img.pixels[(sourceY*img.width*4)+(sourceX*4)];
+			var bufferG = img.pixels[(sourceY*img.width*4)+(sourceX*4)+1];
+			var bufferB = img.pixels[(sourceY*img.width*4)+(sourceX*4)+2];
+			var bufferA = img.pixels[(sourceY*img.width*4)+(sourceX*4)+3]; 
+
+			img.pixels[(sourceY*img.width*4)+(sourceX*4)] = img.pixels[(destY*img.width*4)+(destX*4)];
+			img.pixels[(sourceY*img.width*4)+(sourceX*4)+1]  = img.pixels[(destY*img.width*4)+(destX*4)+1];
+			img.pixels[(sourceY*img.width*4)+(sourceX*4)+2]  = img.pixels[(destY*img.width*4)+(destX*4)+2];
+			img.pixels[(sourceY*img.width*4)+(sourceX*4)+3]  = img.pixels[(destY*img.width*4)+(destX*4)+3];
+
+			img.pixels[(destY*img.width*4)+(destX*4)] = bufferR;
+			img.pixels[(destY*img.width*4)+(destX*4)+1] = bufferG;
+			img.pixels[(destY*img.width*4)+(destX*4)+2] = bufferB;
+			img.pixels[(destY*img.width*4)+(destX*4)+3] = bufferA;
+
+
+			img.updatePixels();
+			// Displays the image at its actual size at point (0,0)
+		  	// image(img, int(position.x), int(position.y));
+		  	image(img,0,0);
+
+
+
+		  
+		}
+
+
+		</script>
+	</body>
+</html>

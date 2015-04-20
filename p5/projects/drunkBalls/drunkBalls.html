@@ -1,0 +1,128 @@
+<html>
+<head>
+  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.4/p5.js"></script>
+  <!-- uncomment lines below to include extra p5 libraries -->
+  <!--<script language="javascript" src="../addons/p5.dom.js"></script>-->
+  <!--<script language="javascript" src="../addons/p5.sound.js"></script>-->
+  <!-- this line removes any default padding and style. you might only need one of these values set. -->
+  <style> body {padding: 0; margin: 0;} </style>
+</head>
+
+<body>
+<script language="javascript" type="text/javascript">
+
+var balls = [];
+
+function setup() {
+	devicePixelScaling(false);
+	createCanvas(windowWidth, windowHeight);
+	colorMode(HSB, 100);
+	background(50,50,50);
+}
+
+function draw() {
+	if(focused){
+		for (var i=0; i<balls.length; i++) {
+    		if(balls[i].isInBounds()){
+    			balls[i].run();
+    		} else {
+    			//removes ball from array
+	  			balls.splice(i, 1);
+    		}
+  		}
+  	}
+ 	
+}
+
+function windowResized() {
+	//resize canvas to match window when resized
+  	resizeCanvas(windowWidth, windowHeight);
+  	background(50,50,50);
+}
+
+function mousePressed() {
+	this.x = 0;
+	this.y = 0;
+	this.ballRemoved = false;
+
+
+	if(mouseIsPressed){
+		this.x=mouseX;
+		this.y=mouseY;
+	} else if(touchIsDown){
+		this.x = touchX;
+		this.y = touchY;
+	}
+
+	
+	for(var i=0 ; i < balls.length; i++){
+	  	if(balls[i].isClicked(this.x,this.y)){
+	  		balls.splice(i, 1);
+	  		this.ballRemoved = true;
+	  	}
+	}
+
+	if(balls.length == 0 && this.ballRemoved == false){
+		balls.push(new DrunkBall(this.x,this.y));
+	} else if(this.ballRemoved == false){
+		balls.push(new DrunkBall(this.x,this.y));
+	}	
+}
+
+//definition of DrunkBall class
+
+function DrunkBall(_x, _y){
+	this.dmax = 250;
+	this.x = _x;
+	this.y = _y;
+	this.d = random(this.dmax);
+	this.h = random(100);
+	this.s = random(100);
+	this.b = random(100);
+	this.maxStep = 25;
+	this.offset = 50;
+
+	this.run = function(){
+		//update color
+		this.h += (this.d/100)*random(-10,10) % 100;
+  		this.s += random(-1,1);
+  		this.b = 100*(this.d-this.offset)/(this.dmax) + this.offset;
+ 		//move
+ 		this.y += (this.d/this.dmax)*random(-this.maxStep,this.maxStep);
+ 		this.x += (this.d/this.dmax)*random(-this.maxStep,this.maxStep);
+  		//resize
+  		this.d += (this.d/this.dmax)*random(-this.maxStep,this.maxStep);
+ 		if(this.d < 10) this.d+=10;
+ 		if(this.d >= this.dmax) this.d=this.dmax;
+ 		//display
+ 		this.display();
+	};
+
+	this.display = function(){
+		colorMode(HSB, 100);
+		fill(this.h,this.s,this.b);
+  		ellipse(this.x, this.y, this.d, this.d);
+	};
+
+	this.isInBounds = function(){
+		if(this.x < 0 || this.x >= windowWidth || this.y < 0 || this.y >= windowHeight){
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	this.isClicked = function(clickX, clickY){
+		if(abs(this.x - clickX) < this.d/2 && abs(this.y - clickY) < this.d/2){
+			return true;
+		} else {
+			return false;
+		}
+		
+	};
+
+}
+</script>
+
+</body>
+</html>
