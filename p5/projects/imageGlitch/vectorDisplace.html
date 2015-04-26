@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
 		<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.4/p5.js"></script>
 		<!-- uncomment lines below to include extra p5 libraries -->
 		<!--<script language="javascript" src="../addons/p5.dom.js"></script>-->
@@ -12,6 +13,24 @@
 
 	<body>
 		<script language="javascript" type="text/javascript">
+
+		// code by Phillip Stearns for image processing via pixel pushing
+		// This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+		// To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/.
+		// contact phil@phillipstearns.com
+
+		// things to implement:
+		// user specified image
+		// import vector matrix
+		// export vector matrix
+		// gui for control of matrix parameters
+		// gui for control of p5.Image.copy() parameters
+		// save image
+		// pause/resume
+
+		// type 'a' to reset image
+		// type 'r' to randomize the grid
+
 
 		var imgSrc;
 		var imgBuffer;
@@ -39,28 +58,27 @@
 			displayBuffer();
 
 			makeBlocks(10, 12);
-			
 
-			position = createVector(0,0);
-			//createCanvas(800, 600);
 			createCanvas(imgSrc.width, imgSrc.height);
 			x=0;
 			y=0;
 			update = false;
-			image(imgDisplay, position.x, position.y);
+			image(imgDisplay, 0, 0);
 
 
 		}
 
-		function draw() {	
-			// swapPixels(125);
-			if(update==true){
-				imgBuffer.loadPixels();
-				swapLines(y%height,(imgBuffer.height-1)-(y%imgBuffer.height));
-				swapCols(x%width,(imgBuffer.width-1)-(x%imgBuffer.width));
-				imgBuffer.updatePixels();
-				displayBuffer();				
-		  	}
+		function draw() {
+
+			// swaps lines and columns of pixels across the center of the image
+			// if(update==true){
+			// 	imgBuffer.loadPixels();
+			// 	swapLines(y%height,(imgBuffer.height-1)-(y%imgBuffer.height));
+			// 	swapCols(x%width,(imgBuffer.width-1)-(x%imgBuffer.width));
+			// 	imgBuffer.updatePixels();
+			// 	displayBuffer();				
+		 //  	}
+
 		  	var angle = random(.01);
 		  	for(var i = 0 ; i < blocks.length ; i++){
 
@@ -121,7 +139,6 @@
 		function makeBlocks(_blocksWide, _blocksHigh){
 
 			blocks=[];
-
 			blocksHigh = _blocksHigh;
 			blocksWide = _blocksWide;
 			blockWidth = int(imgBuffer.width/blocksWide)+1;
@@ -165,7 +182,6 @@
 		function swapPixel(){
 			var sourceX = int(random(imgBuffer.width));
 			var sourceY = int(random(imgBuffer.height));
-
 			var destX = int(random(imgBuffer.width));
 			var destY = int(random(imgBuffer.height));
 
@@ -177,23 +193,27 @@
 		}
 
 		function loadBuffer(image){
+
 			image.loadPixels();
 			imgBuffer.loadPixels();
+
 			for(var i = 0 ; i < imgSrc.pixels.length ; i++){
 				imgBuffer.pixels[i] = image.pixels[i];	
 			}
-		  	
-		 	// arrayCopy(image.pixels, 0, imgBuffer.pixels, 0, image.pixels.length);
 
 		 	imgBuffer.updatePixels();
+
 		}
 
 		function displayBuffer(){
+
 			imgDisplay.loadPixels();
 			imgBuffer.loadPixels();
+
 			for(var i = 0 ; i < imgSrc.pixels.length ; i++){
 				imgDisplay.pixels[i] = imgBuffer.pixels[i];	
 			}
+
 		  	imgDisplay.updatePixels();
 		}
 
@@ -224,23 +244,21 @@
 				return this;
 			}
 
-		}
-
-		
-
-		
+		}		
 
 		function displaceBlock(the_block){
+
 			var b = the_block.get();
 			var sx =b.origin.x;
 			var sy =b.origin.y;
 			var sw =b.width;
 			var sh =b.height;
-			var dx =int(b.position.x);
-			var dy =int(b.position.y);
+			var dx =int(b.position.x); // using floating point engages interpolation which blurs the copy
+			var dy =int(b.position.y); // using floating point engages interpolation which blurs the copy
 			var dw =b.width;
 			var dh =b.height;
 
+			//copies pixels from the displayed image to the buffer
 			imgBuffer.copy(imgDisplay,sx,sy,sw,sh,dx,dy,dw,dh);
 
 		}
