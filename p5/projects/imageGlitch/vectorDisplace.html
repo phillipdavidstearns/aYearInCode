@@ -21,7 +21,6 @@
 		var y;
 		var update;
 
-		var block;
 		var blocksHigh;
 		var blocksWide;
 
@@ -39,19 +38,8 @@
 			loadBuffer(imgSrc);
 			displayBuffer();
 
-			block = new Block(10, imgSrc.width/2, imgSrc.height/2, 50, 50);
-
-			blocksHigh = 10;
-			blocksWide = 10;
-			blockWidth = int(imgBuffer.width/blocksWide);
-			blockHeight = int(imgBuffer.height/blocksHigh);
-
-			var index = 0;
-			for(var y = 0 ; y < blocksHigh; y++){
-				for(var x = 0 ; x < blocksWide; x++){
-					blocks[index++]= new Block(10, x*blockWidth, y*blockHeight, blockWidth, blockHeight);
-				}
-			}
+			makeBlocks(10, 12);
+			
 
 			position = createVector(0,0);
 			//createCanvas(800, 600);
@@ -61,51 +49,40 @@
 			update = false;
 			image(imgDisplay, position.x, position.y);
 
+
 		}
 
-		function draw() {
-
-			
+		function draw() {	
 			// swapPixels(125);
-
 			if(update==true){
 				imgBuffer.loadPixels();
 				swapLines(y%height,(imgBuffer.height-1)-(y%imgBuffer.height));
 				swapCols(x%width,(imgBuffer.width-1)-(x%imgBuffer.width));
 				imgBuffer.updatePixels();
-				
+				displayBuffer();				
 		  	}
-
-		  	var newVector = new p5.Vector.sub(block.position, block.origin);
-		  	newVector.rotate(.1);
-		  	block.position = p5.Vector.add(block.origin, newVector);
-		  	
+		  	var angle = random(.01);
 		  	for(var i = 0 ; i < blocks.length ; i++){
 
 		  		var newVector = new p5.Vector.sub(blocks[i].position, blocks[i].origin);
-		  		newVector.rotate(.05);
+		  		newVector.rotate(angle+random(.01));
+		  		newVector.setMag(2);
 		  		blocks[i].position = p5.Vector.add(blocks[i].origin, newVector);
 		  		displaceBlock(blocks[i]);
+		  		
 		  	}
-
-			// displaceBlock(block);
-
-		 	
-
-		
-
-		  	displayBuffer();
+			displayBuffer();
 		  	
-		  	image(imgDisplay, 0, 0);
-
-		  
-
-		  
+		  	image(imgDisplay, 0, 0); 
 		}
 
 		function keyTyped() {
 			if (key === 'a') {
 				loadBuffer(imgSrc);
+				displayBuffer();
+			}
+			if (key === 'r') {
+				makeBlocks(int(random(20))+2, int(random(20))+2);
 			}
 			return false; // prevent any default behavior
 		}
@@ -139,6 +116,23 @@
 		function touchEnded(){
 			update=false;
 			return false;
+		}
+
+		function makeBlocks(_blocksWide, _blocksHigh){
+
+			blocks=[];
+
+			blocksHigh = _blocksHigh;
+			blocksWide = _blocksWide;
+			blockWidth = int(imgBuffer.width/blocksWide)+1;
+			blockHeight = int(imgBuffer.height/blocksHigh)+1;
+
+			var index = 0;
+			for(var y = 0 ; y < blocksHigh; y++){
+				for(var x = 0 ; x < blocksWide; x++){
+					blocks[index++]= new Block(10, x*blockWidth, y*blockHeight, blockWidth, blockHeight);
+				}
+			}
 		}
 
 		function swapLines(lineA, lineB){
@@ -242,8 +236,8 @@
 			var sy =b.origin.y;
 			var sw =b.width;
 			var sh =b.height;
-			var dx =b.position.x;
-			var dy =b.position.y;
+			var dx =int(b.position.x);
+			var dy =int(b.position.y);
 			var dw =b.width;
 			var dh =b.height;
 
