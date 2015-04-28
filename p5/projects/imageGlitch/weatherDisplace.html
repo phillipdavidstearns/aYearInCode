@@ -16,6 +16,7 @@
 
 		// code by Phillip Stearns for image processing via pixel pushing
 		// uses weather data from http://openweathermap.org/api to "mosh" and image
+		// http://www.darrinward.com/lat-long/?id=555487 will help you maps your lat/long coordinates
 		// This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
 		// To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/.
 		// contact phil@phillipstearns.com
@@ -33,7 +34,6 @@
 		// type 'r' to randomize the grid
 		// type 'w' to update wind vectors
 
-		var wind
 
 		var imgSrc;
 		var imgBuffer;
@@ -45,20 +45,29 @@
 		var blocksWide;
 
 		var blocks = [];
+
+		var lat;
+		var lon;
+		var lat_range;
+		var lon_range;
 		
 		function preload(){
+			devicePixelScaling(false);
 			imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/5/5c/Perito_Moreno_Glacier_Patagonia_Argentina_Luca_Galuzzi_2005.JPG");
 		}
 
 		function setup() {
-			wind=[];
-			devicePixelScaling(false);
+			lat = 30;
+			lat_range = -30;
+			lon = 30;
+			lon_range = 30;
+			
 			imgBuffer = createImage(imgSrc.width, imgSrc.height);
 			imgDisplay = createImage(imgSrc.width, imgSrc.height);
 			loadBuffer(imgSrc);
 			displayBuffer();
 
-			makeBlocks(10, 12);
+			makeBlocks(60, 40);
 
 			createCanvas(imgSrc.width, imgSrc.height);
 		
@@ -67,13 +76,11 @@
 
 		function draw() {
 
-		  	var angle = random(.01);
-
 		  	for(var i = 0 ; i < blocks.length ; i++){
-		  		if(wind[i] != null){
-			  		blocks[i].position.set(p5.Vector.add(blocks[i].origin, wind[i]));
+		  		
+		  		if(frameCount % 240 == 0){
+		  			blocks[i] = updateWind(blocks[i]);
 		  		}
-
 		  		displaceBlock(blocks[i]);
 		  	}
 
@@ -82,32 +89,9 @@
 		  	image(imgDisplay, 0, 0); 
 		}
 
-		function getWeather(lat, lon, lat_range, lon_range){
-			// Request the data from openweathermap
-			wind = [];
-			for(var y = 0 ; y < blocksHigh ; y++){
-				for(var x = 0 ; x < blocksWide ; x++){
-					loadJSON('http://api.openweathermap.org/data/2.5/weather?lat='+(lat+(y*lat_range/blocksHigh))+'&lon='+(lon+(x*lon_range/blocksWide)), gotWeather);
-				}
-			}
-		}
-		  
-
-		function gotWeather(weather) {
-		  var vector = createVector(0,0); 
-		  // Get the angle (convert to radians)
-		  var angle = radians(Number(weather.wind.deg));
-		  // Get the wind speed
-		  var windmag = Number(weather.wind.speed);
-		 
-		  vector = p5.Vector.fromAngle(angle);
-		  vector.setMag(windmag);
-		  wind.push(createVector(vector.x,vector.y));
-		}
 
 		function keyTyped() {
 			if(key === 'w'){
-				getWeather(40.75,-74,-.25,-.25);
 			}
 
 			if (key === 'a') {
@@ -117,13 +101,13 @@
 			}
 			if (key === 'r') {
 				// randomize the matrix
-				makeBlocks(int(random(20))+2, int(random(20))+2);
+				makeBlocks(int(random(50))+20, int(random(50))+20);
 			}
 			return false; // prevent any default behavior
 		}
 
 		function mousePressed() {
-			makeBlocks(int(random(20))+2, int(random(20))+2);
+			// makeBlocks(int(random(20))+2, int(random(20))+2);
 		}
 
 
@@ -139,13 +123,22 @@
 
 			for(var y = 0 ; y < blocksHigh; y++){
 				for(var x = 0 ; x < blocksWide; x++){
-					blocks[index]= new Block(10, x*blockWidth, y*blockHeight, blockWidth, blockHeight);
+					blocks[index] = new Block(10, x*blockWidth, y*blockHeight, blockWidth, blockHeight, x, y);
+					blocks[index] = updateWind(blocks[index]);
 					index++;
 				}
 			}
 
-			getWeather(40.75,-74,-.25,-.25);
 		}
+
+		updateWind = function(block){
+			var b = block.get();
+			loadJSON('http://api.openweathermap.org/data/2.5/weather?lat='+b.lat+'&lon='+b.lon, function(weather){
+				b.gotWind(weather)
+			});
+			return b;
+		}
+
 
 		function loadBuffer(image){
 
@@ -173,7 +166,7 @@
 
 		//begin imgBlock definition
 
-		function Block(m, x, y, w, h){
+		function Block(m, x, y, w, h, id_x, id_y){
 
 			this.mass = m;
 			this.origin = createVector(x,y);
@@ -182,6 +175,9 @@
 			this.acceleration = createVector(0,0);
 			this.width = w;
 			this.height = h;
+			this.lat = (lat+(id_y*lat_range/blocksHigh));
+			this.lon = (lon+(id_x*lon_range/blocksWide));
+
 
 			this.applyForce = function(force){
 				var f = p5.Vector.div(force,this.mass);
@@ -197,6 +193,15 @@
 			this.get = function(){
 				return this;
 			}
+
+			this.gotWind = function(weather) {
+				var angle = radians(Number(weather.wind.deg));
+				// Get the wind speed
+				var windmag = Number(weather.wind.speed);
+				this.velocity = p5.Vector.fromAngle(angle);
+				this.velocity.setMag(windmag);
+				this.position = p5.Vector.add(this.origin, this.velocity);
+			}			
 
 		}		
 
