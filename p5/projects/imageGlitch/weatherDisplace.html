@@ -53,14 +53,17 @@
 		
 		function preload(){
 			devicePixelScaling(false);
-			imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/5/5c/Perito_Moreno_Glacier_Patagonia_Argentina_Luca_Galuzzi_2005.JPG");
+			
+			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/e/e6/Libya_5230_Wan_Caza_Dunes_Luca_Galuzzi_2007.jpg");
+			imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/4/49/The_World_Factbook_-_Algeria_-_Flickr_-_The_Central_Intelligence_Agency_(7).jpg");
+			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/5/5c/Perito_Moreno_Glacier_Patagonia_Argentina_Luca_Galuzzi_2005.JPG");
 		}
 
 		function setup() {
 			lat = 30;
-			lat_range = -30;
-			lon = 30;
-			lon_range = 30;
+			lat_range = -15;
+			lon = -10;
+			lon_range = 40;
 			
 			imgBuffer = createImage(imgSrc.width, imgSrc.height);
 			imgDisplay = createImage(imgSrc.width, imgSrc.height);
