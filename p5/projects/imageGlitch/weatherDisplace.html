@@ -53,24 +53,25 @@
 		
 		function preload(){
 			devicePixelScaling(false);
-			
+			imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/f/f0/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006_edit_1.jpg");
+			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/a/a0/Algeria_Sahara_Desert_Photo_From_Drone_5.jpg");
 			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/e/e6/Libya_5230_Wan_Caza_Dunes_Luca_Galuzzi_2007.jpg");
-			imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/4/49/The_World_Factbook_-_Algeria_-_Flickr_-_The_Central_Intelligence_Agency_(7).jpg");
+			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/4/49/The_World_Factbook_-_Algeria_-_Flickr_-_The_Central_Intelligence_Agency_(7).jpg");
 			// imgSrc = loadImage("http://upload.wikimedia.org/wikipedia/commons/5/5c/Perito_Moreno_Glacier_Patagonia_Argentina_Luca_Galuzzi_2005.JPG");
 		}
 
 		function setup() {
-			lat = 30;
-			lat_range = -15;
-			lon = -10;
-			lon_range = 40;
+			lat = 35;
+			lat_range = -10;
+			lon = 70;
+			lon_range = 20;
 			
 			imgBuffer = createImage(imgSrc.width, imgSrc.height);
 			imgDisplay = createImage(imgSrc.width, imgSrc.height);
 			loadBuffer(imgSrc);
 			displayBuffer();
 
-			makeBlocks(60, 40);
+			makeBlocks(int(imgSrc.width/32)+1, int(imgSrc.width/32)+1);
 
 			createCanvas(imgSrc.width, imgSrc.height);
 		
@@ -111,6 +112,8 @@
 
 		function mousePressed() {
 			// makeBlocks(int(random(20))+2, int(random(20))+2);
+			loadBuffer(imgSrc);
+			displayBuffer();
 		}
 
 
@@ -215,8 +218,10 @@
 			var sy =b.origin.y;
 			var sw =b.width;
 			var sh =b.height;
-			var dx =int(b.position.x); // using floating point engages interpolation which blurs the copy
-			var dy =int(b.position.y); // using floating point engages interpolation which blurs the copy
+			var dx =int(b.position.x); 
+			var dy =int(b.position.y); 
+			// var dx =b.position.x; // using floating point engages interpolation which blurs the copy
+			// var dy =b.position.y; // using floating point engages interpolation which blurs the copy
 			var dw =b.width;
 			var dh =b.height;
 			//copies pixels from the displayed image to the buffer
