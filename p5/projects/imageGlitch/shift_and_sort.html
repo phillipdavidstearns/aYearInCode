@@ -57,8 +57,6 @@
 			loadBuffer(imgSrc);
 			displayBuffer();
 
-			makeBlocks(10, 12);
-
 			createCanvas(imgSrc.width, imgSrc.height);
 			x=0;
 			y=0;
@@ -69,27 +67,40 @@
 		}
 
 		function draw() {
-
-			// swaps lines and columns of pixels across the center of the image
-			// if(update==true){
-			// 	imgBuffer.loadPixels();
-			// 	swapLines(y%height,(imgBuffer.height-1)-(y%imgBuffer.height));
-			// 	swapCols(x%width,(imgBuffer.width-1)-(x%imgBuffer.width));
-			// 	imgBuffer.updatePixels();
-			// 	displayBuffer();				
-		 //  	}
-
-		  	// var angle = random(.01);
-		  	// for(var i = 0 ; i < blocks.length ; i++){
-
-		  	// 	var newVector = new p5.Vector.sub(blocks[i].position, blocks[i].origin);
-		  	// 	newVector.rotate(angle+random(.01));
-		  	// 	newVector.setMag(2);
-		  	// 	blocks[i].position = p5.Vector.add(blocks[i].origin, newVector);
-		  	// 	displaceBlock(blocks[i]);
-		  		
-		  	// }
+		  	var r = [];
+		  	var g = [];
+		  	var b = [];
 		  	
+		  	var y = 125;
+		  	imgBuffer.loadPixels();
+
+		  	// for(var y = 0 ; y < imgBuffer.height ; y++){
+
+			  	for(var x = 0 ; x < imgBuffer.width; x++){
+			  		// r[x]=int(imgBuffer.pixels[(4*(y*imgBuffer.width+x))]);
+			  		// g[x]=int(imgBuffer.pixels[(4*(y*imgBuffer.width+x))+1]);
+			  		// b[x]=int(imgBuffer.pixels[(4*(y*imgBuffer.width+x))+2]);
+			  	}
+
+			  	 r.sort(r.length);
+				 g.sort(g.length);
+				 b.sort(b.length);
+
+			  	for(var x = 0 ; x < imgBuffer.pixels.width; x++){
+			  		imgBuffer.pixels[(4*(y*imgBuffer.width+x))]=r[x];
+			  		imgBuffer.pixels[(4*(y*imgBuffer.width+x))+1+1]=g[x];
+			  		imgBuffer.pixels[(4*(y*imgBuffer.width+x))+1+2]=b[x];
+			  		imgBuffer.pixels[(4*(y*imgBuffer.width+x))+1+3]=255;
+
+			  		// imgBuffer.pixels[i]=i/imgBuffer.pixels.length*255;
+			  		// imgBuffer.pixels[i+1]=(i+1)/imgBuffer.pixels.length*255;
+			  		// imgBuffer.pixels[i+2]=(i+2)/imgBuffer.pixels.length*255;
+			  		// imgBuffer.pixels[i+3]=255;
+			  	}
+		  	// }
+
+		  	imgBuffer.updatePixels();
+
 			displayBuffer();
 		  	
 		  	image(imgDisplay, 0, 0); 
@@ -101,7 +112,6 @@
 				displayBuffer();
 			}
 			if (key === 'r') {
-				makeBlocks(int(random(20))+2, int(random(20))+2);
 			}
 			return false; // prevent any default behavior
 		}
@@ -137,61 +147,7 @@
 			return false;
 		}
 
-		function makeBlocks(_blocksWide, _blocksHigh){
-
-			blocks=[];
-			blocksHigh = _blocksHigh;
-			blocksWide = _blocksWide;
-			blockWidth = int(imgBuffer.width/blocksWide)+1;
-			blockHeight = int(imgBuffer.height/blocksHigh)+1;
-
-			var index = 0;
-			for(var y = 0 ; y < blocksHigh; y++){
-				for(var x = 0 ; x < blocksWide; x++){
-					blocks[index++]= new Block(10, x*blockWidth, y*blockHeight, blockWidth, blockHeight);
-				}
-			}
-		}
-
-		function swapLines(lineA, lineB){
-			for(var i = 0 ; i < imgBuffer.width ; i++){
-				for(var j = 0 ; j < 4 ; j++){
-					var buffer = imgBuffer.pixels[4*(lineA*imgBuffer.width+i)+j];
-					imgBuffer.pixels[4*(lineA*imgBuffer.width+i)+j] = imgBuffer.pixels[4*(lineB*imgBuffer.width+i)+j];
-					imgBuffer.pixels[4*(lineB*imgBuffer.width+i)+j] = buffer;
-				}
-			}
-		}
-
-		function swapCols(colA, colB){
-			for(var i = 0 ; i < imgBuffer.height ; i++){
-				for(var j = 0 ; j < 4 ; j++){
-					var buffer = imgBuffer.pixels[4*(i*imgBuffer.width+colA)+j];
-					imgBuffer.pixels[4*(i*imgBuffer.width+colA)+j] = imgBuffer.pixels[4*(i*imgBuffer.width+colB)+j];
-					imgBuffer.pixels[4*(i*imgBuffer.width+colB)+j] = buffer;
-				}
-			}
-		}
-
-		function swapPixels(pixels){
-			var pixelsToSwap = pixels;
-			for(var i = 0 ; i < pixelsToSwap ; i++){
-				swapPixel();
-			}
-		}
-
-		function swapPixel(){
-			var sourceX = int(random(imgBuffer.width));
-			var sourceY = int(random(imgBuffer.height));
-			var destX = int(random(imgBuffer.width));
-			var destY = int(random(imgBuffer.height));
-
-			for(var i = 0 ; i < 4 ; i++){
-				var buffer = imgBuffer.pixels[4*(sourceY*imgBuffer.width+sourceX)+i];
-				imgBuffer.pixels[4*(sourceY*imgBuffer.width+sourceX)+i]  = imgBuffer.pixels[4*(destY*imgBuffer.width+destX)+i];
-				imgBuffer.pixels[4*(destY*imgBuffer.width+destX)+i] = buffer;
-			}
-		}
+	
 
 		function loadBuffer(image){
 
@@ -218,51 +174,6 @@
 		  	imgDisplay.updatePixels();
 		}
 
-		//begin imgBlock definition
-
-		function Block(m, x, y, w, h){
-
-			this.mass = m;
-			this.origin = createVector(x,y);
-			this.position = createVector(x+random(-5,5),y+random(-5,5));
-			this.velocity = createVector(0,0);
-			this.acceleration = createVector(0,0);
-			this.width = w;
-			this.height = h;
-
-			this.applyForce = function(force){
-				var f = p5.Vector.div(force,this.mass);
-	  			this.acceleration.add(f);
-			}
-
-			this.update = function(){
-				this.velocity.add(this.acceleration);
-				this.position.add(this.velocity);
-				this.acceleration.mult(0);
-			}
-
-			this.get = function(){
-				return this;
-			}
-
-		}		
-
-		function displaceBlock(the_block){
-
-			var b = the_block.get();
-			var sx =b.origin.x;
-			var sy =b.origin.y;
-			var sw =b.width;
-			var sh =b.height;
-			var dx =int(b.position.x); // using floating point engages interpolation which blurs the copy
-			var dy =int(b.position.y); // using floating point engages interpolation which blurs the copy
-			var dw =b.width;
-			var dh =b.height;
-
-			//copies pixels from the displayed image to the buffer
-			imgBuffer.copy(imgDisplay,sx,sy,sw,sh,dx,dy,dw,dh);
-
-		}
 
 
 		</script>
