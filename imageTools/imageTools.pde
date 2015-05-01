@@ -32,13 +32,13 @@ void setup() {
   if (frame != null) {
     frame.setResizable(true);
   }
-  
+
   src = createImage(screen_width, screen_height, RGB);
   buffer = createImage(screen_width, screen_height, RGB);
   display = createImage(screen_width, screen_height, RGB);
-  
-  loadData("Gizmos.jpg");
-  
+
+  loadData("utah.jpg");
+
   cp5 = new ControlP5(this);
   frameRate(30);
   // by calling function addControlFrame() a
@@ -52,18 +52,18 @@ void setup() {
 }
 
 void draw() {
-    loadBuffer(src);
-    pixel_sort(0);
-    loadPixels();
-    if(frameCount < 30){
-      saveFrame("output/Gizmo-####.png");
-    }
+  loadBuffer(src);
+  pixel_sort(0);
+  loadPixels();
+  if (frameCount < 120) {
+    saveFrame("output/landscape/landscape_test-####.png");
+  }
 }
 
-void loadBuffer(PImage _image){
+void loadBuffer(PImage _image) {
   _image.loadPixels();
   buffer.loadPixels();
-  for(int i = 0 ; i < _image.pixels.length ; i++){
+  for (int i = 0; i < _image.pixels.length; i++) {
     buffer.pixels[i]=_image.pixels[i];
   }
   buffer.updatePixels();
@@ -79,7 +79,7 @@ void loadData(String thePath) {
 
 void saveData(String thePath) {
   src.save(thePath+".TIF");
-//  saveFrame(thePath+".TIF");
+  //  saveFrame(thePath+".TIF");
   //  PImage output = createImage(width, height, RGB);
   //  for(int i = 0 ; i < output.pixels.length ; i++){
   //    output.pixels[i] = pixels[i];
@@ -90,225 +90,205 @@ void saveData(String thePath) {
 void pixel_sort(int _mode) {
   buffer.loadPixels();
   src.loadPixels();
-  
-  
-  boolean reverse = true;
-//  if(random(100) >= 0){
-//    reverse = true;
-//  } else {
-//    reverse = false;
-//  }
-  
-  int row_start = 0;
-  int row_end = src.height;
 
-  int col_start = 0;
-  int col_end = src.width;
-
-  int[] px_buffer;
-  int[] r_buffer;
-  int[] g_buffer;
-  int[] b_buffer;
-  
   int pos = frameCount%255;
   int neg = frameCount%255;
-  
-  int threshold_pos = color(pos,pos,pos);
-  int threshold_neg = color(neg,neg,neg);
-  
-  int ib = 0;
-  int buffer_length = 0;
-  boolean section= false;
-     
-  switch(0) {
-    
-    
-   
-    case 0: //pixel_sort pixel value row by row 
-      px_buffer = new int[src.width];
-      
-      ib = 0;
-      buffer_length = 0;
-      section= false;
-      
-      
-      for(int y = row_start; y < row_end; y++){
-        if(random(100) >= 50){
-          reverse = true;
-        } else {
-          reverse = false;
-        }
-        for (int x = 0; x < src.width; x++) {
-          if(buffer.pixels[y*src.width+x] >= threshold_pos && !section){
-            section = true;
-            buffer_length=1;
-            ib = x;
-          } else if (buffer.pixels[y*buffer.width+x] >= threshold_pos && section){
-            buffer_length++;
-          }
-          if (section && buffer.pixels[y*buffer.width+x] < threshold_neg || x >= src.width-1){
-            px_buffer = new int[buffer_length];
-            for(int i = 0 ; i < px_buffer.length ; i++){
-              px_buffer[i] = buffer.pixels[(y*buffer.width)+(ib+i)];
-            }
-            px_buffer = sort(px_buffer);
-            if(reverse){
-              px_buffer = reverse(px_buffer);
-            }
-            section = false;
-            for(int i = 0 ; i < px_buffer.length ; i++){
-              buffer.pixels[(y*src.width)+(ib+i)] = px_buffer[i];
-            }
-          }
-        }
-      }
-      break;
-      
-    case 1:
-      
-      px_buffer = new int[src.height];
-      ib = 0;
-      buffer_length = 0;
-      section= false;
-      
-      
-      for(int x = col_start; x < col_end; x++){
-        for (int y = 0; y < src.height; y++) {
-          if(buffer.pixels[y*src.width+x] >= threshold_pos && !section){
-            section = true;
-            buffer_length=1;
-            ib = y;
-          } else if (buffer.pixels[y*buffer.width+x] >= threshold_pos && section){
-            buffer_length++;
-          } else if (buffer.pixels[y*buffer.width+x] < threshold_neg && section){
-            px_buffer = new int[buffer_length];
-            for(int i = 0 ; i < px_buffer.length ; i++){
-              px_buffer[i] = src.pixels[((ib+i)*buffer.width)+(x)];
-            }
-            px_buffer = sort(px_buffer);
-            if(reverse){
-              px_buffer = reverse(px_buffer);
-            }
-            section = false;
-            for(int i = 0 ; i < px_buffer.length ; i++){
-              buffer.pixels[((ib+i)*src.width)+(x)] = px_buffer[i];
-            }
-          }
-        }
-      }
-      
-//      px_buffer = new int[src.height];
-//      for (int x = col_start; x < col_end; x++) {
-//        for (int y = 0; y < src.height; y++) {
-//          px_buffer[y] = src.pixels[y*src.width+x];
-//        }
-//        px_buffer = sort(px_buffer);
-//        if(reverse){
-//          px_buffer = reverse(px_buffer);
-//        }
-//        for (int y = 0; y < src.height; y++) {
-//          buffer.pixels[y*src.width+x]=px_buffer[y];
-//        }
-//      }
-      break;
-      
-    case 2:
-      // RGB channel sort on rows
-      r_buffer = new int[src.width];
-      g_buffer = new int[src.width];
-      b_buffer = new int[src.width];
-      for (int y = row_start; y < row_end; y++) {
-        for (int x = 0; x < src.width; x++) {
-          r_buffer[x] = src.pixels[y*src.width+x] >> 16 & 0xFF;
-          g_buffer[x] = src.pixels[y*src.width+x] >> 8 & 0xFF;
-          b_buffer[x] = src.pixels[y*src.width+x] & 0xFF;
-        }
-        
-        r_buffer = thresholdSort(r_buffer, pos, neg);
-        g_buffer = thresholdSort(g_buffer, pos, neg);
-        b_buffer = thresholdSort(b_buffer, pos, neg);
-        
-        if(reverse){
-          r_buffer = reverse(r_buffer);
-          g_buffer = reverse(g_buffer);
-          b_buffer = reverse(b_buffer);
-        }
-        
-        for (int x = 0; x < src.width; x++) {
-          buffer.pixels[y*src.width+x]= 255 << 24 | r_buffer[x] << 16 | g_buffer[x] << 8 | b_buffer[x];
-        }
-        
-      }
+  //  int pos = 0;
+  //  int neg = 0;
 
-      break;
-      
-    case 3:
-      // RGB channel sort on rows
-      r_buffer = new int[src.height];
-      g_buffer = new int[src.height];
-      b_buffer = new int[src.height];
-      for (int x = col_start; x < col_end; x++) {
-        for (int y = 0; y < src.height; y++) {
-          r_buffer[y] = src.pixels[y*src.width+x] >> 16 & 0xFF;
-          g_buffer[y] = src.pixels[y*src.width+x] >> 8 & 0xFF;
-          b_buffer[y] = src.pixels[y*src.width+x] & 0xFF;
-        }
-        
-        r_buffer = thresholdSort(r_buffer, pos, neg);
-        g_buffer = thresholdSort(g_buffer, pos, neg);
-        b_buffer = thresholdSort(b_buffer, pos, neg);
-        
-        if(reverse){
-          r_buffer = reverse(r_buffer);
-          g_buffer = reverse(g_buffer);
-          b_buffer = reverse(b_buffer);
-        }
-        
-        for (int y = 0; y < src.height; y++) {
-          buffer.pixels[y*src.width+x]= 255 << 24 | r_buffer[y] << 16 | g_buffer[y] << 8 | b_buffer[y];
-        }
-        
-      }
-      break;
+  int pos_color = color(int(random(255)), int(random(255)), int(random(255)));
+  int neg_color = color(int(random(255)), int(random(255)), int(random(255)));
+
+  switch(int(random(2))) {
+
+  case 0:
+    int _thedir = 0;
+    int _theend;
+    
+    if(_thedir == 0){
+      _theend = buffer.height;
+    } else {
+      _theend = buffer.width;
+    }
+    buffer = sortPixels (buffer, 0, _theend, pos_color, neg_color, _thedir, prob(10), int(random(2)));
+    break;
+
+  case 1:
+    int[] _pos = {int(random(255)),int(random(255)),int(random(255))};
+    int[] _neg = {int(random(255)),int(random(255)),int(random(255))};
+    boolean r = prob(50);
+    boolean g = prob(50);
+    boolean b = prob(50);
+    boolean[] _reverse = {r,g,b};
+    int[] mode = {int(random(2)),int(random(2)),int(random(2))};
+    int _dir = int(random(2));
+    int end;
+    if(_dir == 0){
+      end = buffer.height;
+    } else {
+      end = buffer.width;
+    }
+    
+    buffer = sortPixelsRGB (buffer, 0, end,  _pos, _neg, _dir , _reverse, mode);
+    
+    break;
   }
   buffer.updatePixels();  
   image(buffer, 0, 0);
 }
 
-int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg){
-  int[] temp = _array;
-  int[] _buffer;
-  boolean section = false;
-  int beginning = 0;
-  int section_length=1;
+boolean prob(float _prob){
+  if(_prob >= random(100)){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+PImage sortPixelsRGB (PImage _image, int _start, int _end,  int[] _pos, int[] _neg, int _dir, boolean[] _reverse, int[] _mode){
+ 
+  int[] r_buffer;
+  int[] g_buffer;
+  int[] b_buffer;
   
-//  for(int i = 0 ; i < _array.length ; i++){
-//    println(_array[i]);
-//  }
+  if(_dir == 0){
+    r_buffer = new int[_image.width];
+    g_buffer = new int[_image.width];
+    b_buffer = new int[_image.width];
+  } else {  
+    r_buffer = new int[_image.height];
+    g_buffer = new int[_image.height];
+    b_buffer = new int[_image.height];
+  }
   
-  for(int i = 0 ; i < temp.length ; i++){
-    if(temp[i] >= _threshold_pos && !section){
-      section = true;
-      section_length=1;
-      beginning = i;
-    } else if (temp[i] >= _threshold_pos && section){
-      section_length++;
-    } else if (temp[i] < _threshold_neg && section){
-      _buffer = new int[section_length];
-      for(int j = 0 ; j < _buffer.length ; j++){
-        _buffer[j] = temp[beginning+j];
+  for (int a = _start; a < _end; a++) {
+    for (int b = 0; b < r_buffer.length; b++) {
+      
+      if(_dir == 0){
+        r_buffer[b] = _image.pixels[a*_image.width+b] >> 16 & 0xFF;
+        g_buffer[b] = _image.pixels[a*_image.width+b] >> 8 & 0xFF;
+        b_buffer[b] = _image.pixels[a*_image.width+b] & 0xFF;
+      } else {
+        r_buffer[b] = _image.pixels[b*_image.width+a] >> 16 & 0xFF;
+        g_buffer[b] = _image.pixels[b*_image.width+a] >> 8 & 0xFF;
+        b_buffer[b] = _image.pixels[b*_image.width+a] & 0xFF;
       }
-      _buffer = sort(_buffer);
-//      if(reverse){
-//        _buffer = reverse(_buffer);
-//      }
-      section = false;
-      for(int j = 0 ; j < _buffer.length ; j++){
-        temp[beginning+j] = _buffer[j];
+      
+    }
+
+    r_buffer = thresholdSort(r_buffer, _pos[0], _neg[0], _reverse[0], _mode[0]);
+    g_buffer = thresholdSort(g_buffer, _pos[1], _neg[1], _reverse[1], _mode[1]);
+    b_buffer = thresholdSort(b_buffer, _pos[2], _neg[2], _reverse[2], _mode[2]); 
+
+    for (int b = 0; b < r_buffer.length; b++) {
+      
+      if(_dir == 0){
+        _image.pixels[a*_image.width+b]= 255 << 24 | r_buffer[b] << 16 | g_buffer[b] << 8 | b_buffer[b];
+      } else {
+        _image.pixels[b*_image.width+a]= 255 << 24 | r_buffer[b] << 16 | g_buffer[b] << 8 | b_buffer[b];
       }
     }
   }
-  return temp;
+  return _image;
+}
+
+PImage sortPixels (PImage _image, int _start, int _end, int _pos, int _neg, int _dir, boolean _reverse, int _threshold_mode) { 
+
+  int buffer_index = 0;
+  int[] px_buffer;
+
+  if (_dir == 0) {
+    px_buffer = new int[_image.width];
+  } else {
+    px_buffer = new int[_image.height];
+  }
+
+  for (int a = _start; a < _end; a++) {
+    for (int b = 0; b < px_buffer.length; b++) {
+      if (_dir == 0) {
+        px_buffer[b] = _image.pixels[a*_image.width+b];
+      } else if (_dir == 1) {
+        px_buffer[b] = _image.pixels[b*_image.width+a];
+      }
+    }
+
+    px_buffer = thresholdSort(px_buffer, _pos, _neg, _reverse, _threshold_mode);
+    
+    for (int b = 0; b < px_buffer.length; b++) {
+      if (_dir == 0) {
+        _image.pixels[a*_image.width+b] = px_buffer[b];
+      } else if (_dir == 1) {
+        _image.pixels[b*_image.width+a] = px_buffer[b];
+      }
+    }
+  }
+  return _image;
+}
+
+int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg, boolean _reverse, int _mode) {
+  int[] _buffer;
+  boolean section = false;
+  int beginning = 0;
+  int section_length=0;
+
+  switch(_mode) {
+    case 0:
+      for (int i = 0; i < _array.length; i++) {
+      if (_array[i] >= _threshold_pos && !section) {
+        section = true;
+        section_length=1;
+        beginning = i;
+      } else if (_array[i] >= _threshold_neg && section) {
+        section_length++;
+      }
+      if (_array[i] < _threshold_neg && section || i >= _array.length-1) {
+        _buffer = new int[section_length];
+        for (int j = 0; j < _buffer.length; j++) {
+          _buffer[j] = _array[beginning+j];
+        }
+        _buffer = sort(_buffer);
+
+        if (_reverse) {
+          _buffer = reverse(_buffer);
+        }
+
+        section = false;
+        for (int k = 0; k < _buffer.length; k++) {
+          _array[beginning+k] = _buffer[k];
+        }
+      }
+    }
+    break;
+
+  case 1:
+    for (int i = 0; i < _array.length; i++) {
+      if (_array[i] < _threshold_neg && !section) {
+        section = true;
+        section_length=1;
+        beginning = i;
+      } else if (_array[i] <= _threshold_pos && section) {
+        section_length++;
+      }
+      if (_array[i] > _threshold_pos && section || i >= _array.length-1) {
+        _buffer = new int[section_length];
+        for (int j = 0; j < _buffer.length; j++) {
+          _buffer[j] = _array[beginning+j];
+        }
+        _buffer = sort(_buffer);
+
+        if (_reverse) {
+          _buffer = reverse(_buffer);
+        }
+
+        section = false;
+        for (int k = 0; k < _buffer.length; k++) {
+          _array[beginning+k] = _buffer[k];
+        }
+      }
+    }
+    break;
+  }
+  return _array;
 }
 
 
