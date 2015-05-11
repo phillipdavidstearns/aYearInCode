@@ -10,8 +10,8 @@ class Block {
   PVector velocity;
   PVector acceleration;
   
-  float maxspeed=10;
-  float maxforce=2.5;
+  float maxspeed=1.5;
+  float maxforce=.125;
   
   float hue;
   float saturation;
@@ -36,9 +36,9 @@ class Block {
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-    sep.mult(1);
+    sep.mult(1.5);
     ali.mult(1);
-    coh.mult(1);
+    coh.mult(.75);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ali);
@@ -74,8 +74,8 @@ class Block {
   
   // Wraparound
   void borders() {
-    if (location.x < 0) location.x = width;
-    if (location.y < 0) location.y = height;
+    if (location.x < 0) location.x = width - 1;
+    if (location.y < 0) location.y = height - 1;
     if (location.x > width) location.x = 0;
     if (location.y > height) location.y = 0;
   }

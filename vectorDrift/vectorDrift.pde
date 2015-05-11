@@ -25,7 +25,7 @@ int mode = 1;
 PVector[] rando;
 void setup(){
  
-  src = loadImage("input/balloons_sm.jpg"); //loads source image
+  src = loadImage("input/image1.JPG"); //loads source image
   //src.resize(800,1200);
   size(src.width, src.height); //set window size to source image dimensions 
   image(src, 0, 0); //draw source image
@@ -46,7 +46,7 @@ void setup(){
 }
 
 void draw(){
-saveFrame("output/2015_04_02/002/Balloons-####.PNG");
+saveFrame("output/2015_05_11/005/Anomaly_BW_005_-####.PNG");
   if(frameCount >= 9000){
     exit();
   }
@@ -188,9 +188,9 @@ void displacePixels(Flock _input, Flock _output){
     for (int _y = 0; _y < _width; _y++) {
       for (int _x = 0; _x < _height; _x++) {
         int capture_x = (int(copy.x) + _x)%(width);
-        if (capture_x < 0 ) capture_x += width - 1;
+        if (capture_x < 0 ) capture_x += width;
         int capture_y = (int(copy.y) + _y)%(height);
-        if (capture_y < 0 ) capture_y += height - 1;
+        if (capture_y < 0 ) capture_y += height;
         
         int displacment_x = (int(paste.x) +_x)%(width);
         if (displacment_x < 0 ) displacment_x = displacment_x + width - 1;

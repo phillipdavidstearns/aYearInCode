@@ -24,3 +24,7 @@ dataViz/input/Terminal
 *.jpg
 
 image_displace/sketch.properties
+
+*.TIF
+
+*.tiff
