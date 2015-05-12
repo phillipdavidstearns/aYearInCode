@@ -49,6 +49,23 @@ public class ControlFrame extends PApplet {
             .plugTo(parent, "play")
               .setValue(false);
     ;
+    
+    cp5.addToggle("quick")
+      .setPosition(130, 5)
+        .setSize(20, 20)
+          .setLabel("Q")
+            .plugTo(parent, "quick")
+              .setValue(true);
+              ;
+              
+     cp5.addToggle("record")
+      .setPosition(105, 5)
+        .setSize(20, 20)
+          .setLabel("R")
+            .plugTo(parent, "record")
+              .setValue(false);
+              ;
+
 
     cp5.addToggle("preview")
       .setPosition(80, 30)
@@ -197,27 +214,59 @@ public class ControlFrame extends PApplet {
             .plugTo(parent, "thresh_3")
               ;
 
+    cp5.addSlider("shift_amt_x")
+      .setPosition(5, 155)
+        .setSize(255, 20)
+          .setRange(-10, 10)
+            .setNumberOfTickMarks(21)
+              .setLabel("shift x")
+                .plugTo(parent, "shift_amt_x")
+                  ;
+    cp5.addSlider("shift_amt_y")
+      .setPosition(5, 180)
+        .setSize(255, 20)
+          .setRange(-10, 10)
+            .setNumberOfTickMarks(21)
+              .setLabel("shift y")
+                .plugTo(parent, "shift_amt_y")
+                  ;
+                  
+     cp5.addToggle("shift_left")
+      .setPosition(325, 155)
+        .setSize(20, 20)
+          .setLabel("Y/N")
+            .plugTo(parent, "shift_left")
+            ;
+
+    cp5.addToggle("shift_right")
+      .setPosition(325, 180)
+        .setSize(20, 20)
+          .setLabel("Y/N")
+          .plugTo(parent, "shift_right")
+            ;
+
     //RGB values for threshold_positive
     cp5.addSlider("r_pos")
       .setPosition(5, 80)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("r thd +")
-              .plugTo(parent, "r_pos")
+              .plugTo(parent, "r_pos_inc")
                 ;
+                
     cp5.addSlider("g_pos")
       .setPosition(5, 105)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("g thd +")
-              .plugTo(parent, "g_pos")
+              .plugTo(parent, "g_pos_inc")
                 ;
     cp5.addSlider("b_pos")
       .setPosition(5, 130)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("b thd +")
-              .plugTo(parent, "b_pos")
+              .plugTo(parent, "b_pos_inc")
                 ;
 
     //RGB values for threshold_negativee
@@ -226,23 +275,22 @@ public class ControlFrame extends PApplet {
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("r thd -")
-              .plugTo(parent, "r_neg")
+              .plugTo(parent, "r_neg_inc")
                 ;
     cp5.addSlider("g_neg")
       .setPosition(300, 105)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("g thd -")
-              .plugTo(parent, "g_neg")
+              .plugTo(parent, "g_neg_inc")
                 ;
     cp5.addSlider("b_neg")
       .setPosition(300, 130)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("b thd -")
-              .plugTo(parent, "b_neg")
+              .plugTo(parent, "b_neg_inc")
                 ;
-
   }
 
   public void draw() {
@@ -251,6 +299,8 @@ public class ControlFrame extends PApplet {
 
   public void reset() {
     loadBuffer(src);
+    loadPreview(buffer);
+    loadOutput(buffer);
   }
 
   public void setThresh1(int id) {  
