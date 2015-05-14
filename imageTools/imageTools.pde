@@ -18,6 +18,7 @@ private ControlP5 cp5;
 
 ControlFrame cf;
 
+String thePath;
 boolean sort_issued = false;
 boolean play = false;
 boolean record = false;
@@ -32,6 +33,7 @@ boolean shift_right = false;
 boolean quick = true;
 boolean preview_mode = false;
 boolean rand = false;
+boolean automate = false;
 
 PImage src;
 PImage buffer;
@@ -52,15 +54,8 @@ int r_neg=0;
 int g_neg=0;
 int b_neg=0;
 
-int r_pos_inc=0;
-int g_pos_inc=0;
-int b_pos_inc=0;
-
-int r_neg_inc=0;
-int g_neg_inc=0;
-int b_neg_inc=0;
-
 int sort_mode = 0;
+int sort_by = 0;
 
 int thresh_1 = 0;
 int thresh_2 = 0;
@@ -103,7 +98,7 @@ void setup() {
   // by calling function addControlFrame() a
   // new frame is created and an instance of class
   // ControlFrame is instanziated.
-  cf = addControlFrame("GUI", 800, 300);
+  cf = addControlFrame("GUI", 1200, 800);
 
   // add Controllers to the 'extra' Frame inside 
   // the ControlFrame class setup() method below.
@@ -116,67 +111,29 @@ void setup() {
 }
 
 void draw() {
-  
-  
+
+
   //begin process
-  if(play){
-    
+  if (play) {
+    //y(t) = A\sin(2 \pi f t + \varphi) = A\sin(\omega t + \varphi)
     //red automation math
-    if(rand){
-    r_pos -= int(random(256));
-    } else {
-      r_pos += r_pos_inc;
+    if (automate) {
+      if (rand) {
+        r_pos = int(random(256));
+        r_neg = int(random(256));
+        g_pos = int(random(256));
+        g_neg = int(random(256));
+        b_pos = int(random(256));
+        b_neg = int(random(256));
+      }
+      
     }
- 
-    r_pos += 255;
-    r_pos %= 256;
-   
-    if(rand){
-    r_neg -= int(random(256));
-    } else {
-      r_neg += r_neg_inc;
-    }
-    r_neg += 255;
-    r_neg %= 256;
-    
-    //green automation math
-    if(rand){
-    g_pos -= int(random(256));
-    } else {
-      g_pos += g_pos_inc;
-    }
-    g_pos += 255;
-    g_pos %= 256;
-   
-    if(rand){
-    g_neg -= int(random(256));
-    } else {
-      g_neg += g_neg_inc;
-    }
-    g_neg += 255;
-    g_neg %= 256;
-    
-    //blue automation math
-    if(rand){
-    b_pos -= int(random(256));
-    } else {
-      b_pos += b_pos_inc;
-    }
-    b_pos += 255;
-    b_pos %= 256;
-   
-    if(rand){
-    b_neg -= int(random(256));
-    } else {
-      b_neg += b_neg_inc;
-    }
-    b_neg += 255;
-    b_neg %= 256;
-    
+
     makeParameters();
 
-    if(quick){loadPreview(buffer);
-//    thresholdSort(preview.pixels, positive_threshold, negative_threshold, sort_mode, threshold_mode);
+    if (quick) {
+      loadPreview(buffer);
+      //    thresholdSort(preview.pixels, positive_threshold, negative_threshold, sort_mode, threshold_mode);
       sortPixels(preview, positive_threshold, negative_threshold, sort_mode, threshold_mode);
     } else {
       sortPixels(preview, positive_threshold, negative_threshold, sort_mode, threshold_mode);
@@ -187,51 +144,46 @@ void draw() {
     if (shift_right) {
       shift(preview, 1);
     }
-    if(record){
-    capture_count++;
-    preview.save("output/test_"+nfs(capture_count, 4)+".png");
+    if (record) {
+      capture_count++;
+      if (thePath != null) {
+        preview.save(thePath+"-"+nfs(capture_count, 4)+".png");
+      }
     }
   }
   //end process
-  
 
-  switch(display_mode){
-    case 0:
-      displaySource();
-      println("src");
-      break;
-    case 1:
-      displayBuffer();
-      println("buffer");
-      break;
-    case 2:
-      displayPreview();
-      println("preview");
-      break;
-    case 3:
-      displayOutput();
-      println("output");
-      break;
+
+  switch(display_mode) {
+  case 0:
+    displaySource();
+    break;
+  case 1:
+    displayBuffer();
+    break;
+  case 2:
+    displayPreview();
+    break;
+  case 3:
+    displayOutput();
+    break;
   }
-  
-  
-  
 }
 
-void keyPressed(){
-  switch(keyCode){
-    case 49:
-      display_mode = 0;
-      break;
-    case 50:
-      display_mode = 1;
-      break;
-    case 51:
-      display_mode = 2;
-      break;
-    case 52:
-      display_mode = 3;
-      break;
+void keyPressed() {
+  switch(keyCode) {
+  case 49:
+    display_mode = 0;
+    break;
+  case 50:
+    display_mode = 1;
+    break;
+  case 51:
+    display_mode = 2;
+    break;
+  case 52:
+    display_mode = 3;
+    break;
   }
 }
 
@@ -288,7 +240,6 @@ void shift(PImage _image, int _direction) {
     }
     break;
   }
-
 }
 
 int[] shiftPixels(int[] _pixelArray, int _spaces) {
@@ -303,11 +254,11 @@ int[] shiftPixels(int[] _pixelArray, int _spaces) {
 //pixelsorting
 
 PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _threshold_mode) { 
-  int buffer_index = 0;
-  int[] px_buffer;
-  int[] r_buffer;
-  int[] g_buffer;
-  int[] b_buffer;
+
+  color[] px_buffer;
+  color[] r_buffer;
+  color[] g_buffer;
+  color[] b_buffer;
 
   if (sort_x) {
     if (!color_mode_x) {
@@ -347,7 +298,7 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
 
   if (sort_y) {
     if (!color_mode_y) {
-      px_buffer = new int[_image.height];   
+      px_buffer = new color[_image.height];   
       for (int a = 0; a < _image.width; a++) {
         for (int b = 0; b < px_buffer.length; b++) {
           px_buffer[b] = _image.pixels[b*_image.width+a];
@@ -359,9 +310,9 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
       }
     }
     if (color_mode_y) {
-      r_buffer = new int[_image.height];
-      g_buffer = new int[_image.height];
-      b_buffer = new int[_image.height];
+      r_buffer = new color[_image.height];
+      g_buffer = new color[_image.height];
+      b_buffer = new color[_image.height];
 
       for (int a = 0; a < _image.width; a++) {
         for (int b = 0; b < r_buffer.length; b++) {
@@ -384,9 +335,9 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
   return _image;
 }
 
-int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg, int _sort_mode, int _mode) {
+color[] thresholdSort(color[] _array, int _threshold_pos, int _threshold_neg, int _sort_mode, int _mode) {
 
-  int[] _buffer;
+  color[] _buffer;
   boolean section = false;
   int beginning = 0;
   int section_length=0;
@@ -404,14 +355,14 @@ int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg, int _s
         section_length++;
       }
       if (_array[i] < _threshold_neg && section || i >= _array.length-1) {
-        _buffer = new int[section_length];
+        _buffer = new color[section_length];
         for (int j = 0; j < _buffer.length; j++) {
           _buffer[j] = _array[beginning+j];
         }
-        if(!quick){
-        _buffer = pixelSort(_buffer, _sort_mode);
+        if (!quick) {
+          _buffer = pixelSort(_buffer, _sort_mode);
         } else {
-        _buffer = sort(_buffer);
+          _buffer = sort(_buffer);
         }
         section = false;
         for (int k = 0; k < _buffer.length; k++) {
@@ -432,14 +383,14 @@ int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg, int _s
         section_length++;
       }
       if (_array[i] > _threshold_pos && section || i >= _array.length-1) {
-        _buffer = new int[section_length];
+        _buffer = new color[section_length];
         for (int j = 0; j < _buffer.length; j++) {
           _buffer[j] = _array[beginning+j];
         }
-        if(!quick){
-        _buffer = pixelSort(_buffer, _sort_mode);
+        if (!quick) {
+          _buffer = pixelSort(_buffer, _sort_mode);
         } else {
-        _buffer = sort(_buffer);
+          _buffer = sort(_buffer);
         }
         section = false;
         for (int k = 0; k < _buffer.length; k++) {
@@ -452,40 +403,152 @@ int[] thresholdSort(int[] _array, int _threshold_pos, int _threshold_neg, int _s
   return _array;
 }
 
-int[] pixelSort(int[] _pixelArray, int _sort_mode) {
+color[] pixelSort(color[] _pixelArray, int _sort_mode) {
 
-  switch(_sort_mode) { 
-  case 0:
-    for (int i = 0; i < _pixelArray.length-1; i++) {
-      if (_pixelArray[i] < _pixelArray[i+1]) {
-        _pixelArray = swapPixels(_pixelArray, i+1, i);
+  if (sort_by == 0) {
+    switch(_sort_mode) { 
+    case 0:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (_pixelArray[i] < _pixelArray[i+1]) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
       }
-    }
-    break;
-  case 1:
-    for (int i = 0; i < _pixelArray.length-1; i++) {
-      if (_pixelArray[i] > _pixelArray[i+1]) {
-        _pixelArray = swapPixels(_pixelArray, i+1, i);
+      break;
+    case 1:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (_pixelArray[i] > _pixelArray[i+1]) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
       }
-    }
 
-    break;
-  case 2:
-    for (int i = _pixelArray.length-2; i >= 0; i--) {
-      if (_pixelArray[i] < _pixelArray[i+1]) {
-        _pixelArray = swapPixels(_pixelArray, i+1, i);
+      break;
+    case 2:
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (_pixelArray[i] < _pixelArray[i+1]) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
       }
-    }
 
-    break;
-  case 3:
-
-    for (int i = _pixelArray.length-2; i >= 0; i--) {
-      if (_pixelArray[i] > _pixelArray[i+1]) {
-        _pixelArray = swapPixels(_pixelArray, i+1, i);
+      break;
+    case 3:
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (_pixelArray[i] > _pixelArray[i+1]) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
       }
+      break;
     }
-    break;
+  } else if (sort_by == 1) {
+
+    println("hue");
+
+    switch(_sort_mode) { 
+    case 0:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (hue(_pixelArray[i]) < hue(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    case 1:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (hue(_pixelArray[i]) > hue(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 2:
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (hue(_pixelArray[i]) < hue(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 3:
+
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (hue(_pixelArray[i]) > hue(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    }
+  } else if (sort_by == 2) {
+
+    println("bright");
+
+    switch(_sort_mode) { 
+    case 0:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (brightness(_pixelArray[i]) < brightness(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    case 1:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (brightness(_pixelArray[i]) > brightness(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 2:
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (brightness(_pixelArray[i]) < brightness(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 3:
+
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (brightness(_pixelArray[i]) > brightness(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    }
+  } else if (sort_by == 3) {
+
+    println("sat");
+
+    switch(_sort_mode) { 
+    case 0:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (saturation(_pixelArray[i]) < saturation(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    case 1:
+      for (int i = 0; i < _pixelArray.length-1; i++) {
+        if (saturation(_pixelArray[i]) > saturation(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 2:
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (saturation(_pixelArray[i]) < saturation(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+
+      break;
+    case 3:
+
+      for (int i = _pixelArray.length-2; i >= 0; i--) {
+        if (saturation(_pixelArray[i]) > saturation(_pixelArray[i+1])) {
+          _pixelArray = swapPixels(_pixelArray, i+1, i);
+        }
+      }
+      break;
+    }
   }
 
   return _pixelArray;
@@ -555,24 +618,24 @@ void loadOutput(PImage _image) {
   }
 }
 
-void displayPreview(){
+void displayPreview() {
   preview.updatePixels();
-  image(preview,0,0);
+  image(preview, 0, 0);
 }
 
-void displayOutput(){  
+void displayOutput() {  
   output.updatePixels();
-  image(output,0,0);
+  image(output, 0, 0);
 }
 
-void displayBuffer(){  
+void displayBuffer() {  
   buffer.updatePixels();
-  image(buffer,0,0);
+  image(buffer, 0, 0);
 }
 
-void displaySource(){
+void displaySource() {
   src.updatePixels();
-  image(src,0,0);
+  image(src, 0, 0);
 }
 
 
@@ -590,6 +653,7 @@ void loadData(String thePath) {
 void saveData(String thePath) {
   buffer.save(thePath+".TIF");
 }
+
 
 
 public int sketchWidth() {

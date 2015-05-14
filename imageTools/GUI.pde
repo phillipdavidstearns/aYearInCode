@@ -5,7 +5,7 @@ ControlFrame addControlFrame(String theName, int theWidth, int theHeight) {
   p.init();
   f.setTitle(theName);
   f.setSize(p.w, p.h);
-  f.setLocation(100, 100);
+  f.setLocation(200, 100);
   f.setResizable(false);
   f.setVisible(true);
   return p;
@@ -39,7 +39,7 @@ public class ControlFrame extends PApplet {
     cp5.addButton("reset")
       .setPosition(55, 5)
         .setSize(20, 20)
-          .setLabel("R")
+          .setLabel("RST")
             ;
 
     cp5.addToggle("play")
@@ -49,37 +49,37 @@ public class ControlFrame extends PApplet {
             .plugTo(parent, "play")
               .setValue(false);
     ;
-    
+
     cp5.addToggle("quick")
       .setPosition(130, 5)
         .setSize(20, 20)
           .setLabel("Q")
             .plugTo(parent, "quick")
               .setValue(true);
-              ;
-              
-     cp5.addToggle("record")
+    ;
+
+    cp5.addToggle("record")
       .setPosition(105, 5)
         .setSize(20, 20)
           .setLabel("R")
             .plugTo(parent, "record")
               .setValue(false);
-              ;
+    ;
 
 
-    cp5.addToggle("preview")
-      .setPosition(80, 30)
+    cp5.addToggle("rand")
+      .setPosition(5, 30)
         .setSize(20, 20)
-          .setLabel("PW")
-            .plugTo(parent, "pre")
+          .setLabel("RAND")
+            .plugTo(parent, "rand")
               .setValue(false);
     ;
 
-    cp5.addToggle("realtime")
-      .setPosition(50, 30)
+    cp5.addToggle("automate")
+      .setPosition(30, 30)
         .setSize(20, 20)
-          .setLabel("RT")
-            .plugTo(parent, "realtime")
+          .setLabel("AUTO")
+            .plugTo(parent, "automate")
               .setValue(false);
     ;
 
@@ -96,8 +96,9 @@ public class ControlFrame extends PApplet {
         .setSize(20, 20)
           .setLabel("Y")
             .plugTo(parent, "sort_y")
-              .setValue(false);
-    ;
+              .setValue(false)
+                ;
+
 
     cp5.addToggle("color_mode_x")
       .setPosition(650, 45)
@@ -230,20 +231,20 @@ public class ControlFrame extends PApplet {
               .setLabel("shift y")
                 .plugTo(parent, "shift_amt_y")
                   ;
-                  
-     cp5.addToggle("shift_left")
+
+    cp5.addToggle("shift_left")
       .setPosition(325, 155)
         .setSize(20, 20)
           .setLabel("Y/N")
             .plugTo(parent, "shift_left")
-            ;
+              ;
 
     cp5.addToggle("shift_right")
       .setPosition(325, 180)
         .setSize(20, 20)
           .setLabel("Y/N")
-          .plugTo(parent, "shift_right")
-            ;
+            .plugTo(parent, "shift_right")
+              ;
 
     //RGB values for threshold_positive
     cp5.addSlider("r_pos")
@@ -251,22 +252,22 @@ public class ControlFrame extends PApplet {
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("r thd +")
-              .plugTo(parent, "r_pos_inc")
+              .plugTo(parent, "r_pos")
                 ;
-                
+
     cp5.addSlider("g_pos")
       .setPosition(5, 105)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("g thd +")
-              .plugTo(parent, "g_pos_inc")
+              .plugTo(parent, "g_pos")
                 ;
     cp5.addSlider("b_pos")
       .setPosition(5, 130)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("b thd +")
-              .plugTo(parent, "b_pos_inc")
+              .plugTo(parent, "b_pos")
                 ;
 
     //RGB values for threshold_negativee
@@ -275,22 +276,38 @@ public class ControlFrame extends PApplet {
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("r thd -")
-              .plugTo(parent, "r_neg_inc")
+              .plugTo(parent, "r_neg")
                 ;
     cp5.addSlider("g_neg")
       .setPosition(300, 105)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("g thd -")
-              .plugTo(parent, "g_neg_inc")
+              .plugTo(parent, "g_neg")
                 ;
     cp5.addSlider("b_neg")
       .setPosition(300, 130)
         .setSize(255, 20)
           .setRange(0, 255)
             .setLabel("b thd -")
-              .plugTo(parent, "b_neg_inc")
+              .plugTo(parent, "b_neg")
                 ;
+    cp5.addRadioButton("sort_by")
+      .setPosition(55, 30)
+        .setSize(20, 20)
+          .setItemsPerRow(4)
+            .setSpacingColumn(5)
+              .addItem("val", 0)
+                .addItem("h", 1)
+                  .addItem("s", 2)
+                    .addItem("b", 3)
+                      .activate(0);
+                      ;
+  }
+
+  public void sort_by(int id) {
+    sort_by = id;
+    println(sort_by);
   }
 
   public void draw() {
@@ -303,30 +320,9 @@ public class ControlFrame extends PApplet {
     loadOutput(buffer);
   }
 
-  public void setThresh1(int id) {  
-    if (id != -1) {
-      thresh_1 = id;
-    } else {
-      thresh_1= 0;
-    }
-  }
-  public void setThresh2(int id) {  
-    if (id != -1) {
-      thresh_2 = id;
-    } else {
-      thresh_2= 0;
-    }
-  }
-  public void setThresh3(int id) {  
-    if (id != -1) {
-      thresh_3 = id;
-    } else {
-      thresh_3= 0;
-    }
-  }
 
   public void open_file() {
-    selectInput("Select a file to process:", "inputSelection");
+    selectInput("Select a file to process: ", "inputSelection");
   }
 
   void inputSelection(File input) {
@@ -347,7 +343,8 @@ public class ControlFrame extends PApplet {
       println("Window was closed or the user hit cancel.");
     } else {
       println("User selected " + output.getAbsolutePath());
-      saveData(output.getAbsolutePath());
+      //      saveData(output.getAbsolutePath());
+      thePath = output.getAbsolutePath();
     }
   }
 
@@ -367,4 +364,3 @@ public class ControlFrame extends PApplet {
 
   Object parent;
 }
-
