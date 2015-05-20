@@ -18,7 +18,13 @@ private ControlP5 cp5;
 
 ControlFrame cf;
 
+LFO[] lfos;
+
+
 String thePath;
+boolean diagonal_a = false;
+boolean diagonal_b = false;
+
 boolean sort_issued = false;
 boolean play = false;
 boolean record = false;
@@ -30,7 +36,7 @@ boolean pre = true;
 boolean realtime = false;
 boolean shift_left = false;
 boolean shift_right = false;
-boolean quick = true;
+boolean quick = false;
 boolean preview_mode = false;
 boolean rand = false;
 boolean automate = false;
@@ -86,6 +92,7 @@ int shift_amt_y;
 
 int display_mode = 2; //0 = source, 1 = buffer, 2 = preview, 3 = output;
 int capture_count = 0;
+int iterations=0;
 
 void setup() {
   setScreenSize(screen_width, screen_height);
@@ -107,7 +114,11 @@ void setup() {
   buffer = createImage(screen_width, screen_height, RGB);
   output = createImage(screen_width, screen_height, RGB);
   preview = createImage(screen_width, screen_height, RGB);
-  loadData("image2.JPG");
+  loadData("jpegs/P_Missoni_Converse_BlackWhite-1200.jpg");
+  lfos = new LFO[6];
+  for(int i = 0 ; i < lfos.length ; i++){
+  lfos[i] = new LFO();
+  }
 }
 
 void draw() {
@@ -115,9 +126,20 @@ void draw() {
 
   //begin process
   if (play) {
+
+    //    sortSlope();
+
     //y(t) = A\sin(2 \pi f t + \varphi) = A\sin(\omega t + \varphi)
     //red automation math
     if (automate) {
+//        println(int(256*((lfo_01.update()/2)+0.5)));
+        r_pos = int(255*((lfos[0].update(1.7)/2)+0.5));
+        r_neg = int(255*((lfos[1].update(2.1)/2)+0.5));
+        g_pos = int(255*((lfos[2].update(3.3)/2)+0.5));
+        g_neg = int(255*((lfos[3].update(4.5)/2)+0.5));
+        b_pos = int(255*((lfos[4].update(6.5)/2)+0.5));
+        b_neg = int(255*((lfos[5].update(11.7)/2)+0.5));
+        
       if (rand) {
         r_pos = int(random(256));
         r_neg = int(random(256));
@@ -126,7 +148,6 @@ void draw() {
         b_pos = int(random(256));
         b_neg = int(random(256));
       }
-      
     }
 
     makeParameters();
@@ -136,7 +157,9 @@ void draw() {
       //    thresholdSort(preview.pixels, positive_threshold, negative_threshold, sort_mode, threshold_mode);
       sortPixels(preview, positive_threshold, negative_threshold, sort_mode, threshold_mode);
     } else {
-      sortPixels(preview, positive_threshold, negative_threshold, sort_mode, threshold_mode);
+      for(int i = 0 ; i < iterations ; i++){
+        sortPixels(preview, positive_threshold, negative_threshold, sort_mode, threshold_mode);
+      }
     }
     if (shift_left) {
       shift(preview, 0);
@@ -169,6 +192,8 @@ void draw() {
     break;
   }
 }
+
+
 
 void keyPressed() {
   switch(keyCode) {
@@ -259,6 +284,197 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
   color[] r_buffer;
   color[] g_buffer;
   color[] b_buffer;
+
+  int index = 0;
+  int x = 0;
+  int y = 0; 
+
+  if (diagonal_a) {
+    if (!color_mode_x) {
+      for (int i = 0; i < _image.height; i++) {
+        index = 0;
+        x = 0;
+        y = i;
+        px_buffer = new color[i+1];
+        while (x < _image.width && x <= i && y >= 0 && index < px_buffer.length) {
+          px_buffer[index] = _image.pixels[y*_image.width+x];
+          _image.pixels[y*_image.width+x]=0;
+          index++;
+          x++;
+          y--;
+        }
+        px_buffer = thresholdSort(px_buffer, _pos, _neg, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+        index=0;
+        x=0;
+        y=i;
+        while (x < _image.width && x <= i && y >= 0 && index < px_buffer.length) {
+          _image.pixels[y*_image.width+x]=px_buffer[index];
+          index++;
+          x++;
+          y--;
+        }
+      }
+
+      for (int i = 1; i < _image.width; i++) {
+        index=0;
+        x=i;
+        y=_image.height-1;
+        px_buffer = new color[width - (x)];
+        while (x < _image.width && y >= 0  && index < px_buffer.length) {
+          px_buffer[index] = _image.pixels[y*_image.width+x];
+          index++;
+          x++;
+          y--;
+        }
+
+        px_buffer = thresholdSort(px_buffer, _pos, _neg, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+
+        index=0;
+        x=i;
+        y=_image.height-1;
+        while (x < _image.width && y >= 0 && index < px_buffer.length) {
+          _image.pixels[y*_image.width+x] = px_buffer[index];
+          index++;
+          x++;
+          y--;
+        }
+      }
+    }
+
+    //RGB mode diagonal sorting
+    if (color_mode_x) {
+      for (int i = 0; i < _image.height; i++) {
+        index = 0;
+        x = 0;
+        y = i;
+
+        r_buffer = new color[i+1];
+        g_buffer = new color[i+1];
+        b_buffer = new color[i+1];
+
+        while (x < _image.width && x <= i && y >= 0 && index < r_buffer.length) {
+
+          r_buffer[index] = _image.pixels[y*_image.width+x] >> 16 & 0xFF;
+          g_buffer[index] = _image.pixels[y*_image.width+x] >> 8 & 0xFF;
+          b_buffer[index] = _image.pixels[y*_image.width+x] & 0xFF;
+          index++;
+          x++;
+          y--;
+        }
+
+        r_buffer = thresholdSort(r_buffer, _pos >> 16 & 0xFF, _neg >> 16 & 0xFF, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+        g_buffer = thresholdSort(g_buffer, _pos >> 8 & 0xFF, _neg >> 8 & 0xFF, _sort_mode >> 8 & 3, _threshold_mode >> 1 & 1);
+        b_buffer = thresholdSort(b_buffer, _pos & 0xFF, _neg & 0xFF, _sort_mode >> 6 & 3, _threshold_mode & 1);
+
+        index=0;
+        x=0;
+        y=i;
+        while (x < _image.width && x <= i && y >= 0 && index < r_buffer.length) {
+
+          _image.pixels[y*_image.width+x]= 255 << 24 | r_buffer[index] << 16 | g_buffer[index] << 8 | b_buffer[index];
+
+          index++;
+          x++;
+          y--;
+        }
+      }
+
+      for (int i = 0; i < _image.width; i++) {
+        index=0;
+        x=i;
+        y=_image.height-1;
+        r_buffer = new color[width - (x+1)];
+        g_buffer = new color[width - (x+1)];
+        b_buffer = new color[width - (x+1)];
+        while (x < _image.width && y >= 0 && index < r_buffer.length) {
+          r_buffer[index] = _image.pixels[y*_image.width+x] >> 16 & 0xFF;
+          g_buffer[index] = _image.pixels[y*_image.width+x] >> 8 & 0xFF;
+          b_buffer[index] = _image.pixels[y*_image.width+x] & 0xFF;
+          index++;
+          x++;
+          y--;
+        }
+
+        r_buffer = thresholdSort(r_buffer, _pos >> 16 & 0xFF, _neg >> 16 & 0xFF, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+        g_buffer = thresholdSort(g_buffer, _pos >> 8 & 0xFF, _neg >> 8 & 0xFF, _sort_mode >> 8 & 3, _threshold_mode >> 1 & 1);
+        b_buffer = thresholdSort(b_buffer, _pos & 0xFF, _neg & 0xFF, _sort_mode >> 6 & 3, _threshold_mode & 1);
+
+        index=0;
+        x=i;
+        y=_image.height-1;
+        while (x < _image.width && y >= 0 && index < r_buffer.length) {
+          _image.pixels[y*_image.width+x]= 255 << 24 | r_buffer[index] << 16 | g_buffer[index] << 8 | b_buffer[index];
+          index++;
+          x++;
+          y--;
+        }
+      }
+    }
+  }
+
+  if (diagonal_b) {//  starting from 0, height-1 to width-1, 0 ; picks diagonal pixels from bottom right to upper left  
+
+    for (int i = 0; i < _image.width; i++) {
+      index = 0;
+      x = i;
+      y = _image.height-1;
+      px_buffer= new color[i+1];
+      while ( x >= 0 && y >=0 && index < px_buffer.length) {
+        px_buffer[index]=_image.pixels[y*_image.width+x];
+        _image.pixels[y*_image.width+x]=0;
+
+        x--;
+        y--;
+        index++;
+      }
+
+      px_buffer = thresholdSort(px_buffer, _pos, _neg, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+
+      index = 0;
+      x = i;
+      y = _image.height-1;
+      while ( x >=0 && y >=0 && index < px_buffer.length) {
+        _image.pixels[y*_image.width+x]=px_buffer[index];
+        x--;
+        y--;
+        index++;
+      }
+    }
+
+    for (int i = 0; i < _image.height - 1; i++) {
+      index = 0;
+      x = _image.width - 1;
+      y = _image.height - 2 - i;
+      if (y <= _image.width) {
+        px_buffer = new color[_image.width - (_image.height-y)];
+        
+      } else {
+        px_buffer = new color[_image.width];
+      }
+      while (x >= 0 && y >= 0 && index < px_buffer.length) {
+        px_buffer[index]=_image.pixels[y*_image.width+x];
+        x--;
+        y--;
+        index++;
+      }
+
+      px_buffer = thresholdSort(px_buffer, _pos, _neg, _sort_mode >> 10 & 3, _threshold_mode >> 2 & 1);
+
+
+      index = 0;
+      x = _image.width - 1;
+      y = _image.height - 2 - i;
+
+      while (x >= 0 && y >= 0 && index < px_buffer.length) {
+        _image.pixels[y*_image.width+x]=px_buffer[index];
+        x--;
+        y--;
+        index++;
+      }
+    }
+  }
+
+
 
   if (sort_x) {
     if (!color_mode_x) {
@@ -440,8 +656,6 @@ color[] pixelSort(color[] _pixelArray, int _sort_mode) {
     }
   } else if (sort_by == 1) {
 
-    println("hue");
-
     switch(_sort_mode) { 
     case 0:
       for (int i = 0; i < _pixelArray.length-1; i++) {
@@ -477,8 +691,6 @@ color[] pixelSort(color[] _pixelArray, int _sort_mode) {
     }
   } else if (sort_by == 2) {
 
-    println("bright");
-
     switch(_sort_mode) { 
     case 0:
       for (int i = 0; i < _pixelArray.length-1; i++) {
@@ -513,8 +725,6 @@ color[] pixelSort(color[] _pixelArray, int _sort_mode) {
       break;
     }
   } else if (sort_by == 3) {
-
-    println("sat");
 
     switch(_sort_mode) { 
     case 0:

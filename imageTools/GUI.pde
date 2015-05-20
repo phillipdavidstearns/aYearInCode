@@ -99,6 +99,22 @@ public class ControlFrame extends PApplet {
               .setValue(false)
                 ;
 
+    cp5.addToggle("sort_diagonal_a")
+      .setPosition(625, 20)
+        .setSize(20, 20)
+          .setLabel("A")
+            .plugTo(parent, "diagonal_a")
+              .setValue(false);
+    ;
+
+    cp5.addToggle("sort_diagonal_b")
+      .setPosition(675, 20)
+        .setSize(20, 20)
+          .setLabel("Y")
+            .plugTo(parent, "diagonal_b")
+              .setValue(false)
+                ;
+
 
     cp5.addToggle("color_mode_x")
       .setPosition(650, 45)
@@ -232,6 +248,15 @@ public class ControlFrame extends PApplet {
                 .plugTo(parent, "shift_amt_y")
                   ;
 
+    cp5.addSlider("iterations")
+      .setPosition(5, 205)
+        .setSize(200, 20)
+          .setRange(0, 50)
+            .setNumberOfTickMarks(51)
+              .setLabel("Iterate")
+                .plugTo(parent, "iterations")
+                  ;
+
     cp5.addToggle("shift_left")
       .setPosition(325, 155)
         .setSize(20, 20)
@@ -302,7 +327,7 @@ public class ControlFrame extends PApplet {
                   .addItem("s", 2)
                     .addItem("b", 3)
                       .activate(0);
-                      ;
+    ;
   }
 
   public void sort_by(int id) {
@@ -345,6 +370,7 @@ public class ControlFrame extends PApplet {
       println("User selected " + output.getAbsolutePath());
       //      saveData(output.getAbsolutePath());
       thePath = output.getAbsolutePath();
+      capture_count = 0;
     }
   }
 
@@ -364,3 +390,4 @@ public class ControlFrame extends PApplet {
 
   Object parent;
 }
+

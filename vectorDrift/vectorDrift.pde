@@ -25,7 +25,7 @@ int mode = 1;
 PVector[] rando;
 void setup(){
  
-  src = loadImage("input/image1.JPG"); //loads source image
+  src = loadImage("input/Black.jpg"); //loads source image
   //src.resize(800,1200);
   size(src.width, src.height); //set window size to source image dimensions 
   image(src, 0, 0); //draw source image
@@ -46,7 +46,7 @@ void setup(){
 }
 
 void draw(){
-saveFrame("output/2015_05_11/005/Anomaly_BW_005_-####.PNG");
+saveFrame("output/Anomaly/005/Black_Drift_03-####.PNG");
   if(frameCount >= 9000){
     exit();
   }
