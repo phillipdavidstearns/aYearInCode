@@ -94,6 +94,9 @@ int display_mode = 2; //0 = source, 1 = buffer, 2 = preview, 3 = output;
 int capture_count = 0;
 int iterations=0;
 
+float[] inc = new float[6];
+float[] phase = new float[6];
+
 void setup() {
   setScreenSize(screen_width, screen_height);
   if (frame != null) {
@@ -114,7 +117,7 @@ void setup() {
   buffer = createImage(screen_width, screen_height, RGB);
   output = createImage(screen_width, screen_height, RGB);
   preview = createImage(screen_width, screen_height, RGB);
-  loadData("jpegs/P_Missoni_Converse_BlackWhite-1200.jpg");
+  loadData("jpegs/Black/blackwhite_MISSONI.jpg");
   lfos = new LFO[6];
   for(int i = 0 ; i < lfos.length ; i++){
   lfos[i] = new LFO();
@@ -132,13 +135,22 @@ void draw() {
     //y(t) = A\sin(2 \pi f t + \varphi) = A\sin(\omega t + \varphi)
     //red automation math
     if (automate) {
+      
+      
+      
+      
+      
+      
+      
+      
+      
 //        println(int(256*((lfo_01.update()/2)+0.5)));
-        r_pos = int(255*((lfos[0].update(1.7)/2)+0.5));
-        r_neg = int(255*((lfos[1].update(2.1)/2)+0.5));
-        g_pos = int(255*((lfos[2].update(3.3)/2)+0.5));
-        g_neg = int(255*((lfos[3].update(4.5)/2)+0.5));
-        b_pos = int(255*((lfos[4].update(6.5)/2)+0.5));
-        b_neg = int(255*((lfos[5].update(11.7)/2)+0.5));
+        r_pos = int(255*((lfos[0].update(inc[0], PI*(phase[0])-PI/2)/2)+0.5));
+        r_neg = int(255*((lfos[1].update(inc[1], PI*(phase[1])-PI/2)/2)+0.5));
+        g_pos = int(255*((lfos[2].update(inc[2], PI*(phase[2])-PI/2)/2)+0.5));
+        g_neg = int(255*((lfos[3].update(inc[3], PI*(phase[3])-PI/2)/2)+0.5));
+        b_pos = int(255*((lfos[4].update(inc[4], PI*(phase[4])-PI/2)/2)+0.5));
+        b_neg = int(255*((lfos[5].update(inc[5], PI*(phase[5])-PI/2)/2)+0.5));
         
       if (rand) {
         r_pos = int(random(256));

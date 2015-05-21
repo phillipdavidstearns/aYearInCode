@@ -32,9 +32,19 @@ class LFO {
     inc = random(1);
   }
   
-  float update(float _inc){
+  float update(float _inc, float _phase){
+    inc = _inc;
+    phi = _phase;
     float output = sin(2*PI*freq*(theta/255)+phi);
-    theta+=_inc;
+    theta+=inc;
+    theta%=256;
+    return output;
+  }
+  
+  float update(float _inc){
+    inc = _inc;
+    float output = sin(2*PI*freq*(theta/255)+phi);
+    theta+=inc;
     theta%=256;
     return output;
   }
@@ -46,6 +56,11 @@ class LFO {
     return output;
   }
   
- 
+ void reset(){
+    inc = 0;
+    theta = 0;
+    phi = 0;
+    freq = 1;
+  }
   
 }

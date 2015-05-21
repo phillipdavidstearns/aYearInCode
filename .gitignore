@@ -30,3 +30,7 @@ image_displace/sketch.properties
 *.tiff
 
 *.zip
+
+*.cfa
+
+*.pek

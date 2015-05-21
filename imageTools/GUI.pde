@@ -50,13 +50,6 @@ public class ControlFrame extends PApplet {
               .setValue(false);
     ;
 
-    cp5.addToggle("quick")
-      .setPosition(130, 5)
-        .setSize(20, 20)
-          .setLabel("Q")
-            .plugTo(parent, "quick")
-              .setValue(true);
-    ;
 
     cp5.addToggle("record")
       .setPosition(105, 5)
@@ -65,6 +58,21 @@ public class ControlFrame extends PApplet {
             .plugTo(parent, "record")
               .setValue(false);
     ;
+
+    cp5.addToggle("quick")
+      .setPosition(130, 5)
+        .setSize(20, 20)
+          .setLabel("Q")
+            .plugTo(parent, "quick")
+              .setValue(true);
+    ;
+    
+    cp5.addButton("resetLFO")
+      .setPosition(155, 5)
+        .setSize(20, 20)
+          .setLabel("RST")
+    ;
+
 
 
     cp5.addToggle("rand")
@@ -248,15 +256,6 @@ public class ControlFrame extends PApplet {
                 .plugTo(parent, "shift_amt_y")
                   ;
 
-    cp5.addSlider("iterations")
-      .setPosition(5, 205)
-        .setSize(200, 20)
-          .setRange(0, 50)
-            .setNumberOfTickMarks(51)
-              .setLabel("Iterate")
-                .plugTo(parent, "iterations")
-                  ;
-
     cp5.addToggle("shift_left")
       .setPosition(325, 155)
         .setSize(20, 20)
@@ -326,8 +325,172 @@ public class ControlFrame extends PApplet {
                 .addItem("h", 1)
                   .addItem("s", 2)
                     .addItem("b", 3)
-                      .activate(0);
-    ;
+                      .activate(0)
+                        ;
+
+    // automation increments                  
+    cp5.addSlider("r_pos_inc")
+      .setPosition(5, 250)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("r_pos_inc")
+              .plugTo(parent, "inc[0]")
+                ;
+
+    cp5.addSlider("r_neg_inc")
+      .setPosition(305, 250)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("r_neg_inc")
+              .plugTo(parent, "inc[1]")
+                ;
+
+    cp5.addSlider("g_pos_inc")
+      .setPosition(5, 275)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("g_pos_inc")
+              .plugTo(parent, "inc[2]")
+                ;
+
+    cp5.addSlider("g_neg_inc")
+      .setPosition(305, 275)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("g_neg_inc")
+              .plugTo(parent, "inc[3]")
+                ;
+
+    cp5.addSlider("b_pos_inc")
+      .setPosition(5, 300)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("b_pos_inc")
+              .plugTo(parent, "inc[4]")
+                ;
+
+    cp5.addSlider("b_neg_inc")
+      .setPosition(305, 300)
+        .setSize(200, 20)
+          .setRange(-5, 5)
+            .setLabel("b_neg_inc")
+              .plugTo(parent, "inc[5]")
+                ;
+
+    // phase adjustments
+
+    cp5.addSlider("r_pos_phase")
+      .setPosition(5, 325)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("r_pos_phase")
+              .plugTo(parent, "phase[0]")
+                ;
+
+    cp5.addSlider("r_neg_phase")
+      .setPosition(305, 325)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("r_neg_phase")
+              .plugTo(parent, "phase[1]")
+                ;
+
+    cp5.addSlider("g_pos_phase")
+      .setPosition(5, 350)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("g_pos_phase")
+              .plugTo(parent, "phase[2]")
+                ;
+
+    cp5.addSlider("g_neg_phase")
+      .setPosition(305, 350)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("g_neg_phase")
+              .plugTo(parent, "phase[3]")
+                ;
+
+    cp5.addSlider("b_pos_phase")
+      .setPosition(5, 375)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("b_pos_phase")
+              .plugTo(parent, "phase[4]")
+                ;
+
+    cp5.addSlider("b_neg_phase")
+      .setPosition(305, 375)
+        .setSize(200, 20)
+          .setRange(0, 1)
+            .setLabel("b_neg_phase")
+              .plugTo(parent, "phase[5]")
+                ;    
+
+    //iterations
+
+    cp5.addSlider("iterations")
+      .setPosition(5, 205)
+        .setSize(200, 20)
+          .setRange(0, 50)
+            .setNumberOfTickMarks(51)
+              .setLabel("Iterate")
+                .plugTo(parent, "iterations")
+                  ;
+  }
+
+  public void resetLFO() {
+    for (int i = 0; i < lfos.length; i++) {
+      lfos[i].reset();
+    }
+  }
+
+  public void r_pos_inc(float _value) {
+    inc[0] = _value;
+  }
+
+  public void r_neg_inc(float _value) {
+    inc[1] = _value;
+  }
+
+  public void g_pos_inc(float _value) {
+    inc[2] = _value;
+  }
+
+  public void g_neg_inc(float _value) {
+    inc[3] = _value;
+  }
+
+  public void b_pos_inc(float _value) {
+    inc[4] = _value;
+  }
+
+  public void b_neg_inc(float _value) {
+    inc[5] = _value;
+  }
+
+  public void r_pos_phase(float _value) {
+    phase[0] = _value;
+  }
+
+  public void r_neg_phase(float _value) {
+    phase[1] = _value;
+  }
+
+  public void g_pos_phase(float _value) {
+    phase[2] = _value;
+  }
+
+  public void g_neg_phase(float _value) {
+    phase[3] = _value;
+  }
+
+  public void b_pos_phase(float _value) {
+    phase[4] = _value;
+  }
+
+  public void b_neg_phase(float _value) {
+    phase[5] = _value;
   }
 
   public void sort_by(int id) {
