@@ -117,7 +117,7 @@ void setup() {
   buffer = createImage(screen_width, screen_height, RGB);
   output = createImage(screen_width, screen_height, RGB);
   preview = createImage(screen_width, screen_height, RGB);
-  loadData("jpegs/Black/blackwhite_MISSONI.jpg");
+  loadData("utah.jpg");
   lfos = new LFO[6];
   for(int i = 0 ; i < lfos.length ; i++){
   lfos[i] = new LFO();
@@ -134,15 +134,7 @@ void draw() {
 
     //y(t) = A\sin(2 \pi f t + \varphi) = A\sin(\omega t + \varphi)
     //red automation math
-    if (automate) {
-      
-      
-      
-      
-      
-      
-      
-      
+    if (automate) {    
       
 //        println(int(256*((lfo_01.update()/2)+0.5)));
         r_pos = int(255*((lfos[0].update(inc[0], PI*(phase[0])-PI/2)/2)+0.5));
@@ -307,7 +299,11 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
         index = 0;
         x = 0;
         y = i;
-        px_buffer = new color[i+1];
+        if(i < _image.width){
+          px_buffer = new color[i+1];
+        } else {
+          px_buffer = new color[_image.width];
+        }
         while (x < _image.width && x <= i && y >= 0 && index < px_buffer.length) {
           px_buffer[index] = _image.pixels[y*_image.width+x];
           _image.pixels[y*_image.width+x]=0;
@@ -331,7 +327,11 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
         index=0;
         x=i;
         y=_image.height-1;
-        px_buffer = new color[width - (x)];
+        if(_image.width > _image.height && i < _image.width - _image.height){
+          px_buffer = new color[height];
+        } else {
+          px_buffer = new color[width - (x)];
+        }
         while (x < _image.width && y >= 0  && index < px_buffer.length) {
           px_buffer[index] = _image.pixels[y*_image.width+x];
           index++;
@@ -360,9 +360,15 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
         x = 0;
         y = i;
 
-        r_buffer = new color[i+1];
-        g_buffer = new color[i+1];
-        b_buffer = new color[i+1];
+        if(i < _image.width){
+          r_buffer = new color[i+1];
+          g_buffer = new color[i+1];
+          b_buffer = new color[i+1];
+        } else {
+          r_buffer = new color[_image.width];
+          g_buffer = new color[_image.width];
+          b_buffer = new color[_image.width];
+        }
 
         while (x < _image.width && x <= i && y >= 0 && index < r_buffer.length) {
 
@@ -391,13 +397,21 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
         }
       }
 
-      for (int i = 0; i < _image.width; i++) {
+      for (int i = 1; i < _image.width; i++) {
         index=0;
         x=i;
         y=_image.height-1;
-        r_buffer = new color[width - (x+1)];
-        g_buffer = new color[width - (x+1)];
-        b_buffer = new color[width - (x+1)];
+        
+        if(_image.width > _image.height && i < _image.width - _image.height){
+          r_buffer = new color[height];
+          g_buffer = new color[height];
+          b_buffer = new color[height];
+        } else {
+          r_buffer = new color[width - (x)];
+          g_buffer = new color[width - (x)];
+          b_buffer = new color[width - (x)];
+        }
+        
         while (x < _image.width && y >= 0 && index < r_buffer.length) {
           r_buffer[index] = _image.pixels[y*_image.width+x] >> 16 & 0xFF;
           g_buffer[index] = _image.pixels[y*_image.width+x] >> 8 & 0xFF;
@@ -425,16 +439,21 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
   }
 
   if (diagonal_b) {//  starting from 0, height-1 to width-1, 0 ; picks diagonal pixels from bottom right to upper left  
-
+    
     for (int i = 0; i < _image.width; i++) {
       index = 0;
       x = i;
       y = _image.height-1;
-      px_buffer= new color[i+1];
+      
+      if(_image.width > _image.height && i >= _image.height){
+        px_buffer = new color[_image.height];
+      } else {
+        px_buffer= new color[i+1];
+      }
+      
       while ( x >= 0 && y >=0 && index < px_buffer.length) {
         px_buffer[index]=_image.pixels[y*_image.width+x];
         _image.pixels[y*_image.width+x]=0;
-
         x--;
         y--;
         index++;
@@ -453,16 +472,17 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
       }
     }
 
-    for (int i = 0; i < _image.height - 1; i++) {
+    for (int i = 1; i < _image.height; i++) {
       index = 0;
+      
       x = _image.width - 1;
-      y = _image.height - 2 - i;
-      if (y <= _image.width) {
-        px_buffer = new color[_image.width - (_image.height-y)];
-        
-      } else {
+      y = _image.height - 1 - i;
+      if(_image.height > _image.width && i < _image.width -1 ){
         px_buffer = new color[_image.width];
+      } else {
+        px_buffer = new color[_image.height - i];
       }
+      
       while (x >= 0 && y >= 0 && index < px_buffer.length) {
         px_buffer[index]=_image.pixels[y*_image.width+x];
         x--;
@@ -475,7 +495,7 @@ PImage sortPixels (PImage _image, color _pos, color _neg, int _sort_mode, int _t
 
       index = 0;
       x = _image.width - 1;
-      y = _image.height - 2 - i;
+      y = _image.height - 1 - i;
 
       while (x >= 0 && y >= 0 && index < px_buffer.length) {
         _image.pixels[y*_image.width+x]=px_buffer[index];

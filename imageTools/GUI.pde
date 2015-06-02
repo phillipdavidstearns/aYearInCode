@@ -66,12 +66,12 @@ public class ControlFrame extends PApplet {
             .plugTo(parent, "quick")
               .setValue(true);
     ;
-    
+
     cp5.addButton("resetLFO")
       .setPosition(155, 5)
         .setSize(20, 20)
           .setLabel("RST")
-    ;
+            ;
 
 
 
@@ -436,7 +436,8 @@ public class ControlFrame extends PApplet {
             .setNumberOfTickMarks(51)
               .setLabel("Iterate")
                 .plugTo(parent, "iterations")
-                  ;
+                  .setValue(1)
+                    ;
   }
 
   public void resetLFO() {

@@ -1,6 +1,8 @@
 boolean[] row;
 boolean[][] rules;
 int set;
+int page;
+boolean changeRule = false;
 
 void setup(){
   size(500, 500);
@@ -19,28 +21,64 @@ void setup(){
   
   //index for choosing a rule set
   set = 0;
-}
-
-void draw(){
-  loadPixels();
-  shiftUp();
-  drawRow();
-  applyRules(countNeighbors());
-  updatePixels();
- 
-  // randomizer
-  if(frameCount % int(random(500)+1) == 0){
-    for(int i = 0 ; i < width ; i++){
+  
+  for(int i = 0 ; i < width ; i++){
       if(random(1) < random(1)){
         row[i]=true;
       } else {
         row[i]=false;
       }
     }
-    set=int(random(256));
+}
+
+void draw(){
+  loadPixels();
+  if(changeRule){
+    randomizeLine();  
+    for(int i = 0 ; i < height; i++){
+      
+      shiftUp();
+      drawRow();
+      applyRules(countNeighbors());
+      changeRule = false;
+    }
   }
+  updatePixels();
+ 
+  // randomizer  
+    
   
 }
+
+void keyPressed(){
+  switch(key){
+    case 'r':
+      randomizeLine();
+      break;
+      case 's':
+      set++;
+      changeRule = true;
+      println(set);
+      break;
+      case 'a':
+      set--;
+      changeRule = true;
+      println(set);
+      break;
+  }
+}
+
+
+void randomizeLine(){
+  for(int i = 0 ; i < width ; i++){
+      if(random(1) < random(1)){
+        row[i]=true;
+      } else {
+        row[i]=false;
+      }
+    }
+}
+
 
 void drawRow(){
   for(int i = 0 ; i < width ; i++){
