@@ -29,13 +29,13 @@ public class ControlFrame extends PApplet {
       .plugTo(parent, "bit_offset")
         .setRange(0, 24)
           .setSize(100, 20)
-            .setPosition(10, 110)
+            .setPosition(10, 160)
               .setNumberOfTickMarks(25)
                 ;
 
     // controls for skipping pixels     
     cp5.addSlider("pixel_offset")
-      .setPosition(10, 140)
+      .setPosition(10, 190)
         .setRange(0, raw_bits.length)
           .setSize(100, 20)
             ;
@@ -134,22 +134,43 @@ public class ControlFrame extends PApplet {
            .setLabel("GRAY")
               ;
 
-    cp5.addToggle("R_INV")
+    cp5.addToggle("R_INV_PRE")
       .setPosition(10+(0*30), 75)
+        .setSize(20, 20)
+          .plugTo(parent, "red_invert_pre")
+            .setLabel("PRE")
+              ;
+
+    cp5.addToggle("G_INV_PRE")
+      .setPosition(10+(1*30), 75)
+        .setSize(20, 20)
+          .plugTo(parent, "green_invert_pre")
+            .setLabel("PRE")
+              ;
+
+    cp5.addToggle("B_INV_PRE")
+      .setPosition(10+(2*30), 75)
+        .setSize(20, 20)
+          .plugTo(parent, "blue_invert_pre")
+            .setLabel("PRE")
+              ;
+
+    cp5.addToggle("R_INV")
+      .setPosition(10+(0*30), 120)
         .setSize(20, 20)
           .plugTo(parent, "red_invert")
             .setLabel("!R")
               ;
 
     cp5.addToggle("G_INV")
-      .setPosition(10+(1*30), 75)
+      .setPosition(10+(1*30), 120)
         .setSize(20, 20)
           .plugTo(parent, "green_invert")
             .setLabel("!G")
               ;
 
     cp5.addToggle("B_INV")
-      .setPosition(10+(2*30), 75)
+      .setPosition(10+(2*30), 120)
         .setSize(20, 20)
           .plugTo(parent, "blue_invert")
             .setLabel("!B")

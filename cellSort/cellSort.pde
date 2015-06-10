@@ -1,7 +1,7 @@
 PImage source;
 PImage output;
-int higher=100;
-int lower=200;
+int higher=110;
+int lower=190;
 int type = 1;
 int offset_x = 0;
 int offset_y = 0;
@@ -22,8 +22,10 @@ void loadSource() {
   //  output = loadImage("Purple-1200_rotate.jpg");
 //  source = loadImage("Nebula.jpg");
 //  output = loadImage("Nebula.jpg");
-  source = loadImage("orion_nebula_complex_wide.jpeg");
-  output = loadImage("orion_nebula_complex_wide.jpeg");
+//  source = loadImage("orion_nebula_complex_wide.jpeg");
+//  output = loadImage("orion_nebula_complex_wide.jpeg");
+source = loadImage("orion.jpeg");
+output = loadImage("orion.jpeg");
 
 
   image(source, 0, 0);
@@ -41,10 +43,13 @@ void setup() {
 void draw() {
 
   if (play) {
+    
     source.loadPixels();
     output = cellSort(source);
     output.updatePixels();
     image(output, 0, 0);
+    output.save("output/nebula_03/orion_cellSort_Test_01-"+nf(iterations,4)+".png");
+    iterations++;
   }
 }
 

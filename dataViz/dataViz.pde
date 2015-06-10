@@ -41,6 +41,10 @@ boolean green_invert=false;
 boolean blue_invert=false;
 boolean invert=false;
 
+boolean red_invert_pre=false;
+boolean green_invert_pre=false;
+boolean blue_invert_pre=false;
+
 int screen_width = 384;
 int screen_height = 512;
 
@@ -57,7 +61,7 @@ void setup(){
   // by calling function addControlFrame() a
   // new frame is created and an instance of class
   // ControlFrame is instanziated.
-  cf = addControlFrame("GUI", 500 ,200);
+  cf = addControlFrame("GUI", 500 ,300);
   
   // add Controllers to the 'extra' Frame inside 
   // the ControlFrame class setup() method below.
@@ -146,6 +150,17 @@ void bits_to_pixels(){
           }
           chan3*=(255/(pow(2,(chan3_depth))-1)); //scale to 0-255
           
+          if(red_invert_pre == true){
+            chan1^=0xFF;
+          }
+          if(green_invert_pre == true){
+            chan2^=0xFF;
+          }
+          if(blue_invert_pre == true){
+            chan3^=0xFF;
+          }
+          
+          
           //channel swap
           switch(swap_mode){
             case 0:
@@ -181,13 +196,13 @@ void bits_to_pixels(){
           }
       
           //channel invert
-          if(red_invert == true){
+          if(red_invert == true && red_invert_pre == false){
             red^=0xFF;
           }
-          if(green_invert == true){
+          if(green_invert == true && green_invert_pre == false){
             green^=0xFF;
           }
-          if(blue_invert == true){
+          if(blue_invert == true && blue_invert_pre == false){
             blue^=0xFF;
           }
           
