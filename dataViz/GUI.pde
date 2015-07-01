@@ -37,7 +37,7 @@ public class ControlFrame extends PApplet {
     cp5.addSlider("pixel_offset")
       .setPosition(10, 190)
         .setRange(0, raw_bits.length)
-          .setSize(100, 20)
+          .setSize(400, 20)
             ;
     //step forward a pixel  
     cp5.addBang("pixel_inc")
@@ -234,9 +234,9 @@ public class ControlFrame extends PApplet {
   void keyPressed(){
 //    println(keyCode);
     if(keyCode == 38){
-      line_inc();
+      line_inc(screen_height);
     } else if(keyCode == 40){
-      line_dec();
+      line_dec(screen_height);
     }
   }
 
@@ -356,10 +356,20 @@ public class ControlFrame extends PApplet {
   public void line_inc() {
     cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*line_multiplier));
   }
+  
+  public void line_inc(int _lines) {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*_lines));
+  }
 
   public void line_dec() {
     if (pixel_offset-(screen_width*line_multiplier) >= 0) {
       cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*line_multiplier));
+    }
+  }
+  
+  public void line_dec(int _lines) {
+    if (pixel_offset-(screen_width*_lines) >= 0) {
+      cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*_lines));
     }
   }
 
