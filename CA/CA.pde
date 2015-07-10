@@ -1,10 +1,10 @@
 boolean[] row;
 int page;
 boolean changeRule = true;
-boolean run = false;
+boolean scroll = true;
 boolean save = false;
 int shift =0;
-int qty_neighbors = 5;
+int qty_neighbors = 6  ;
 int qty_colors = 2;
 int counter_shift = 0;
 int tap_1 = 27;
@@ -17,95 +17,134 @@ boolean tap_3_en = true;
 boolean tap_4_en = true;
 boolean jam = false; //force an input
 String thePath;
-String initial_rule = new String("11010110111000001001000110010110");
+String initial_rule = new String("0001001100001010101001001101110010101011010011001001001110110100");
 PImage design;
-int w = 191;
-int h = 382;
+int w = 480;
+int h = 270;
+color[] colors;
+int scale = 4;
 
 int qty_neighbor_combinations = int(pow(qty_colors, qty_neighbors));
-long qty_rules = int(pow(qty_colors, qty_neighbor_combinations));
 
 
 ShiftRegister register;
 ShiftRegister rules;
 
 void setup() {
-  size(w, h);
+  size(scale*w, scale*h);
   design = createImage(w, h, RGB);
-//  design = createImage(6114,5150,RGB);
+  //  design = createImage(6114,5150,RGB);
 
   rules = new ShiftRegister(qty_neighbor_combinations);
-  for(int i = 0 ; i < rules.data.length ; i++){
-
-    if (initial_rule.charAt(rules.data.length-1-i) == 48){
+  for (int i = 0; i < rules.data.length; i++) {
+    if (initial_rule.charAt(rules.data.length-1-i) == 48) {
       rules.data[i] = false;
-    } else if (initial_rule.charAt(rules.data.length-1-i) == 49){
+    } else if (initial_rule.charAt(rules.data.length-1-i) == 49) {
       rules.data[i] = true;
     }
   }
- 
+
   row = new boolean[design.width];
   register = new ShiftRegister(design.width);
   register.randomize();
-  noLoop();
+  generatePalette(1);
+  register.reset();
+  shiftRegisterToRow();
+  for(int i = 0 ; i < design.height; i++){
+    updateDesign(scroll);
+  }
+  
+//  noLoop();
 }
 
 void draw() {
-  updateDesign();
-//  thePath = "output/CA_6-2_003/CA_" + qty_neighbors + "-" + qty_colors + "_rule-" + set + "_shift-" + shift + "-preview";
-//  saveData(thePath);
-  image(design, 0, 0);
+  updateDesign(scroll);
+  noSmooth();
+  image(design, 0, 0, width, height);
+  saveFrame("output/CA_BW_001/CA_BW_001-####.PNG");
+  if(frameCount >= 5000){
+    exit();
+  }
 }
 
-void incrementRule(){
+void generatePalette(int mode) {
+  colors = new color[qty_neighbor_combinations];
+  switch(mode) {
+  
+    case 0:
+    
+    color colorA = color(random(256), random(256), random(256));
+    color colorB = color(random(256), random(256), random(256));
+    for (int i = 0; i < colors.length; i++) {
+      colors[i] = lerpColor(colorA, colorB, float(i)/float(colors.length-1));
+    }
+    break;
+  case 1:
+    for (int i = 0; i < colors.length; i++) {
+      colors[i] = color(random(256), random(256), random(256));
+    }
+
+    break;
+  }
+}
+
+void incrementRule() {
   Counter rules_copy = new Counter(rules.data.length, rules.data);
   rules_copy.inc();
-  for(int i = 0 ; i < rules.data.length ; i++){
+  for (int i = 0; i < rules.data.length; i++) {
     rules.data[i] = rules_copy.register[i].state;
   }
 }
 
-void decrementRule(){
+void decrementRule() {
   Counter rules_copy = new Counter(rules.data.length, rules.data);
   rules_copy.dec();
-  for(int i = 0 ; i < rules.data.length ; i++){
+  for (int i = 0; i < rules.data.length; i++) {
     rules.data[i] = rules_copy.register[i].state;
   }
 }
 
-void invertRules(){
-  for(int i = 0 ; i < rules.data.length ; i++){
+void invertRules() {
+  for (int i = 0; i < rules.data.length; i++) {
     rules.data[i] = !rules.data[i];
   }
 }
 
-void reverseRules(){
+void reverseRules() {
   boolean[] buffer = new boolean[rules.data.length];
-  for(int i = 0 ; i < rules.data.length ; i++){
+  for (int i = 0; i < rules.data.length; i++) {
     buffer[i] = rules.data[i];
   }
-  for(int i = 0 ; i < rules.data.length ; i++){
+  for (int i = 0; i < rules.data.length; i++) {
     rules.data[i] = buffer[rules.data.length - 1 - i];
   }
 }
 
-String rule(){
+String rule() {
   String _theRule = new String();
-  for(int i = rules.data.length-1 ; i >= 0; i--){
+  for (int i = rules.data.length-1; i >= 0; i--) {
     _theRule += int(rules.data[i]);
   }
   return _theRule;
 }
 
-void updateDesign() {
-  design.loadPixels();
-  shiftRegisterToRow();
-  for (int i = 0; i < design.height; i++) {
-    drawRow(i);
+void updateDesign(boolean scroll) {
+  if (!scroll) {
+    design.loadPixels();
+    shiftRegisterToRow();
+    for (int i = 0; i < design.height; i++) {
+      drawRow(i);
+      applyRules(countNeighbors());
+    }
+    design.updatePixels();
+    println(rule());
+  } else {
+    design.loadPixels();
+    shiftUp();
     applyRules(countNeighbors());
+    drawRow(design.height-1);
+    design.updatePixels();
   }
-  design.updatePixels();
-  println(rule());
 }
 
 void keyReleased() {
@@ -114,19 +153,30 @@ void keyReleased() {
     jam = false;
     break;
   }
-  
 }
 
 void keyPressed() {
   switch(key) {
-    case 'd':
+  case 'v':
+    generatePalette(0);
+    break;
+  case 'b':
+    generatePalette(1);
+    break;
+  case 'd':
     invertRules();
     break;
-    case 'f':
+  case 'f':
     reverseRules();
+    break;
+  case 'x':
+    register.reset();
+    shiftRegisterToRow();
     break;
   case 'c':
     register.reset();
+    register.data[int(register.data.length/2)] = true;
+    shiftRegisterToRow();
     break;
   case 'j':
     jam = true;
@@ -145,6 +195,7 @@ void keyPressed() {
     break;
   case 'r': 
     register.randomize();
+    shiftRegisterToRow();
     break;
   case 's':
     incrementRule();
@@ -157,13 +208,9 @@ void keyPressed() {
   case 'q':
     register.shiftLeft(register.data[register.data.length-1]);
     break;
-    
-   case 'w':
+  case 'w':
     register.shiftRight(register.data[0]);
     break;
-//    case 'e':
-//    renderRow();
-//    break;
   case'-':
     shift--;
     println("shift: " + shift);
@@ -179,19 +226,19 @@ void keyPressed() {
   case 'o':
     save_file();
     break;
-    case',':
+  case',':
     rules.shiftLeft(rules.data[rules.data.length-1]);
     break;
-    case'.':
+  case'.':
     rules.shiftRight(rules.data[0]);
     break;
-    case 'z':
+  case 'z':
     rules.reset();
     break;
-    case'[':
+  case'[':
     rules.shiftLeft(rules.data[15]^rules.data[16]);
     break;
-    case']':
+  case']':
     rules.shiftRight(rules.data[1]^rules.data[0]);
     break;
   }
@@ -238,20 +285,14 @@ void drawRow(int _y) {
   int[] states = countNeighbors();
   for (int x = 0; x < design.width; x++) {
     design.pixels[_y * design.width+x] = color(255*int(row[x]));
+//    design.pixels[_y * design.width+x] = colors[states[x]];
   }
 }
 
-//void renderRow(){
-//    design.loadPixels();
-//    shiftUp();
-//    applyRules(countNeighbors());
-//    drawRow(height);
-//    design.updatePixels();
-//    image(design, 0, 0);
-//}
+
 
 void shiftUp() {
-  for (int i = 0; i < pixels.length-design.width; i++) {
+  for (int i = 0; i < design.pixels.length-design.width; i++) {
     design.pixels[i] = design.pixels[i+design.width];
   }
 }
@@ -303,13 +344,13 @@ class ShiftRegister {
       }
     }
   }
-  
-  void load(boolean[] _input){
-    for(int i = 0 ; i < data.length ; i++){
+
+  void load(boolean[] _input) {
+    for (int i = 0; i < data.length; i++) {
       data[i] = _input[i];
     }
   }
-  
+
   void shiftLeft(boolean _input) {
     for (int i = data.length-1; i > 0; i--) {
       data[i] = data[i-1];
@@ -325,14 +366,14 @@ class ShiftRegister {
   }
 
   void shiftRight(boolean _input) {
-    for (int i = 0; i < data.length-1 ; i++) {
+    for (int i = 0; i < data.length-1; i++) {
       data[i] = data[i+1];
     }
     data[data.length-1] = _input;
   }
 
   void shiftRight() {
-    for (int i = 0; i < data.length-1 ; i++) {
+    for (int i = 0; i < data.length-1; i++) {
       data[i] = data[i+1];
     }
     data[data.length-1] = false;
@@ -367,18 +408,18 @@ class Counter {
       register[i] = new FlipFlop();
     }
   }
-  
+
   Counter(int size, boolean[] _input) {
     length = size;
     register = new FlipFlop[size];
     for (int i = 0; i < register.length; i++) {
       register[i] = new FlipFlop(_input[i]);
-      if( i != 0 ) register[i].previousClock = _input[i-1];
+      if ( i != 0 ) register[i].previousClock = _input[i-1];
     }
   }
-  
-  void load(boolean[] _input){
-    for(int i = 0 ; i < _input.length ; i++){
+
+  void load(boolean[] _input) {
+    for (int i = 0; i < _input.length; i++) {
       register[i].state = _input[i];
     }
   }
@@ -389,22 +430,22 @@ class Counter {
     }
   }
 
-  void inc(){
+  void inc() {
     this.clock();
   }
-  
-  void dec(){
+
+  void dec() {
     for (int i = 0; i < register.length; i++) {
       register[i].state = !register[i].state;
-      if( i != 0 ) register[i].previousClock = register[i-1].state;
+      if ( i != 0 ) register[i].previousClock = register[i-1].state;
     }
     this.clock();
     for (int i = 0; i < register.length; i++) {
       register[i].state = !register[i].state;
-      if( i != 0 ) register[i].previousClock = register[i-1].state;
+      if ( i != 0 ) register[i].previousClock = register[i-1].state;
     }
   }
-  
+
   void clock() {
     for (int i = 0; i < register.length; i++) {
       if (i == 0) {

@@ -1,8 +1,8 @@
 //cleaning up Block class
 
-float cohesion_coef = block_size*2;
-float separate_coef = block_size*2;
-float align_coef = block_size*2;
+float cohesion_coef = block_size*1;
+float separate_coef = block_size*1;
+float align_coef = block_size*1;
 
 class Block {
 
@@ -10,7 +10,7 @@ class Block {
   PVector velocity;
   PVector acceleration;
 
-  float maxspeed=1.5;
+  float maxspeed=2;
   float maxforce=.25;
 
   float hue;
@@ -36,9 +36,9 @@ class Block {
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-    sep.mult(1.5);
-    ali.mult(1.0);
-    coh.mult(1.25);
+    sep.mult(1.75);
+    ali.mult(.75);
+    coh.mult(1.5);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ali);
