@@ -1,16 +1,17 @@
 //cleaning up Block class
-
-float cohesion_coef = block_size*1;
-float separate_coef = block_size*1;
-float align_coef = block_size*1;
+float rotational_noise = .01;
+float cohesion_coef = block_size*3;
+float separate_coef = block_size*4;
+float align_coef = block_size*2;
 
 class Block {
 
+  PVector origin;
   PVector location;
   PVector velocity;
   PVector acceleration;
 
-  float maxspeed=2;
+  float maxspeed=1;
   float maxforce=.25;
 
   float hue;
@@ -19,6 +20,7 @@ class Block {
 
   //constuctor requires args = size, and x, y coordinates
   Block(int _x, int _y) {
+    origin = new PVector(_x, _y);
     location = new PVector(_x, _y);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
@@ -27,19 +29,22 @@ class Block {
   void run( ArrayList<Block> _blocks) {
     flock(_blocks);
     update();
-    //    display();
+//    display();
   }
 
   // We accumulate a new acceleration each time based on three rules
   void flock(ArrayList<Block> blocks) {
+    PVector origin = origin();      // return to origin
     PVector sep = separate(blocks);   // Separation
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
+//    origin.mult(.0125);
     sep.mult(1.75);
     ali.mult(.75);
-    coh.mult(1.5);
+    coh.mult(1.25);
     // Add the force vectors to acceleration
+//    applyForce(origin);
     applyForce(sep);
     applyForce(ali);
     applyForce(coh);
@@ -54,9 +59,10 @@ class Block {
   void update() {  
     velocity.add(acceleration);
     velocity.limit(maxspeed);
+    velocity.rotate(random(-PI,PI) * rotational_noise);
     location.add(velocity);
     acceleration.mult(0);
-    borders();
+//    bor ders();
   }
 
   // A method that calculates and applies a steering force towards a target
@@ -79,6 +85,14 @@ class Block {
     if (location.x > width) location.x = 0;
     if (location.y > height) location.y = 0;
   }
+  
+  PVector origin(){
+    PVector force = PVector.sub(this.origin, this.location);
+    force.setMag(PVector.dist(this.origin, this.location));
+    force.limit(maxforce);
+    return force;
+  }
+
 
   // Separation
   // Method checks for nearby blocks and steers away

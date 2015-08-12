@@ -21,14 +21,14 @@ PGraphics gradient;
 boolean run = true;
 
 
-int block_size = 64;
+int block_size = 32;
 ArrayList<int[]> images = new ArrayList<int[]>();
 int mode = 1;
 PVector[] rando;
 
 
 void setup() {
-  size(1920,1080, P3D);
+  size(500, 500, P3D);
   gradient = createGradient(width, height);
   src = gradient;
 //  src = loadImage("input/Rex-Tillerson-CEO-Exxon.jpg"); //loads source image
@@ -38,23 +38,18 @@ void setup() {
   loadPixels();
   input_flock = new Flock();
   output_flock = new Flock();
-  // Add an initial set of boids into the system
-  //  for (int i = 0; i < 50; i++) {
-  //    input_flock.addBlock(new Block(int(random(width)), int(random(height))));
-  //    output_flock.addBlock(new Block(int(random(width)), int(random(height))));
-  //  }
-  //  
+    
   makeGrid(block_size);
-  //  makeRando();
+  makeRando();
 
   frameRate(30);
 }
 
 void draw() {
-  saveFrame("output/GradientHD/002/002-####.PNG");
-  if (frameCount >= 9000) {
-    exit();
-  }
+  saveFrame("output/Gradien /t/007/007-####.PNG");
+//  if (frameCount >= 449) {
+//    exit();
+//  }
   if (run) {
 //    input_flock.run(); 
     output_flock.run();  
@@ -67,10 +62,10 @@ PGraphics createGradient(int w, int h){
   PGraphics graphic = createGraphics(w, h, P3D);
   graphic.beginDraw();
   graphic.loadPixels();
-  color colorA = color(255, 255, 0);
-  color colorB = color(255, 127, 0);
-  color colorC = color(255, 255, 255);
-  color colorD = color(255, 0, 255);
+  color colorA = color(255, 255, 255);
+  color colorB = color(255, 255, 0);
+  color colorC = color(0, 0, 255);
+  color colorD = color(0, 255, 255);
   for(int y = 0 ; y < graphic.height ; y++){
     color colorL = lerpColor(colorA, colorB, float(y)/float(graphic.height-1));
     color colorR = lerpColor(colorC, colorD, float(y)/float(graphic.height-1));
@@ -88,7 +83,7 @@ void mouseReleased() {
 
 void makeRando() {
   for (int i = 0; i < input_flock.blocks.size (); i++) {
-    PVector rando = new PVector(random(-1, 1), random(-1, 1));
+    PVector rando = new PVector(random(-.5, .5), random(-.5, .5));
     rando.mult(2);
     output_flock.blocks.get(i).velocity.set(rando);
   }
@@ -177,12 +172,16 @@ void makeGrid(int _block_size) {
       output_flock.addBlock(new Block(_block_size * x, _block_size * y));
     }
   }
-  makeRando();
+//  makeRando();
 }
 
 
 
 void displacePixels(Flock _input, Flock _output) {
+  
+  PVector copy = new PVector(0, 0);
+  PVector paste = new PVector(0, 0);
+  
   //for every block in the flock
   loadPixels();
 
@@ -191,13 +190,12 @@ void displacePixels(Flock _input, Flock _output) {
   }
 
 
-  for (int i = 0; i < _input.blocks.size (); i++ ) {
+  for (int i = _input.blocks.size() - 1 ; i >= 0; i-- ) {
    
     Block input_block = _input.blocks.get(i);
     Block output_block = _output.blocks.get(i);
 
-    PVector copy = new PVector(0, 0);
-    PVector paste = new PVector(0, 0);
+    
 
     copy.set(input_block.location);
     paste.set(PVector.add(input_block.location, output_block.velocity));
@@ -213,7 +211,7 @@ void displacePixels(Flock _input, Flock _output) {
         int displacement_y = (height + int(paste.y) +_y)%(height);
         
 //        buffer.pixels[displacement_x+(width*displacement_y)]=pixels[capture_x + (capture_y * width)];
-        buffer.pixels[capture_x+(width*capture_y)]=pixels[displacement_x + (displacement_y * width)];
+        buffer.pixels[capture_x+(width*capture_y)] = pixels[displacement_x + (displacement_y * width)];
 
       }
     }
