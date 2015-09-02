@@ -61,10 +61,10 @@ void draw() {
   updateDesign(scroll);
   noSmooth();
   image(design, 0, 0, width, height);
-  saveFrame("output/CA_BW_001/CA_BW_001-####.PNG");
-  if(frameCount >= 5000){
-    exit();
-  }
+//  saveFrame("output/CA_BW_001/CA_BW_001-####.PNG");
+//  if(frameCount >= 5000){
+//    exit();
+//  }
 }
 
 void generatePalette(int mode) {
