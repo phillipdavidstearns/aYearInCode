@@ -22,7 +22,7 @@ PImage design;
 int w = 480;
 int h = 270;
 color[] colors;
-int scale = 4;
+int scale = 1;
 
 int qty_neighbor_combinations = int(pow(qty_colors, qty_neighbors));
 
@@ -31,7 +31,7 @@ ShiftRegister register;
 ShiftRegister rules;
 
 void setup() {
-  size(scale*w, scale*h);
+  size(480, 270);
   design = createImage(w, h, RGB);
   //  design = createImage(6114,5150,RGB);
 
@@ -54,12 +54,12 @@ void setup() {
     updateDesign(scroll);
   }
   
+  noSmooth();
 //  noLoop();
 }
 
 void draw() {
   updateDesign(scroll);
-  noSmooth();
   image(design, 0, 0, width, height);
 //  saveFrame("output/CA_BW_001/CA_BW_001-####.PNG");
 //  if(frameCount >= 5000){
@@ -515,4 +515,3 @@ class Counter {
     }
   }
 }
-
