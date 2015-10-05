@@ -6,7 +6,7 @@ ControlFrame addControlFrame(String theName, int theWidth, int theHeight) {
   f.setTitle(theName);
   f.setSize(p.w, p.h);
   f.setLocation(100, 100);
-  f.setResizable(true);
+  f.setResizable(false);
   f.setVisible(true);
   return p;
 }
@@ -15,14 +15,15 @@ ControlFrame addControlFrame(String theName, int theWidth, int theHeight) {
 // are creating a new processing applet inside a
 // new frame with a controlP5 object loaded
 public class ControlFrame extends PApplet {
-
+  ControlP5 cp5;
+  Object parent;
   int w, h;
 
   public void setup() {
-    size(w, h);
+    size(10, 10);
     frameRate(30);
-
     cp5 = new ControlP5(this);
+    this.setSize(this.w, this.h);
 
     // controls for skipping bits 
     cp5.addSlider("bit_offset")
@@ -65,14 +66,14 @@ public class ControlFrame extends PApplet {
             ;
     //specify how many lines to skip  
     cp5.addNumberbox("line_multiplier")
-      .plugTo(parent, "line_multiplier")
-        .setPosition(295, 140)
-          .setSize(20, 20)
-            .setRange(-100, 100)
-              .setValue(1)
-                .setDirection(0)
-                  .setLabel("ln*")
-                    ;
+      //.plugTo(parent, "line_multiplier")
+      .setPosition(295, 140)
+        .setSize(20, 20)
+          .setRange(-100, 100)
+            .setValue(1)
+              .setDirection(0)
+                .setLabel("ln*")
+                  ;
 
     // exits program       
     cp5.addBang("quit")
@@ -119,20 +120,20 @@ public class ControlFrame extends PApplet {
             .setValue(1)
               .setNumberOfTickMarks(9)
                 ; 
-                
-     cp5.addSlider("depth")
+
+    cp5.addSlider("depth")
       .setPosition(400, 45)
         .setSize(50, 20)
           .setRange(0, 8)
             .setValue(1)
               .setNumberOfTickMarks(9)
                 ;
-                
+
     cp5.addToggle("mode")
       .setPosition(400, 10)
         .setSize(20, 20)
-           .setLabel("GRAY")
-              ;
+          .setLabel("GRAY")
+            ;
 
     cp5.addToggle("R_INV_PRE")
       .setPosition(10+(0*30), 75)
@@ -175,8 +176,8 @@ public class ControlFrame extends PApplet {
           .plugTo(parent, "blue_invert")
             .setLabel("!B")
               ;
-              
-     cp5.addToggle("INV")
+
+    cp5.addToggle("INV")
       .setPosition(430, 10)
         .setSize(20, 20)
           .plugTo(parent, "invert")
@@ -230,27 +231,39 @@ public class ControlFrame extends PApplet {
   public void draw() {
     background(25);
   }
-  
-  void keyPressed(){
-//    println(keyCode);
-    if(keyCode == 38){
-      line_inc(screen_height);
-    } else if(keyCode == 40){
-      line_dec(screen_height);
+
+  void keyPressed() {
+    //    println(keyCode);
+    switch(keyCode) {
+    case 38:
+      frame_inc(screen_height-1);
+      break;
+    case 40:
+      frame_dec(screen_height-1);
+      break;
+      case 37:
+      cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()-1);
+      ;
+      break;
+    case 39:
+    cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()+1);
+      ;
+      break;
     }
   }
+
 
   public void open_file() {
     selectInput("Select a file to process:", "inputSelection");
   }
-  
+
   void inputSelection(File input) {
     if (input == null) {
       println("Window was closed or the user hit cancel.");
     } else {
       println("User selected " + input.getAbsolutePath());
       loadData(input.getAbsolutePath());
-      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
 
@@ -258,7 +271,7 @@ public class ControlFrame extends PApplet {
   public void save_file() {
     selectOutput("Select a file to process:", "outputSelection");
   }
-  
+
   void outputSelection(File output) {
     if (output == null) {
       println("Window was closed or the user hit cancel.");
@@ -268,7 +281,7 @@ public class ControlFrame extends PApplet {
     }
   }
 
-  
+
 
   public void set_window_width(String theValue) {
     if (int(theValue) != 0) {
@@ -294,38 +307,38 @@ public class ControlFrame extends PApplet {
   public void chan1_depth(int value) {
     chan1_depth = value;
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-    if(pixel_depth != 0){
-      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
 
   public void chan2_depth(int value) {
     chan2_depth = value;
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-    if(pixel_depth != 0){
-      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
 
   public void chan3_depth(int value) {
     chan3_depth = value;
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-    if(pixel_depth != 0){
-      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
-  
-  public void mode(int value){
+
+  public void mode(int value) {
     mode = value;
   }
-  
+
   public void depth(int value) {
     depth = value;
-    if(mode == 1){
+    if (mode == 1) {
       pixel_depth = chan1_depth + chan2_depth + chan3_depth;
     }
-    if(pixel_depth != 0){
-      cp5.get(Slider.class,"pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
   }
 
@@ -352,26 +365,23 @@ public class ControlFrame extends PApplet {
       cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-1);
     }
   }
-  
+
   public void line_inc() {
-    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*line_multiplier));
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*cp5.getController("line_multiplier").getValue()));
   }
-  
-  public void line_inc(int _lines) {
+
+  public void frame_inc(int _lines) {
     cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*_lines));
   }
 
   public void line_dec() {
-    if (pixel_offset-(screen_width*line_multiplier) >= 0) {
-      cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*line_multiplier));
-    }
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*cp5.getController("line_multiplier").getValue()));
   }
-  
-  public void line_dec(int _lines) {
-    if (pixel_offset-(screen_width*_lines) >= 0) {
-      cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*_lines));
-    }
+
+  public void frame_dec(int _lines) {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*_lines));
   }
+
 
   public ControlFrame(Object theParent, int theWidth, int theHeight) {
     parent = theParent;
@@ -382,8 +392,5 @@ public class ControlFrame extends PApplet {
   public ControlP5 control() {
     return cp5;
   }
-
-  ControlP5 cp5;
-  Object parent;
 }
 

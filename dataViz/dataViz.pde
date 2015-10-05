@@ -29,8 +29,8 @@ String output_path = "output/test/";
 String output_filename = "test";
 String output_ext = ".PNG";
 
-int bit_offset=0; // skips bits 
-int pixel_offset=0; // skips pixels
+int bit_offset = 0; // skips bits 
+int pixel_offset = 0; // skips pixels
 
 // sets number of bits to be packed into color channel values
 int depth, chan1_depth, chan2_depth, chan3_depth, pixel_depth, swap_mode;
@@ -49,22 +49,25 @@ int screen_width = 384;
 int screen_height = 512;
 
 void setup(){
-  setScreenSize(screen_width, screen_height);
+  size(10,10);
   if (frame != null) {
     frame.setResizable(true);
   }
+  setScreenSize(screen_width, screen_height);
   
   loadData(input_path + input_filename + input_ext);
   
-  cp5 = new ControlP5(this); 
+  cp5 = new ControlP5(this);
+  cf = addControlFrame("GUI", 500 ,300);
   
+ 
   // by calling function addControlFrame() a
   // new frame is created and an instance of class
   // ControlFrame is instanziated.
-  cf = addControlFrame("GUI", 500 ,300);
   
   // add Controllers to the 'extra' Frame inside 
   // the ControlFrame class setup() method below.
+
 }
 
 void initializeDepth(int depth1, int depth2, int depth3){
@@ -85,25 +88,8 @@ void loadData(String thePath){
 }
 
 void saveData(String thePath){
-  saveFrame(thePath+".TIF");
-//  PImage output = createImage(width, height, RGB);
-//  for(int i = 0 ; i < output.pixels.length ; i++){
-//    output.pixels[i] = pixels[i];
-//  }
-//  output.save(thePath+".TIF");
+  saveFrame(thePath+".PNG");
 }
-
-public int sketchWidth() {
-    return displayWidth;
-  }
-
-  public int sketchHeight() {
-    return displayHeight;
-  }
-
-  public String sketchRenderer() {
-    return P2D; 
-  }
 
 void setScreenSize(int _width, int _height){
   frame.setSize(_width, _height+22);
