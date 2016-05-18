@@ -1,7 +1,12 @@
+//'o' open dialog
+//'c' clean sequence - this removes any characters that are not ATCG or N - note that you must manually remove any non genomic info
+//'l' scales the sequence to values between 0 and 255.
+//'s' saves output as raw bytes
+
 byte[] input;
 byte[] output;
 String path;
-int start_codon = -720;
+int start_codon = 0;
 int scroll_speed = 3;
 PImage frame;
 int counter = 0;
@@ -50,9 +55,9 @@ void keyPressed() {
   case 'r':
     renderSequence(frame, output, start_codon);
     break;
-  case 'q':
-    run = !run;
-    break;
+//  case 'q':
+//    run = !run;
+//    break;
   }
 }
 
@@ -118,7 +123,7 @@ void levelSequence(byte[] _sequence) {
   if (_sequence == null) {
     println("sequence has not been cleaned. press 'c' to clean.");
   } else {
-    byte[] temp = new byte[_sequence.length];
+//    byte[] temp = new byte[_sequence.length];
     println("leveling sequence...");
     for (int i = 0; i < _sequence.length; i++) {
       switch(_sequence[i]) {

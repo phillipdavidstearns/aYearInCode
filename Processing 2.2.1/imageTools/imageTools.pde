@@ -117,7 +117,7 @@ void setup() {
   buffer = createImage(screen_width, screen_height, RGB);
   output = createImage(screen_width, screen_height, RGB);
   preview = createImage(screen_width, screen_height, RGB);
-  loadData("utah.jpg");
+  loadData("facebook-1080p-grey.jpg");
   lfos = new LFO[6];
   for(int i = 0 ; i < lfos.length ; i++){
   lfos[i] = new LFO();

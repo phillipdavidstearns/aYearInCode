@@ -49,8 +49,8 @@ float velocity_mult = 1;
 boolean move = false;
 
 void setup() {
-  size(1920, 1080, P3D);
-  frame.setSize(1920, 1080);
+  size(1280, 720, P3D);
+  frame.setSize(1280, 720);
   frame.setLocation(0, 0);
   noCursor();
   generatePoints(num_points);  
@@ -120,7 +120,7 @@ void draw() {
     createSkeleton();
     fill((pow(sin(.35*frameCount/(2*PI)), 2)*256 + offset_skeleton)%256, 100, 255);
     stroke(0);
-    strokeWeight(1);
+    strokeWeight(0);
     //  skeleton.plot(1*pow(sin(.0135*frameCount),2), 1*pow(cos(.035*frameCount),2));
     skeleton.plot(1, 0);
   }
@@ -134,7 +134,7 @@ void draw() {
 
   generateFrame(frameBuffer);
   if(save){
-    saveFrame("output/001/001_######.PNG");
+    saveFrame("output/001/001_######.JPG");
   }
 }
 
@@ -153,7 +153,7 @@ void textureMap() {
   noSmooth();
   for (int i = 0; i <  points.length; i+=4) {
     stroke(0);
-    strokeWeight(1);
+    strokeWeight(0);
     textureMode(IMAGE);
     beginShape();
     //    texture(gradient);

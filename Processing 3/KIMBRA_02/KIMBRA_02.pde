@@ -25,6 +25,7 @@ boolean dots = true;
 boolean update = false;
 boolean clearBackground = true;
 boolean oscillate = true;
+boolean save = false;
 
 float rate = 0;
 
@@ -41,8 +42,8 @@ float bond = edge_length/2;
 
 void setup() {
 
-  size(displayWidth, displayHeight, P3D);
-  surface.setSize(displayWidth, displayHeight);
+  size(1280, 720, P3D);
+  surface.setSize(1280, 720);
   surface.setLocation(0, 0);
   noCursor();
   noSmooth();
@@ -160,6 +161,9 @@ void keyPressed() {
   case 'p':
     zoom = !zoom;
     break;
+  case 's':
+    save=!save;
+    break;
   case 'n':
     network = !network;
     break;
@@ -266,6 +270,11 @@ void draw() {
   if (network) {
     renderNetwork(edge_length);
   }
+  
+  if(save){
+    saveFrame("output/001/#########.JPG");
+  }
+  
 }
 
 void renderLines(int _index) {
