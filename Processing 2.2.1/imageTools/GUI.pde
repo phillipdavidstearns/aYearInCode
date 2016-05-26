@@ -76,7 +76,7 @@ public class ControlFrame extends PApplet {
 
 
     cp5.addToggle("rand")
-      .setPosition(5, 30)
+      .setPosition(5, 45)
         .setSize(20, 20)
           .setLabel("RAND")
             .plugTo(parent, "rand")
@@ -84,12 +84,24 @@ public class ControlFrame extends PApplet {
     ;
 
     cp5.addToggle("automate")
-      .setPosition(30, 30)
+      .setPosition(30, 45)
         .setSize(20, 20)
           .setLabel("AUTO")
             .plugTo(parent, "automate")
               .setValue(false);
     ;
+
+    cp5.addRadioButton("sort_by")
+      .setPosition(55, 45)
+        .setSize(20, 20)
+          .setItemsPerRow(4)
+            .setSpacingColumn(25)
+              .addItem("val", 0)
+                .addItem("h", 1)
+                  .addItem("s", 2)
+                    .addItem("b", 3)
+                      .activate(0)
+                        ;
 
     cp5.addToggle("sort_x")
       .setPosition(625, 45)
@@ -108,7 +120,7 @@ public class ControlFrame extends PApplet {
                 ;
 
     cp5.addToggle("sort_diagonal_a")
-      .setPosition(625, 20)
+      .setPosition(625, 5)
         .setSize(20, 20)
           .setLabel("A")
             .plugTo(parent, "diagonal_a")
@@ -116,9 +128,9 @@ public class ControlFrame extends PApplet {
     ;
 
     cp5.addToggle("sort_diagonal_b")
-      .setPosition(675, 20)
+      .setPosition(675, 5)
         .setSize(20, 20)
-          .setLabel("Y")
+          .setLabel("B")
             .plugTo(parent, "diagonal_b")
               .setValue(false)
                 ;
@@ -316,17 +328,6 @@ public class ControlFrame extends PApplet {
             .setLabel("b thd -")
               .plugTo(parent, "b_neg")
                 ;
-    cp5.addRadioButton("sort_by")
-      .setPosition(55, 30)
-        .setSize(20, 20)
-          .setItemsPerRow(4)
-            .setSpacingColumn(5)
-              .addItem("val", 0)
-                .addItem("h", 1)
-                  .addItem("s", 2)
-                    .addItem("b", 3)
-                      .activate(0)
-                        ;
 
     // automation increments                  
     cp5.addSlider("r_pos_inc")
