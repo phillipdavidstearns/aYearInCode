@@ -11,8 +11,8 @@ class Block {
   PVector velocity;
   PVector acceleration;
 
-  float maxspeed=1;
-  float maxforce=.25;
+  float maxspeed=3;
+  float maxforce=1;
 
   float hue;
   float saturation;
@@ -29,7 +29,7 @@ class Block {
   void run( ArrayList<Block> _blocks) {
     flock(_blocks);
     update();
-//    display();
+    //display();
   }
 
   // We accumulate a new acceleration each time based on three rules
@@ -44,7 +44,7 @@ class Block {
     ali.mult(.75);
     coh.mult(1.25);
     // Add the force vectors to acceleration
-//    applyForce(origin);
+    //applyForce(origin);
     applyForce(sep);
     applyForce(ali);
     applyForce(coh);
@@ -62,7 +62,8 @@ class Block {
     velocity.rotate(random(-PI,PI) * rotational_noise);
     location.add(velocity);
     acceleration.mult(0);
-//    bor ders();
+    borders();
+   
   }
 
   // A method that calculates and applies a steering force towards a target
@@ -80,10 +81,8 @@ class Block {
 
   // Wraparound
   void borders() {
-    if (location.x < 0) location.x = width - 1;
-    if (location.y < 0) location.y = height - 1;
-    if (location.x > width) location.x = 0;
-    if (location.y > height) location.y = 0;
+    location.x = width + location.x % width;
+    location.y = height + location.y % height;
   }
   
   PVector origin(){
@@ -186,4 +185,3 @@ class Block {
     rect(location.x, location.y, block_size, block_size);
   }
 }
-

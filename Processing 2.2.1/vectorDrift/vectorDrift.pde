@@ -28,17 +28,15 @@ PVector[] rando;
 
 
 void setup() {
-  size(500, 500, P3D);
+  size(1080, 1080, P2D);
   gradient = createGradient(width, height);
   src = gradient;
-//  src = loadImage("input/Rex-Tillerson-CEO-Exxon.jpg"); //loads source image
-// size(src.width, src.height); //set window size to source image dimensions 
   image(src, 0, 0); //draw source image
   buffer = createImage(width, height, RGB);
   loadPixels();
   input_flock = new Flock();
   output_flock = new Flock();
-    
+
   makeGrid(block_size);
   makeRando();
 
@@ -46,30 +44,30 @@ void setup() {
 }
 
 void draw() {
-  saveFrame("output/Gradien /t/007/007-####.PNG");
-//  if (frameCount >= 449) {
-//    exit();
-//  }
+  //saveFrame("output/Gradien /t/007/007-####.PNG");
+  //if (frameCount >= 449) {
+  //  exit();
+  //}
   if (run) {
-//    input_flock.run(); 
+    input_flock.run(); 
     output_flock.run();  
     displacePixels(output_flock, output_flock);
     image(buffer, 0, 0);
   }
 }
 
-PGraphics createGradient(int w, int h){
-  PGraphics graphic = createGraphics(w, h, P3D);
+PGraphics createGradient(int w, int h) {
+  PGraphics graphic = createGraphics(w, h, P2D);
   graphic.beginDraw();
   graphic.loadPixels();
   color colorA = color(255, 255, 255);
   color colorB = color(255, 255, 0);
   color colorC = color(0, 0, 255);
   color colorD = color(0, 255, 255);
-  for(int y = 0 ; y < graphic.height ; y++){
+  for (int y = 0; y < graphic.height; y++) {
     color colorL = lerpColor(colorA, colorB, float(y)/float(graphic.height-1));
     color colorR = lerpColor(colorC, colorD, float(y)/float(graphic.height-1));
-    for(int x = 0 ; x < graphic.width ; x++ ){
+    for (int x = 0; x < graphic.width; x++ ) {
       graphic.pixels[y*graphic.width+x] = lerpColor(colorL, colorR, float(x)/float(graphic.width-1));
     }
   }
@@ -155,11 +153,6 @@ void outputSelection(File output) {
 
 void saveData(String thePath) {
   saveFrame(thePath+".PNG");
-  //  PImage output = createImage(width, height, RGB);
-  //  for(int i = 0 ; i < output.pixels.length ; i++){
-  //    output.pixels[i] = pixels[i];
-  //  }
-  //  output.save(thePath+".TIF");
 }  
 
 void makeGrid(int _block_size) {
@@ -172,16 +165,16 @@ void makeGrid(int _block_size) {
       output_flock.addBlock(new Block(_block_size * x, _block_size * y));
     }
   }
-//  makeRando();
+  //  makeRando();
 }
 
 
 
 void displacePixels(Flock _input, Flock _output) {
-  
+
   PVector copy = new PVector(0, 0);
   PVector paste = new PVector(0, 0);
-  
+
   //for every block in the flock
   loadPixels();
 
@@ -190,12 +183,12 @@ void displacePixels(Flock _input, Flock _output) {
   }
 
 
-  for (int i = _input.blocks.size() - 1 ; i >= 0; i-- ) {
-   
+  for (int i = _input.blocks.size() - 1; i >= 0; i-- ) {
+
     Block input_block = _input.blocks.get(i);
     Block output_block = _output.blocks.get(i);
 
-    
+
 
     copy.set(input_block.location);
     paste.set(PVector.add(input_block.location, output_block.velocity));
@@ -209,10 +202,9 @@ void displacePixels(Flock _input, Flock _output) {
         int capture_y = (height + int(copy.y) + _y)%(height);
         int displacement_x = (width + int(paste.x) +_x)%(width);
         int displacement_y = (height + int(paste.y) +_y)%(height);
-        
-//        buffer.pixels[displacement_x+(width*displacement_y)]=pixels[capture_x + (capture_y * width)];
-        buffer.pixels[capture_x+(width*capture_y)] = pixels[displacement_x + (displacement_y * width)];
 
+        buffer.pixels[displacement_x+(width*displacement_y)]=pixels[capture_x + (capture_y * width)];
+        //buffer.pixels[capture_x+(width*capture_y)] = pixels[displacement_x + (displacement_y * width)];
       }
     }
     buffer.updatePixels();
@@ -220,8 +212,3 @@ void displacePixels(Flock _input, Flock _output) {
 
   updatePixels();
 }
-
-
-
-
-
