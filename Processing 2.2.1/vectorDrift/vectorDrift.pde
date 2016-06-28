@@ -89,12 +89,11 @@ void makeRando() {
 
 void keyPressed() {
 
-  if (keyCode == 32) {
-    run = !run;
-  }
-
   char k = key;
-  switch(k) {
+  switch(key) {
+    case ' ':
+    run = !run;
+    break;
   case'q':
     mode = 0;
     break;
@@ -107,7 +106,7 @@ void keyPressed() {
   case'r':
     mode = 3;
     break;
-  case 't':
+  case 't': //reset
     image(src, 0, 0);
     loadPixels();
     break;
@@ -165,7 +164,6 @@ void makeGrid(int _block_size) {
       output_flock.addBlock(new Block(_block_size * x, _block_size * y));
     }
   }
-  //  makeRando();
 }
 
 
@@ -178,9 +176,9 @@ void displacePixels(Flock _input, Flock _output) {
   //for every block in the flock
   loadPixels();
 
-  for (int i = 0; i < pixels.length; i++) {
+   for(int i = 0; i < pixels.length; i++){
     buffer.pixels[i]=pixels[i];
-  }
+   }
 
 
   for (int i = _input.blocks.size() - 1; i >= 0; i-- ) {
@@ -191,7 +189,7 @@ void displacePixels(Flock _input, Flock _output) {
 
 
     copy.set(input_block.location);
-    paste.set(PVector.add(input_block.location, output_block.velocity));
+    paste.set(PVector.add(copy, output_block.velocity));
 
     int _width = block_size;
     int _height = block_size;

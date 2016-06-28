@@ -14,7 +14,7 @@ String outputPath;
 int displaySource = 1; //0 = frame, 1 = indexMatrix
 int indexMode = 2; // 0 = saw, 1 = tri, 2 = sine
 float frequencyScale = .25;
-float phaseScale = .025;
+float phaseScale = .05;
 float scanRange = 255;
 
 void setup() {
