@@ -28,7 +28,9 @@ PVector[] rando;
 
 
 void setup() {
-  size(1080, 1080, P2D);
+  size(1000, 1000, P2D);
+  //surface.setResizable(true);
+
   gradient = createGradient(width, height);
   src = gradient;
   image(src, 0, 0); //draw source image
@@ -50,8 +52,8 @@ void draw() {
   //}
   if (run) {
     input_flock.run(); 
-    output_flock.run();  
-    displacePixels(output_flock, output_flock);
+    //output_flock.run();  
+    displacePixels(input_flock, input_flock);
     image(buffer, 0, 0);
   }
 }
@@ -91,7 +93,7 @@ void keyPressed() {
 
   char k = key;
   switch(key) {
-    case ' ':
+  case ' ':
     run = !run;
     break;
   case'q':
@@ -137,22 +139,19 @@ void keyPressed() {
   case 's':
     selectOutput("Select a file to process:", "outputSelection");
     break;
+  case 'S':
+    save_sequence();
+    break;
+  case 'o':
+    open_file();
+    break;
+  case 'x':
+    save = false;
+    frameIndex=0;
   }
 }
 
 
-void outputSelection(File output) {
-  if (output == null) {
-    println("Window was closed or the user hit cancel.");
-  } else {
-    println("User selected " + output.getAbsolutePath());
-    saveData(output.getAbsolutePath());
-  }
-}
-
-void saveData(String thePath) {
-  saveFrame(thePath+".PNG");
-}  
 
 void makeGrid(int _block_size) {
   input_flock = new Flock();
@@ -176,9 +175,9 @@ void displacePixels(Flock _input, Flock _output) {
   //for every block in the flock
   loadPixels();
 
-   for(int i = 0; i < pixels.length; i++){
+  for (int i = 0; i < pixels.length; i++) {
     buffer.pixels[i]=pixels[i];
-   }
+  }
 
 
   for (int i = _input.blocks.size() - 1; i >= 0; i-- ) {

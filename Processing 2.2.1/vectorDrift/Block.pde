@@ -1,8 +1,8 @@
 //cleaning up Block class
-float rotational_noise = .01;
+float rotational_noise = .25;
 float cohesion_coef = block_size*3;
 float separate_coef = block_size*4;
-float align_coef = block_size*2;
+float align_coef = block_size*1;
 
 class Block {
 
@@ -39,12 +39,12 @@ class Block {
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-//    origin.mult(.0125);
-    sep.mult(1.75);
-    ali.mult(.75);
+    origin.mult(.25);
+    sep.mult(1.25);
+    ali.mult(.25);
     coh.mult(1.25);
     // Add the force vectors to acceleration
-    //applyForce(origin);
+    applyForce(origin);
     applyForce(sep);
     applyForce(ali);
     applyForce(coh);
