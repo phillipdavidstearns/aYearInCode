@@ -1,5 +1,4 @@
-PImage[] sequence;
-PImage indexMatrix;
+PImage[] sequence, displacement;
 int[] displacementMatrix;
 PImage frame;
 boolean play;
@@ -9,28 +8,35 @@ boolean interpolate;
 boolean animateMatrix;
 boolean loaded;
 File[] files;
-int frameIndex;
+int frameIndex, frameNumber;
 String outputPath;
 int displaySource = 1; //0 = frame, 1 = indexMatrix
 int indexMode = 2; // 0 = saw, 1 = tri, 2 = sine
 float frequencyScale = .25;
 float phaseScale = .05;
-float scanRange = 255;
+float scanRange = 5; //time in seconds
+float fps = 30;
+float mapDepth = pow(2,8); //8bit or 16bit
+float frameDepth = 0;
+int mapIndex=0;
 
 void setup() {
   size(720, 720);
   surface.setResizable(true);
-  
+  initializeVariables();
+}
+
+void initializeVariables(){
+  frameDepth = (scanRange*fps)/mapDepth;
   play = false;
   animate = false;
   save = false;
   interpolate=false;
   animateMatrix= false;
   frameIndex = 0;
+  frameNumber = 0;
   loaded=false;
-  
-  frameRate(30);
-  
+  frameRate(fps);
 }
 
 void draw() {
@@ -39,23 +45,20 @@ void draw() {
     
     if(animateMatrix){
       updateIndex();
+      mapIndex++;
+    }
+    
+    if (play){
+    frameIndex++;
     }
     
     mapIndexSequence();
-    
-    switch(displaySource) {
-    case 0:
-      image(frame, 0, 0);
-      break;
-    case 1:
-      image(indexMatrix, 0, 0);
-      break;
-    }
+    image(frame, 0, 0);
   }
   
   if(save){
-    saveFrame(outputPath+"_"+frameIndex+".png");
-    frameIndex++;
+    saveFrame(outputPath+"_"+frameNumber+".png");
+    frameNumber++;
   }
 }
 
@@ -74,7 +77,7 @@ void keyPressed() {
     break;
     case 'x':
     save = false;
-    frameIndex=0;
+    frameNumber=0;
     break;
     case ' ':
     play = !play;
@@ -103,50 +106,33 @@ void updateIndex() {
     for (int x = 0; x < frame.width; x++) {
       switch(indexMode) {
       case 0:
-        displacementMatrix[y*indexMatrix.width+x] = int(pow(2,16)*(float(y)/height)); //linear
+        displacementMatrix[y*frame.width+x] = int(mapDepth*(float(y)/height)); //linear
         break;
       case 1:
-        displacementMatrix[y*indexMatrix.width+x] = int(pow(2,16)*(1-(float(y)/height))); //reverse
+        displacementMatrix[y*frame.width+x] = int(mapDepth*(1-(float(y)/height))); //reverse
         break;
         case 2:
-        displacementMatrix[y*indexMatrix.width+x] = int(pow(2,16)*(.5 * sin((frequencyScale*2*PI*float(y)/indexMatrix.height + phaseScale*frameCount))+.5)); //linear
+        displacementMatrix[y*frame.width+x] = int(mapDepth*(.5 * sin((frequencyScale*2*PI*float(y)/frame.height + phaseScale*mapIndex))+.5)); //linear
         break;
         case 3:
-        displacementMatrix[y*indexMatrix.width+x] = int(pow(2,16)*(.5 * sin((frequencyScale*2*PI*float(x)/indexMatrix.height + phaseScale*frameCount))+.5)); //linear
+        displacementMatrix[y*frame.width+x] = int(mapDepth*(.5 * sin((frequencyScale*2*PI*float(x)/frame.height + phaseScale*mapIndex))+.5)); //linear
         break;
         case 4:
-        displacementMatrix[y*indexMatrix.width+x] = int(pow(2,16)*(.5 * sin((frequencyScale*2*PI*float(x)/indexMatrix.height + phaseScale*frameCount))+.5)*(.5 * sin((frequencyScale*2*PI*float(y)/indexMatrix.height + phaseScale*frameCount))+.5)); //linear
+        displacementMatrix[y*frame.width+x] = int(mapDepth*(.5 * sin((frequencyScale*2*PI*float(x)/frame.height + phaseScale*mapIndex))+.5)*(.5 * sin((frequencyScale*2*PI*float(y)/frame.height + phaseScale*mapIndex))+.5)); //linear
         break;
       }
     }
   }
-  
-  //indexMatrix.loadPixels();
-
-  //for (int y = 0; y < indexMatrix.height; y++) {
-  //  for (int x = 0; x < indexMatrix.width; x++) {
-  //        indexMatrix.pixels[y*indexMatrix.width+x] = color(255*float(displacementMatrix[y*indexMatrix.width+x])/pow(2,16));
-  //  }
-  //}
-  //indexMatrix.updatePixels();
 }
 
 void mapIndexSequence() {
   frame.loadPixels();
-  for (int i = 0; i < indexMatrix.pixels.length; i ++) {
+  for (int i = 0; i < displacementMatrix.length; i ++) {
     int theFrame;
     
-    if(!animate){
-    theFrame = int((float(displacementMatrix[i])/pow(2,16) * scanRange))%sequence.length;
-    } else{
-    theFrame = (frameCount+int((float(displacementMatrix[i])/pow(2,16)) * scanRange))%sequence.length;
-    }
+    theFrame = (frameIndex+int(float(displacementMatrix[i])*frameDepth))%sequence.length;
     
-    if(!interpolate){  
     frame.pixels[i] = sequence[theFrame].pixels[i];
-    } else {
-    frame.pixels[i] = lerpColor(sequence[theFrame].pixels[i], sequence[(theFrame+1)%sequence.length].pixels[i], .5);
-    }
   }
   
   frame.updatePixels();
@@ -176,7 +162,22 @@ void seqSelection(File sequence) {
   } else {
     println("User selected " + sequence.getAbsolutePath());
     //parsePath();
-    load_sequence(sequence.getAbsolutePath(), 0);
+    load_sequence(sequence.getAbsolutePath());
+  }
+}
+
+public void open_displacement() {
+  selectFolder("Select a file to process:", "displacementSelection");
+}
+
+void displacementSelection(File sequence) {
+  loaded=false;
+  if (sequence == null) {
+    println("Window was closed or the user hit cancel.");
+  } else {
+    println("User selected " + sequence.getAbsolutePath());
+    //parsePath();
+    load_displacement(sequence.getAbsolutePath());
   }
 }
 
@@ -222,7 +223,7 @@ File[] listFiles(String dir) {
 void load_image(String thePath) {
 }
 
-void load_sequence(String thePath, int index) {
+void load_sequence(String thePath) {
   print("Getting files from folder... ");
   File[] files = listFiles(thePath);
   println("Done!");
@@ -234,11 +235,27 @@ void load_sequence(String thePath, int index) {
   println("Image sequence loaded!");
   println(sequence.length + " images in folder.");
   surface.setSize(sequence[0].width, sequence[0].height);
-  indexMatrix = createImage(sequence[0].width, sequence[0].height, GRAY);
   frame = createImage(sequence[0].width, sequence[0].height, RGB);
   displacementMatrix = new int[frame.pixels.length];
   loaded=true;
 }
+
+void load_displacement(String thePath) {
+  print("Getting files from folder... ");
+  File[] files = listFiles(thePath);
+  println("Done!");
+  displacement = new PImage[files.length];
+  print("Loading image sequence... ");
+  for (int i = 0; i < files.length; i++) {
+    displacement[i]=loadImage(files[i].getAbsolutePath());
+  }
+  println("Image sequence loaded!");
+  println(sequence.length + " images in folder.");
+  frame = createImage(sequence[0].width, sequence[0].height, RGB);
+  displacementMatrix = new int[frame.pixels.length];
+  loaded=true;
+}
+
 
 
 void save_image(String thePath) {
