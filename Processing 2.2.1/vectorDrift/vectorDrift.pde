@@ -11,83 +11,68 @@
 //will be paring down the Block class to make this a reality...
 //WOOT!
 
-PImage src;
-PImage buffer;
-Flock input_flock;
-Flock output_flock;
+PImage src, buffer;
+Flock flock;
 
-PGraphics gradient;
+String outputPath;
+int frameIndex;
 
 boolean run = true;
+boolean save = false;
+boolean loaded = false;
 
-
-int block_size = 32;
-ArrayList<int[]> images = new ArrayList<int[]>();
+public int block_size;
 int mode = 1;
-PVector[] rando;
 
 
 void setup() {
-  size(1000, 1000, P2D);
-  //surface.setResizable(true);
-
-  gradient = createGradient(width, height);
-  src = gradient;
-  image(src, 0, 0); //draw source image
-  buffer = createImage(width, height, RGB);
-  loadPixels();
-  input_flock = new Flock();
-  output_flock = new Flock();
-
-  makeGrid(block_size);
-  makeRando();
-
+  size(100, 100, P2D);
+  surface.setResizable(true);
+  block_size=32;
+  frameIndex=0;
   frameRate(30);
+  background(0);
+}
+
+void initializeFlock(int _block_size){
+  block_size = _block_size;
+  
+  rotational_noise = .1;
+  cohesion_coef = block_size*7;
+  separate_coef = block_size*3;
+  align_coef = block_size*1;
+  
+  makeGrid();
 }
 
 void draw() {
-  //saveFrame("output/Gradien /t/007/007-####.PNG");
-  //if (frameCount >= 449) {
-  //  exit();
-  //}
-  if (run) {
-    input_flock.run(); 
-    //output_flock.run();  
-    displacePixels(input_flock, input_flock);
-    image(buffer, 0, 0);
-  }
-}
-
-PGraphics createGradient(int w, int h) {
-  PGraphics graphic = createGraphics(w, h, P2D);
-  graphic.beginDraw();
-  graphic.loadPixels();
-  color colorA = color(255, 255, 255);
-  color colorB = color(255, 255, 0);
-  color colorC = color(0, 0, 255);
-  color colorD = color(0, 255, 255);
-  for (int y = 0; y < graphic.height; y++) {
-    color colorL = lerpColor(colorA, colorB, float(y)/float(graphic.height-1));
-    color colorR = lerpColor(colorC, colorD, float(y)/float(graphic.height-1));
-    for (int x = 0; x < graphic.width; x++ ) {
-      graphic.pixels[y*graphic.width+x] = lerpColor(colorL, colorR, float(x)/float(graphic.width-1));
+  
+  if (src !=null && loaded) {
+    if (run) {
+      flock.run();  
+      displacePixels(flock);
+      
+      
+      image(buffer, 0, 0);
+     
+      if (save) {
+        saveFrame(outputPath+nf(frameIndex, 4)+".PNG");
+        frameIndex++;
+      }
     }
   }
-  graphic.updatePixels();
-  graphic.endDraw();
-  return graphic;
 }
 
-void mouseReleased() {
+void alphaOverlay(){
+   pushMatrix();
+      translate(width/2,height/2);
+      rotate(PI*(float(frameCount)/1024));
+      imageMode(CENTER);
+      image(src, 0, 0);
+      imageMode(CORNER);
+      popMatrix();
 }
 
-void makeRando() {
-  for (int i = 0; i < input_flock.blocks.size (); i++) {
-    PVector rando = new PVector(random(-.5, .5), random(-.5, .5));
-    rando.mult(2);
-    output_flock.blocks.get(i).velocity.set(rando);
-  }
-}
 
 void keyPressed() {
 
@@ -109,36 +94,39 @@ void keyPressed() {
     mode = 3;
     break;
   case 't': //reset
-    image(src, 0, 0);
-    loadPixels();
+    displaySrc();
     break;
   case '1':
-    makeGrid(16);
+    //makeGrid(8);
+    initializeFlock(8);
     break;
   case '2':   
-    makeGrid(32);
+    //makeGrid(16);
+    initializeFlock(16);
     break;
   case '3':   
-    makeGrid(64);
+    //makeGrid(32);
+    initializeFlock(32);
     break;
   case '4':   
-    makeGrid(128);
+    //makeGrid(64);
+    initializeFlock(64);
     break;
   case '5':
-    makeGrid(256);
+    //makeGrid(128);
+    initializeFlock(128);
     break;
   case '6':   
-    makeGrid(512);
+    //makeGrid(256);
+    initializeFlock(256);
     break;
   case '7':   
-    makeGrid(1024);
+    //makeGrid(512);
     break;
   case '8':   
-    makeGrid(2048);
+    //makeGrid(1024);
     break;
-  case 's':
-    selectOutput("Select a file to process:", "outputSelection");
-    break;
+
   case 'S':
     save_sequence();
     break;
@@ -151,24 +139,23 @@ void keyPressed() {
   }
 }
 
+void displaySrc(){
+  image(src, 0, 0);
+    loadPixels();
+}
 
-
-void makeGrid(int _block_size) {
-  input_flock = new Flock();
-  output_flock = new Flock();
-  block_size=_block_size;
-  for (int x = 0; x < int (width/_block_size+1); x++) {
-    for (int y = 0; y < int (height/_block_size+1); y++) {
-      input_flock.addBlock(new Block(_block_size * x, _block_size * y));
-      output_flock.addBlock(new Block(_block_size * x, _block_size * y));
+void makeGrid() {
+  flock = new Flock();
+  for (int x = 0; x < int (width/block_size)+1; x++) {
+    for (int y = 0; y < int (height/block_size)+1; y++) {
+      flock.addBlock(new Block(block_size * x, block_size * y));
     }
   }
 }
 
 
 
-void displacePixels(Flock _input, Flock _output) {
-
+void displacePixels(Flock _input) {
   PVector copy = new PVector(0, 0);
   PVector paste = new PVector(0, 0);
 
@@ -178,34 +165,31 @@ void displacePixels(Flock _input, Flock _output) {
   for (int i = 0; i < pixels.length; i++) {
     buffer.pixels[i]=pixels[i];
   }
-
-
+  src.loadPixels();
+  buffer.loadPixels();
   for (int i = _input.blocks.size() - 1; i >= 0; i-- ) {
 
     Block input_block = _input.blocks.get(i);
-    Block output_block = _output.blocks.get(i);
 
-
-
-    copy.set(input_block.location);
-    paste.set(PVector.add(copy, output_block.velocity));
+    copy.set(input_block.origin);
+    paste.set(PVector.sub(copy, input_block.velocity));
 
     int _width = block_size;
     int _height = block_size;
 
     for (int _y = 0; _y < _width; _y++) {
       for (int _x = 0; _x < _height; _x++) {
-        int capture_x = (width + int(copy.x) + _x)%(width);
-        int capture_y = (height + int(copy.y) + _y)%(height);
-        int displacement_x = (width + int(paste.x) +_x)%(width);
-        int displacement_y = (height + int(paste.y) +_y)%(height);
+        int capture_x = int(width + copy.x + _x)%(width);
+        int capture_y = int(height + copy.y + _y)%(height);
+        int displacement_x = int(width + paste.x +_x)%(width);
+        int displacement_y = int(height + paste.y +_y)%(height);
 
         buffer.pixels[displacement_x+(width*displacement_y)]=pixels[capture_x + (capture_y * width)];
         //buffer.pixels[capture_x+(width*capture_y)] = pixels[displacement_x + (displacement_y * width)];
       }
     }
-    buffer.updatePixels();
+   
   }
-
+  buffer.updatePixels();
   updatePixels();
 }

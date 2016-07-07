@@ -31,8 +31,11 @@ void setup() {
   size(4000, 2000, P2D);
   src = loadImage("environment.png");
   image(src, 0, 0); //draw source image
+  loadPixels();
   buffer = createImage(width, height, RGB);
   makeGrid(block_size);
+  input_flock = new Flock();
+  output_flock = new Flock();
   frameRate(30);
 }
 
@@ -43,7 +46,6 @@ void draw() {
     displacePixels(input_flock, input_flock);
     image(buffer, 0, 0);
     if (save) {
-      //buffer.save(outputPath+nfs(frameNumber,4)+".PNG");
       saveFrame(outputPath+nfs(frameNumber, 4)+".PNG");
       frameNumber++;
     }

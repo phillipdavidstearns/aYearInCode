@@ -1,8 +1,7 @@
-String outputPath;
-boolean save;
-int frameIndex;
+
 
 public void open_file() {
+  loaded = false;
   selectInput("Select a file to process:", "inputSelection");
 }
 
@@ -16,7 +15,20 @@ void inputSelection(File input) {
 }
 
 void load_image(String thePath) {
+  print("loading: "+thePath+" ... ");
   src = loadImage(thePath);
+  surface.setSize(src.width, src.height);
+  buffer = createImage(src.width, src.height, ARGB);
+
+  if (src != null) {
+    initializeFlock(block_size);
+    println("Done!");
+    loaded=true;
+  } else {
+    println("Image failed to load.");
+  }
+  
+  displaySrc();
 }
 
 
@@ -50,9 +62,4 @@ void outputFolderSelection(File output) {
     save = true;
   }
   frameIndex=0;
-}
-
-void save_animation (String thePath){
-    saveFrame(thePath+"_"+frameIndex+".png");
-    frameIndex++;
 }

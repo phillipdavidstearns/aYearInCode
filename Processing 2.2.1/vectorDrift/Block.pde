@@ -1,8 +1,8 @@
 //cleaning up Block class
-float rotational_noise = .25;
-float cohesion_coef = block_size*3;
-float separate_coef = block_size*4;
-float align_coef = block_size*1;
+float rotational_noise;
+float cohesion_coef;
+float separate_coef;
+float align_coef;
 
 class Block {
 
@@ -11,8 +11,8 @@ class Block {
   PVector velocity;
   PVector acceleration;
 
-  float maxspeed=3;
-  float maxforce=1;
+  float maxspeed=5;
+  float maxforce=.5;
 
   float hue;
   float saturation;
@@ -34,17 +34,17 @@ class Block {
 
   // We accumulate a new acceleration each time based on three rules
   void flock(ArrayList<Block> blocks) {
-    PVector origin = origin();      // return to origin
+
     PVector sep = separate(blocks);   // Separation
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-    origin.mult(.25);
-    sep.mult(1.25);
+
+    sep.mult(1.5);
     ali.mult(.25);
     coh.mult(1.25);
     // Add the force vectors to acceleration
-    applyForce(origin);
+
     applyForce(sep);
     applyForce(ali);
     applyForce(coh);
@@ -59,11 +59,16 @@ class Block {
   void update() {  
     velocity.add(acceleration);
     velocity.limit(maxspeed);
-    velocity.rotate(random(-PI,PI) * rotational_noise);
+    velocity.rotate(random(-PI, PI) * rotational_noise);
     location.add(velocity);
     acceleration.mult(0);
     borders();
-   
+  }
+  
+    // Wraparound
+  void borders() {
+    location.x = (width + location.x) % width;
+    location.y = (height + location.y) % height;
   }
 
   // A method that calculates and applies a steering force towards a target
@@ -79,13 +84,9 @@ class Block {
     return steer;
   }
 
-  // Wraparound
-  void borders() {
-    location.x = width + location.x % width;
-    location.y = height + location.y % height;
-  }
-  
-  PVector origin(){
+
+
+  PVector origin() {
     PVector force = PVector.sub(this.origin, this.location);
     force.setMag(PVector.dist(this.origin, this.location));
     force.limit(maxforce);
@@ -94,14 +95,16 @@ class Block {
 
 
   // Separation
-  // Method checks for nearby blocks and steers away
+  // Method checks for n`earby blocks and steers away
   PVector separate (ArrayList<Block> blocks) {
     float desiredseparation = separate_coef;
     PVector steer = new PVector(0, 0, 0);
     int count = 0;
     // For every boid in the system, check if it's too close
     for (Block other : blocks) {
+      
       float d = PVector.dist(location, other.location);
+      
       // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
       if ((d > 0) && (d < desiredseparation)) {
         // Calculate vector pointing away from neighbor
@@ -175,10 +178,7 @@ class Block {
     }
   }
   void display() {
-    //    stroke(0);
-    //    noFill();
-    //    rect(location.x, location.y, size, size);
-    //    
+    
     stroke(0);
     strokeWeight(1);
     fill(255);
