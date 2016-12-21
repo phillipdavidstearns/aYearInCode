@@ -1,24 +1,32 @@
-PImage satins[];
-PGraphics satin_gradient;
+//PImage satins[];
+//PGraphics satin_gradient;
+
 PImage noise_gradient;
-int color_depth = 9;
-float spread = 1.75;
+int color_depth = 2;
+float spread = 1.5;
 float step = .01;
 int mode = 2;
 int buffer;
+int seed=0;
+
+int w = 765;
+int h = 765;
+
 void setup() {
   size(10, 10);
-  satins = new PImage[7];
-  for (int i = 0; i < satins.length; i++) {
-    satins[i] = loadImage("satin_8-"+(7-i)+".png");
-  }
-  noise_gradient = createImage(1024, 1024, RGB);
+  surface.setResizable(true);
+
+  //satins = new PImage[7];
+  //for (int i = 0; i < satins.length; i++) {
+  //  satins[i] = loadImage("satin_8-"+(7-i)+".png");
+  //}
   //  satin_gradient = createGraphics(noise_gradient.width*8, noise_gradient.height*8);
 
-  buffer = int(noise_gradient.height * .125);
-  size(noise_gradient.width, noise_gradient.height);
-  makeGradient(mode);
+  noise_gradient = createImage(w, h, RGB);
 
+  buffer = int(noise_gradient.height * 0.125);
+  surface.setSize(noise_gradient.width, noise_gradient.height);
+  makeGradient(mode);
   noLoop();
 }
 
@@ -30,25 +38,34 @@ void draw() {
 
 void keyPressed() {
   switch(key) {
+
+  case'.':
+    seed++;
+    redraw();
+    break;
+  case',':
+    if (seed > 0) seed--;
+    redraw();
+    break;
   case 'q':
     mode=0;
-
     redraw();
     break;
   case 'w':
     mode=1;
-
     redraw();
     break;
   case 'e':
     mode=2;
-
+    redraw();
+    break;
+  case 'r':
+    mode=3;
     redraw();
     break;
   case '-':
     spread-=step;
     if (spread < 0) spread = 0.01;
-
     redraw();
     break;
   case '=':
@@ -90,27 +107,37 @@ void keyPressed() {
   case '0':
     step = 0;
     break;
-  case 'r':
-    redraw();
-    break;
   case 's':
     saveGradient();
     break;
   }
+  println("seed: "+seed);
+  println("mode: "+mode);
   println("color depth: " + color_depth);
   println("step: "+step);
   println("spread: "+spread);
 }
 
 void saveGradient() {
-  String file = "output/"+color_depth+"_"+"gaussian_stepped_gradient_"+noise_gradient.width+"w_"+noise_gradient.height+"h_"+spread+"_spread_"+buffer+"_buffer.png";
+  String file = "output/"+color_depth+"_"+"gaussian_stepped_gradient_"+noise_gradient.width+"w_"+noise_gradient.height+"h_"+spread+"_spread_"+buffer+"_buffer_"+seed+"_seed.png";
   println("saving file: " + file);
   noise_gradient.save(file);
   println("done!");
 }
 
+void makeNoise() {
+  
+  for (int i = 0; i < noise_gradient.pixels.length; i++) {
+    if (random(1) > .5) {
+      noise_gradient.pixels[i] = color(255);
+    } else {
+      noise_gradient.pixels[i] = color(0);
+    }
+  }
+}
 
 void makeGradient(int _mode) {
+  randomSeed(seed);
   noise_gradient.loadPixels();
   switch(_mode) {
   case 0:
@@ -121,6 +148,9 @@ void makeGradient(int _mode) {
     break;
   case 2:
     gaussianGradient();
+    break;
+  case 3:
+    makeNoise();
     break;
   }
   noise_gradient.updatePixels();
@@ -207,4 +237,3 @@ float linear(float _position, float _center, float _width) {
     return 0;
   }
 }
-
