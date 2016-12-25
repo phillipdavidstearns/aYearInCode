@@ -2,15 +2,15 @@
 //PGraphics satin_gradient;
 
 PImage noise_gradient;
-int color_depth = 2;
-float spread = 1.5;
+int color_depth = 7;
+float spread = 2;
 float step = .01;
 int mode = 2;
 int buffer;
-int seed=0;
+int seed=124;
 
-int w = 765;
-int h = 765;
+int w = 2100;
+int h = 6114;
 
 void setup() {
   size(10, 10);
@@ -23,9 +23,8 @@ void setup() {
   //  satin_gradient = createGraphics(noise_gradient.width*8, noise_gradient.height*8);
 
   noise_gradient = createImage(w, h, RGB);
-
   buffer = int(noise_gradient.height * 0.125);
-  surface.setSize(noise_gradient.width, noise_gradient.height);
+  setScreenSize(noise_gradient);
   makeGradient(mode);
   noLoop();
 }
@@ -35,10 +34,17 @@ void draw() {
   image(noise_gradient, 0, 0);
 }
 
+void setScreenSize(PImage image){
+  surface.setSize(image.width, image.height);
+  redraw();
+}
 
 void keyPressed() {
   switch(key) {
-
+  case 'z':
+    setScreenSize(noise_gradient);
+    redraw();
+  break;
   case'.':
     seed++;
     redraw();
