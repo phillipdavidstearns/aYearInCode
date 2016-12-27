@@ -4,8 +4,8 @@ PImage test;
 void setup() {
   size(100, 100);
   surface.setResizable(true);
-
-
+  input = createImage(800, 600, RGB);
+  surface.setSize(input.width, input.height);
 }
 
 void draw() {
@@ -14,56 +14,103 @@ void draw() {
     changeDiagonalPixels(input);
     display(displaySource);
   }
-  
-  
 }
 
 void changeDiagonalPixels(PImage image) {
   image.loadPixels();
   for (int i = 0; i < image.width+image.height-1; i++) {
-    drawDiagonal(image, i, stepSort(getDiagonal(image, i)));
+    //drawDiagonal(image, i, stepSort(getDiagonal(image, i)));
+    drawDiagonal(image, i, getDiagonal(image, i));
   }
   image.updatePixels();
 }
 
-int[] stepSort(int[] array){
-  for(int i = 0 ; i < array.length-1 ; i++){
-    if(array[i] > array[i+1]){
-    array = swap(array, i, i+1);
+int[] stepSort(int[] array) {
+  for (int i = 0; i < array.length-1; i++) {
+    if (array[i] > array[i+1]) {
+      array = swap(array, i, i+1);
     }
   }
   return array;
 }
 
 void drawDiagonal(PImage image, int index, int[] array) {
+  int x=0;
+  int y=0;
+  int c = 0;
+  //draws pixels from lower left to upper right
+  //if (index >= 0 && index < image.height + image.width - 1) {
+  //  int x=0;
+  //  int y=0;
 
+  //  if (image.height > image.width) { // portrait images
+  //    if (index < image.width) {
+  //      x=0;
+  //      y = index;
+  //    } else if (index >= image.width && index < image.height) {
+  //      x=0;
+  //      y = index;
+  //    } else if (index >= image.height) {
+  //      x = index - image.height;
+  //      y = image.height-1;
+  //    } else {
+  //      println("drawDiagonal portrait mode: index out of bounds");
+  //    }
+  //  } else if (image.height <= image.width) { // 1:1 and landscape images
+  //    if (index < image.height) {
+  //      x=0;
+  //      y = index;
+  //    } else if (index >= image.height && index < image.width) {
+  //      x = index - (image.height-1);
+  //      y = image.height-1;
+  //    } else if (index >= image.width) {
+  //      x = index - (image.height-1);
+  //      y = image.height-1;
+  //    } else {
+  //      println("drawDiagonal 1:1 and landscape mode: index out of bounds");
+  //    }
+  //  } else {
+  //    println("error: unknown image aspect ratio");
+  //  }
+
+
+  //  for (int i = 0; i < array.length; i++) {
+  //    image.pixels[y*image.width+x] = array[i];
+  //    y--;
+  //    x++;
+  //  }
+  //} else {
+  //  println("index out of bounds");
+  //}
+
+  //draws pixels from lower right to upper left
   if (index >= 0 && index < image.height + image.width - 1) {
-    int x=0;
-    int y=0;
+    x=0;
+    y=0;
 
     if (image.height > image.width) { // portrait images
       if (index < image.width) {
-        x=0;
-        y = index;
-      } else if (index >= image.width && index < image.height) {
-        x=0;
+        x = image.width-1;
         y = index;
       } else if (index >= image.height) {
-        x = index - image.height;
+        x = (image.width - 1) - (index - image.height);
         y = image.height-1;
       } else {
         println("drawDiagonal portrait mode: index out of bounds");
       }
     } else if (image.height <= image.width) { // 1:1 and landscape images
       if (index < image.height) {
-        x=0;
+        x = image.width-1;
         y = index;
+        c = 1;
       } else if (index >= image.height && index < image.width) {
-        x = index - (image.height-1);
+        x = image.width - (index - (image.height - 1));
         y = image.height-1;
+        c = 2;
       } else if (index >= image.width) {
-        x = index - (image.height-1);
+        x = image.width-1;
         y = image.height-1;
+        c = 3;
       } else {
         println("drawDiagonal 1:1 and landscape mode: index out of bounds");
       }
@@ -71,11 +118,21 @@ void drawDiagonal(PImage image, int index, int[] array) {
       println("error: unknown image aspect ratio");
     }
 
-    
     for (int i = 0; i < array.length; i++) {
-      image.pixels[y*image.width+x] = array[i];
+      //image.pixels[y*image.width+x] = array[i];
+      switch(c) {
+      case 1:
+        image.pixels[y*image.width+x] = 0x0000FF;
+        break;
+      case 2:
+        image.pixels[y*image.width+x] = 0x00FF00;
+        break;
+      case 3:
+        image.pixels[y*image.width+x] = 0xFF0000;
+        break;
+      }
       y--;
-      x++;
+      x--;
     }
   } else {
     println("index out of bounds");
@@ -85,39 +142,92 @@ void drawDiagonal(PImage image, int index, int[] array) {
 int[] getDiagonal(PImage image, int index) {
   if (index >= 0 && index < image.height + image.width - 1) {
     int[] array;
-    int x;
-    int y;
+    int x=0;
+    int y=0;
 
+    int c = 0;
+    //----------------------------------------------------
+    //if (image.height > image. width) { // portrait images
+    //  if (index < image.width) {
+    //    x=0;
+    //    y = index;
+    //    array = new int[y+1];
+    //  } else if (index >= image.width && index < image.height) {
+    //    x=0;
+    //    y = index;
+    //    array = new int[image.width];
+    //  } else if (index >= image.height) {
+    //    x = index - image.height;
+    //    y = image.height-1;
+    //    array = new int[image.width-x];
+    //  } else {
+    //    println("portrait mode: index out of bounds");
+    //    return null;
+    //  }
+    //} else if (image.height <= image.width) { // 1:1 and landscape images
+    //  if (index < image.height) {
+    //    x=0;
+    //    y = index;
+    //    array = new int[y+1];
+    //  } else if (index >= image.height && index < image.width) {
+    //    x = index - (image.height-1);
+    //    y = image.height-1;
+    //    array = new int[image.height];
+    //  } else if (index >= image.width) {
+    //    x = index - (image.height-1);
+    //    y = image.height-1;
+    //    array = new int[image.width-x];
+    //  } else {
+    //    println("1:1 and landscape mode: index out of bounds");
+    //    return null;
+    //  }
+    //} else {
+    //  println("error: unknown image aspect ratio");
+    //  return null;
+    //}
+    //for (int i = 0; i < array.length; i++) {
+    //  array[i] = image.pixels[y*image.width+x];
+    //  y--;
+    //  x++;
+    //}
+    //-----------------------
     if (image.height > image. width) { // portrait images
       if (index < image.width) {
-        x=0;
+        x = image.width-1;
         y = index;
+        c = 1;
         array = new int[y+1];
       } else if (index >= image.width && index < image.height) {
-        x=0;
+        x= image.width-1;
         y = index;
+        c = 2;
         array = new int[image.width];
       } else if (index >= image.height) {
-        x = index - image.height;
+        x = image.width- (index - image.height);
         y = image.height-1;
+        c = 3;
         array = new int[image.width-x];
       } else {
         println("portrait mode: index out of bounds");
         return null;
       }
     } else if (image.height <= image.width) { // 1:1 and landscape images
+
       if (index < image.height) {
-        x=0;
+        x = image.width-1;
         y = index;
+        c = 1;
         array = new int[y+1];
       } else if (index >= image.height && index < image.width) {
-        x = index - (image.height-1);
+        x = image.width - (index - (image.height - 1 ));
         y = image.height-1;
+        c = 2;
         array = new int[image.height];
       } else if (index >= image.width) {
-        x = index - (image.height-1);
+        x = index-(image.width-1);
         y = image.height-1;
-        array = new int[image.width-x];
+        c = 3;
+        array = new int[image.height-x];
       } else {
         println("1:1 and landscape mode: index out of bounds");
         return null;
@@ -126,13 +236,26 @@ int[] getDiagonal(PImage image, int index) {
       println("error: unknown image aspect ratio");
       return null;
     }
-    //println("index: "+index+", x: "+ x+", y: "+y+", array.length: "+array.length);
-    
+
     for (int i = 0; i < array.length; i++) {
-      array[i] = image.pixels[y*image.width+x];
+      //array[i] = image.pixels[y*image.width+x];
+      //switch(c) {
+      //case 1:
+      //  array[i] = 0x0000FF;
+      //  break;
+      //case 2:
+      //  array[i] = 0x00FF00;
+      //  break;
+      //case 3:
+      //  array[i] = 0xFF0000;
+      //  break;
+      //}
       y--;
-      x++;
+      x--;
     }
+
+    //-----------------------
+
 
     return array;
   } else {
