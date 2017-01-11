@@ -8,7 +8,8 @@ int[] states;
 int[] rules;
 color[] colors;
 
-int ruleDepth = 2;
+int qtyAnts = 2;
+int ruleDepth = 4; // minimum rule set is 2
 
 PImage output;
 
@@ -16,9 +17,8 @@ void setup() {
   size(400, 400);
   
   output = createImage(width, height, RGB);
-  
   ant = new Ant(int(width/2), int(height/2), 0);
-  ants = new Ant[1];
+  ants = new Ant[qtyAnts];
   rules = new int[ruleDepth];
   colors = new color[ruleDepth];
 
@@ -29,19 +29,45 @@ void setup() {
     ants[i] = new Ant();
   }
 
-  states = new boolean[width*height];
+  states = new int[width*height];
 
-  loadPixels();
-  for (int i = 0; i < width*height; i++) {
-    states[i] = false; //initialize states to all false
-    pixels[i] = color(255); //initialize pixels to all white
-  }
-  updatePixels();
+  initStates();
+
 }
 
 void randomizeRules(){
   for(int i = 0 ; i < rules.length ; i++){
-    rules[i] = int(random(ruleDepth)) << 1 | int(random(0x1));
+    //rule consists of two parts: state, turn direction
+    //state is shifted left one bit, turn direction is the LSB
+    rules[i] = (int(random(ruleDepth)) << 1) ^ (int(random(2)) & 1);
+    println(binary(rules[i]));
+  }
+}
+
+void randomizeColors(){
+  for(int i = 0 ; i < colors.length ; i++){
+    colors[i] = int(random(0xFFFFFF));
+  }
+}
+
+void initStates(){
+    for (int i = 0; i < width*height; i++) {
+    states[i] = 0; //initialize states to all false 
+  }
+}
+
+
+void keyPressed(){
+  switch(key){
+  case 'r':
+    randomizeRules();
+  break;
+  case 'c':
+    randomizeColors();
+  break;
+  case 'e':
+    initStates();
+  break;
   }
 }
 
@@ -52,16 +78,9 @@ advances one square in that direction
 changes the square to another state
 */
 
-void randomizeColors(){
-  for(int i = 0 ; i < colors.length ; i++){
-    colors[i] = int(random(0xFFFFFF));
-  }
-}
-
-
 void draw() {
-  loadPixels();
-  for (int i = 0; i < 100; i++) {
+
+  for (int i = 0; i < 1000; i++) {
     for (int j = 0; j < ants.length; j++) { 
 
       int[] positions = new int[ants.length];
@@ -70,7 +89,7 @@ void draw() {
 
       positions[j] = position;
 
-      pixels[position] = color(0xFF - 255*int(ants[j].update(states)));
+      ants[j].update(states);
 
       for (int k = 0; k < j; k++) {
         if (positions[j] == positions[k]) {
@@ -78,10 +97,18 @@ void draw() {
         }
       }
 
-      if (!overlap) states[position] = rules[states[position]];
+      //if (!overlap) states[position] = (states[position] + 1) % (ruleDepth);
+      states[position] = rules[states[position]] >> 1;
+      //println(states[position]);
+      //println(rules[states[position]]>>1);
     }
   }
-  updatePixels();
+  output.loadPixels();
+  for(int i = 0 ; i < output.pixels.length ; i++ ){
+    output.pixels[i] = colors[states[i]];
+  }
+  output.updatePixels();
+  image(output, 0 , 0);
 }
 
 
@@ -103,18 +130,17 @@ class Ant {
   }
 
 
-  boolean update(boolean[] input) {
-    boolean state = input[y*width+x];
-
-    if (!state) {
+  void update(int[] _states) {
+    int state = _states[y*width+x];
+    int direction = rules[state] & 1;
+    
+    if (direction == 1) {
       orientation++;
     } else {
       orientation--;
     }
 
     orientation = (orientation + 4) % 4;
-
-    String dir = new String();
 
     switch(orientation) {
     case 0:
@@ -133,7 +159,5 @@ class Ant {
 
     x = (x + width) % width;
     y = (y + width) % width;
-
-    return !state;
   }
 } 
