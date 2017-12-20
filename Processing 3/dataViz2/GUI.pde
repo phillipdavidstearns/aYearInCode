@@ -8,7 +8,7 @@ void keyPressed() {
     frame_dec(screen_height-1);
     break;
   case 37: //LEFTARROW
-    if(bit_offset>0) bit_offset-=1;
+    if (bit_offset>0) bit_offset-=1;
     ;
     break;
   case 39: //RIGHTARROW
@@ -18,103 +18,133 @@ void keyPressed() {
   }
   /*
   Key Bindings:
-  o
-  O
-  1-6
-  q
-  w
-  e
-  a
-  s
-  d
-  z
-  UPARROW
-  DOWNARROW
-  LEFTARROW
-  RIGHTARROW
-  */
-  switch(key){
-    case 'o':
+   o
+   O
+   1-6
+   q
+   w
+   e
+   a
+   s
+   d
+   z
+   UPARROW
+   DOWNARROW
+   LEFTARROW
+   RIGHTARROW
+   */
+  switch(key) {
+  case 'o':
     open_file();
     break;
-    case 'O':
+  case 'O':
     save_file();
     break;
-    case '1':
+    case '0':
+    mode^=0x1;
+    if (mode == 0){
+     println("color mode = RGB");
+    } else if (mode == 1){
+    println("color more = Greyscale");
+    } else {
+      println("You broke the matrix.");
+    }
+    break;
+  case '1':
     swap_mode=0;
     println("channel swap mode: "+swap_mode);
     break;
-    case '2':
+  case '2':
     swap_mode=1;
     println("channel swap mode: "+swap_mode);
     break;
-    case '3':
+  case '3':
     swap_mode=2;
     println("channel swap mode: "+swap_mode);
     break;
-    case '4':
+  case '4':
     swap_mode=3;
     println("channel swap mode: "+swap_mode);
     break;
-    case '5':
+  case '5':
     swap_mode=4;
     println("channel swap mode: "+swap_mode);
     break;
-    case '6':
+  case '6':
     swap_mode=5;
     println("channel swap mode: "+swap_mode);
     break;
-    case 'q':
+  case 'q':
     red_invert=!red_invert;
     println("red_invert = "+red_invert);
     break;
-    case 'w':
+  case 'w':
     green_invert=!green_invert;
     println("green_invert = "+green_invert);
     break;
-    case 'e':
+  case 'e':
     blue_invert=!blue_invert;
     println("blue_invert = "+blue_invert);
     break;
-    case 'a':
+  case 'a':
     red_invert_pre=!red_invert_pre;
     println("red_invert_pre = "+red_invert_pre);
     break;
-    case 's':
+  case 's':
     green_invert_pre=!green_invert_pre;
     println("green_invert_pre = "+green_invert_pre);
     break;
-    case 'd':
+  case 'd':
     blue_invert_pre=!blue_invert_pre;
     println("blue_invert_pre = "+blue_invert_pre);
     break;
-    case 'z':
+  case 'z':
     invert=!invert;
     println("invert = "+invert);
     break;
-    case 'r':
+  case 'r': //incrase red channel bit depth
     if (chan1_depth < 8) set_chan1_depth(chan1_depth+1);
     println("Channel 1 Depth = "+chan1_depth);
     break;
-    case 'R':
+  case 'R': //decrease red channel bit depth
     if (chan1_depth > 0) set_chan1_depth(chan1_depth-1);
     println("Channel 1 Depth = "+chan1_depth);
     break;
-    case 'g':
+  case 'g': //increase green channel bit depth
     if (chan2_depth < 8) set_chan2_depth(chan2_depth+1);
     println("Channel 2 Depth = "+chan2_depth);
     break;
-    case 'G':
+  case 'G': //decrease green channel bit depth
     if (chan2_depth > 0) set_chan2_depth(chan2_depth-1);
     println("Channel 2 Depth = "+chan2_depth);
     break;
-    case 'b':
+  case 'b': //increase blue channel bit depth
     if (chan3_depth < 8) set_chan3_depth(chan3_depth+1);
     println("Channel 3 Depth = "+chan3_depth);
     break;
-    case 'B':
+  case 'B': //decrease blue channel bit depth 
     if (chan3_depth > 0) set_chan3_depth(chan3_depth-1);
     println("Channel 3 Depth = "+chan3_depth);
+    break;
+    case '(': //decrease greyscale bit depth
+    if (depth>1) depth--;
+    println("Greyscale bit depth = "+depth);
+    break;
+    case ')': //increase greyscale bit depth 
+    if (depth<24) depth++;
+    println("Greyscale bit depth = "+depth);
+    break;
+    case '[': //decrease window width by 1 pixel
+    set_window_width(width-1);
+    break;
+    case ']': //increase window width by 1 pixel
+    set_window_width(width+1);
+    break;
+    case '{': //decrease window height by 1 pixel
+    set_window_height(height-1);
+    break;
+    case '}': //increase window height by 1 pixel
+    set_window_height(height+1);
     break;
   }
   redraw();
@@ -154,14 +184,19 @@ void outputSelection(File output) {
 
 public void set_window_width(int _width) {
   if (int(_width) != 0) {
-    setScreenSize(_width, screen_height);
+    setScreenSize(_width, height);
   }
 }
 
 public void set_window_height(int _height) {
   if (int(_height) != 0) {
-  setScreenSize(screen_width, _height);
-  
+    setScreenSize(width, _height);
+  }
+}
+
+public void set_window_size(int _width, int _height) {
+  if (_height != 0 && _width != 0) {
+    setScreenSize(_width, _height);
   }
 }
 
@@ -169,25 +204,16 @@ public void set_window_height(int _height) {
 void set_chan1_depth(int _value) {
   chan1_depth = _value;
   pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-  //if (pixel_depth != 0 && pixel_offset != 0) {
-  //  pixel_offset=raw_bits.length/pixel_depth;
-  //}
 }
-  
+
 public void set_chan2_depth(int _value) {
   chan2_depth = _value;
   pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-  //if (pixel_depth != 0 && pixel_offset != 0) {
-  //  pixel_offset=raw_bits.length/pixel_depth;
-  //}
 }
 
 public void set_chan3_depth(int _value) {
   chan3_depth = _value;
   pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-  //if (pixel_depth != 0 && pixel_offset != 0) {
-  //  pixel_offset=raw_bits.length/pixel_depth;
-  //}
 }
 
 public void mode(int value) {
@@ -219,7 +245,7 @@ public void pixel_offset(int value) {
 }
 
 public void pixel_inc() {
-  pixel_offset+=1;
+  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=1;
 }
 
 public void pixel_dec() {
@@ -229,19 +255,19 @@ public void pixel_dec() {
 }
 
 public void line_inc() {
-  pixel_offset+=screen_width*line_multiplier;
+  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=screen_width*line_multiplier;
 }
 
 public void frame_inc(int _lines) {
-  pixel_offset+=screen_width*_lines;
+  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=screen_width*_lines;
 }
 
 public void line_dec() {
-  if(pixel_offset>0) pixel_offset-=screen_width*line_multiplier;
-  if(pixel_offset<0) pixel_offset=0;
+  if (pixel_offset>0) pixel_offset-=screen_width*line_multiplier;
+  if (pixel_offset<0) pixel_offset=0;
 }
 
 public void frame_dec(int _lines) {
-  if(pixel_offset>0) pixel_offset-=screen_width*_lines;
-  if(pixel_offset<0) pixel_offset=0;
+  if (pixel_offset>0) pixel_offset-=screen_width*_lines;
+  if (pixel_offset<0) pixel_offset=0;
 }

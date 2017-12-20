@@ -8,7 +8,7 @@
 
 byte[] raw_bytes, raw_bits;
 
-int mode=0;
+int mode=0; // 0 = RGB , 1 = Greyscale
 
 //you will have to specify your own path for files you want to render
 
@@ -34,11 +34,12 @@ int screen_height = 1000/2;
 
 void setup(){
   size(10,10);
+  background(0);
   if (frame != null) {
     surface.setResizable(true);
   }
-  surface.setSize(screen_width, screen_height);
-    
+  setScreenSize(screen_width, screen_height);
+  depth=1;  
   initializeDepth(5,6,5);
   noLoop();
 }
@@ -51,8 +52,9 @@ void initializeDepth(int depth1, int depth2, int depth3){
 }
 
 void draw(){
+  background(0);
   if (raw_bytes != null && raw_bits != null){
-  bits_to_pixels();
+    bits_to_pixels();
   } else {
     open_file();
   }
@@ -70,7 +72,8 @@ void saveData(String thePath){
 }
 
 void setScreenSize(int _width, int _height){
-  frame.setSize(_width, _height+22);
+  surface.setSize(_width, _height);
+  println("Screen size = "+width+" x "+height);
 }
 
 void bytes_to_bits(){ 
