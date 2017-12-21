@@ -8,13 +8,13 @@ int[] states;
 int[] rules;
 color[] colors;
 
-int qtyAnts = 2;
-int ruleDepth = 4; // minimum rule set is 2
+int qtyAnts = 7;
+int ruleDepth = 32; // minimum rule set is 2
 
 PImage output;
 
 void setup() {
-  size(400, 400);
+  size(1280, 720);
   
   output = createImage(width, height, RGB);
   ant = new Ant(int(width/2), int(height/2), 0);
@@ -109,6 +109,7 @@ void draw() {
   }
   output.updatePixels();
   image(output, 0 , 0);
+  output.save("output/ant-"+nfs(frameCount, 4)+".png");
 }
 
 
@@ -158,6 +159,6 @@ class Ant {
     }
 
     x = (x + width) % width;
-    y = (y + width) % width;
+    y = (y + height) % height;
   }
 } 

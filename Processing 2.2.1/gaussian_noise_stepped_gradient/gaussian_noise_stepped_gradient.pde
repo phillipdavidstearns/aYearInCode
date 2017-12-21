@@ -2,26 +2,19 @@
 //PGraphics satin_gradient;
 
 PImage noise_gradient;
-int color_depth = 7;
-float spread = 2;
+int color_depth = 2;
+float spread = .5;
 float step = .01;
 int mode = 2;
 int buffer;
 int seed=124;
 
-int w = 2100;
-int h = 6114;
+int w = 1275;
+int h = 2300;
 
 void setup() {
   size(10, 10);
   surface.setResizable(true);
-
-  //satins = new PImage[7];
-  //for (int i = 0; i < satins.length; i++) {
-  //  satins[i] = loadImage("satin_8-"+(7-i)+".png");
-  //}
-  //  satin_gradient = createGraphics(noise_gradient.width*8, noise_gradient.height*8);
-
   noise_gradient = createImage(w, h, RGB);
   buffer = int(noise_gradient.height * 0.125);
   setScreenSize(noise_gradient);
@@ -131,10 +124,10 @@ void saveGradient() {
   println("done!");
 }
 
-void makeNoise() {
+void makeNoise(float _thresh) {
   
   for (int i = 0; i < noise_gradient.pixels.length; i++) {
-    if (random(1) > .5) {
+    if (random(1) > _thresh) {
       noise_gradient.pixels[i] = color(255);
     } else {
       noise_gradient.pixels[i] = color(0);
@@ -156,7 +149,7 @@ void makeGradient(int _mode) {
     gaussianGradient();
     break;
   case 3:
-    makeNoise();
+    makeNoise(spread);
     break;
   }
   noise_gradient.updatePixels();
@@ -169,7 +162,7 @@ void linearGradient() {
     float[] linear_values = new float[color_depth];
     float linear_sum = 0;
     for (int i = 0; i < color_depth; i++) {
-      linear_values[i] = linear(float(y), buffer+(float(i)+.5)*(float(noise_gradient.height-(2*buffer))/float(color_depth)), spread*float(noise_gradient.height)/float(color_depth));
+      linear_values[i] = linear(float(y), (float(i)+.5)*(float(noise_gradient.height)/float(color_depth)), 4*spread*float(noise_gradient.height)/float(color_depth));
       linear_sum += linear_values[i];
     }
     for (int x = 0; x < noise_gradient.width; x++) {
@@ -183,7 +176,7 @@ void sinusoidalGradient() {
     float[] sine_values = new float[color_depth];
     float sine_sum = 0;
     for (int i = 0; i < color_depth; i++) {
-      sine_values[i] = sinusoidal(float(y), buffer+(float(i)+.5)*(float(noise_gradient.height-(2*buffer))/float(color_depth)), spread*float(noise_gradient.height)/float(color_depth), 3);
+      sine_values[i] = sinusoidal(float(y), (float(i)+.5)*(float(noise_gradient.height)/float(color_depth)), 3*spread*float(noise_gradient.height)/float(color_depth), 2);
       sine_sum += sine_values[i];
     }
     for (int x = 0; x < noise_gradient.width; x++) {
@@ -197,7 +190,8 @@ void gaussianGradient() {
     float[] gaussian_values = new float[color_depth];
     float gaussian_sum = 0;
     for (int i = 0; i < color_depth; i++) {
-      gaussian_values[i] = gaussian(float(y), buffer+(float(i)+.5)*(float(noise_gradient.height-(2*buffer))/float(color_depth)), .25*spread*float(noise_gradient.height)/float(color_depth));
+      //gaussian_values[i] = gaussian(float(y), buffer+(float(i)+.5)*(float(noise_gradient.height-(2*buffer))/float(color_depth)), .25*spread*float(noise_gradient.height)/float(color_depth));
+      gaussian_values[i] = gaussian(float(y), (float(i)+.5)*(float(noise_gradient.height)/float(color_depth)), spread*float(noise_gradient.height)/float(color_depth));
       gaussian_sum += gaussian_values[i];
     }
     for (int x = 0; x < noise_gradient.width; x++) {

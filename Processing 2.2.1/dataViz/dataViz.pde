@@ -108,7 +108,7 @@ void bits_to_pixels(){
 
   for(int i = 0 ; i < pixels.length ; i++){
     switch(mode){
-      case 0:
+      case 0: // color
         int chan1 = 0;
         int chan2 = 0; 
         int chan3 = 0; 
@@ -137,13 +137,13 @@ void bits_to_pixels(){
           chan3*=(255/(pow(2,(chan3_depth))-1)); //scale to 0-255
           
           if(red_invert_pre == true){
-            chan1^=0xFF;
+            chan1=~chan1;
           }
           if(green_invert_pre == true){
-            chan2^=0xFF;
+            chan2=~chan2;
           }
           if(blue_invert_pre == true){
-            chan3^=0xFF;
+            chan3=~chan3;
           }
           
           
@@ -183,23 +183,23 @@ void bits_to_pixels(){
       
           //channel invert
           if(red_invert == true && red_invert_pre == false){
-            red^=0xFF;
+            red=~red;
           }
           if(green_invert == true && green_invert_pre == false){
-            green^=0xFF;
+            green=~green;
           }
           if(blue_invert == true && blue_invert_pre == false){
-            blue^=0xFF;
+            blue=~blue;
           }
           
           pixels[i] = 255 <<24 |red << 16 | green << 8 | blue;
           
         } else {
-          pixels[i] = 0x00000000;
+          pixels[i] = 0;
         }
         break;
       
-      case 1:
+      case 1: // grey scale
         int pixel = 0;
         if((i+pixel_offset)*depth+depth+bit_offset < raw_bits.length){
         
@@ -209,12 +209,12 @@ void bits_to_pixels(){
           pixel*=(255/(pow(2,(depth))-1)); //scale to 0-255
           
           if(invert == true){
-            pixel^=0xFF;
+            pixel=~pixel;
           }
           
           pixels[i] = color(pixel);
         } else {
-          pixels[i] = 0x00000000;
+          pixels[i] = 0;
         }
       break;
     }

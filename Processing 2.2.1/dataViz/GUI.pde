@@ -234,18 +234,19 @@ public class ControlFrame extends PApplet {
 
   void keyPressed() {
     //    println(keyCode);
-    switch(keyCode) {
-    case 38:
+    
+    switch(key) {
+    case '>':
       frame_inc(screen_height-1);
       break;
-    case 40:
+    case '<':
       frame_dec(screen_height-1);
       break;
-      case 37:
+      case ',':
       cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()-1);
       ;
       break;
-    case 39:
+    case '.':
     cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()+1);
       ;
       break;

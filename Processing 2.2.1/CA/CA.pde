@@ -1,28 +1,38 @@
 boolean[] row;
 int page;
 boolean changeRule = true;
-boolean scroll = true;
+boolean scroll = false;
 boolean save = false;
-int shift =0;
-int qty_neighbors = 6  ;
-int qty_colors = 2;
-int counter_shift = 0;
+boolean colorMode = true;
+int shift = 0; // factor for shifting the subsequent row when drawn
+int qty_neighbors = 6  ; // how many cells from the previous row are considered
+int qty_colors = 2; // colordepth
+int counter_shift = 0 ;
 int tap_1 = 27;
 int tap_2 = 231;
 int tap_3 = 127;
 int tap_4 = 31;
+
+int designWidth = 5100;
+int designHeight = 5100;
+
+int scale = 1; // magnification factor
+int xoffset = 0; //shifts magnified view
+int yoffset = 0; //shifts magnified view
+
 boolean tap_1_en = true;
 boolean tap_2_en = true;
 boolean tap_3_en = true;
 boolean tap_4_en = true;
+
 boolean jam = false; //force an input
+
 String thePath;
-String initial_rule = new String("0001001100001010101001001101110010101011010011001001001110110100");
+String initial_rule = new String("0100000000000000000000000000001000000000000001000000000001000001");
 PImage design;
-int w = 480;
-int h = 270;
+
 color[] colors;
-int scale = 1;
+
 
 int qty_neighbor_combinations = int(pow(qty_colors, qty_neighbors));
 
@@ -31,9 +41,8 @@ ShiftRegister register;
 ShiftRegister rules;
 
 void setup() {
-  size(480, 270);
-  design = createImage(w, h, RGB);
-  //  design = createImage(6114,5150,RGB);
+  size(1280, 720);
+  design = createImage(designWidth, designHeight, RGB);
 
   rules = new ShiftRegister(qty_neighbor_combinations);
   for (int i = 0; i < rules.data.length; i++) {
@@ -50,29 +59,25 @@ void setup() {
   generatePalette(1);
   register.reset();
   shiftRegisterToRow();
-  for(int i = 0 ; i < design.height; i++){
-    updateDesign(scroll);
-  }
-  
+  updateDesign();
+
+
   noSmooth();
-//  noLoop();
+  noLoop();
 }
 
 void draw() {
-  updateDesign(scroll);
-  image(design, 0, 0, width, height);
-//  saveFrame("output/CA_BW_001/CA_BW_001-####.PNG");
-//  if(frameCount >= 5000){
-//    exit();
-//  }
+  updateDesign();
+  background(0);
+  image(design, 0+(xoffset*scale), 0+(yoffset*scale), design.width*scale, design.height*scale);
 }
 
 void generatePalette(int mode) {
   colors = new color[qty_neighbor_combinations];
   switch(mode) {
-  
-    case 0:
-    
+
+  case 0:
+
     color colorA = color(random(256), random(256), random(256));
     color colorB = color(random(256), random(256), random(256));
     for (int i = 0; i < colors.length; i++) {
@@ -128,35 +133,25 @@ String rule() {
   return _theRule;
 }
 
-void updateDesign(boolean scroll) {
-  if (!scroll) {
-    design.loadPixels();
-    shiftRegisterToRow();
-    for (int i = 0; i < design.height; i++) {
-      drawRow(i);
-      applyRules(countNeighbors());
-    }
-    design.updatePixels();
-    println(rule());
-  } else {
-    design.loadPixels();
-    shiftUp();
+void updateDesign() {
+
+  design.loadPixels();
+  shiftRegisterToRow();
+  for (int i = 0; i < design.height; i++) {
+    drawRow(i);
     applyRules(countNeighbors());
-    drawRow(design.height-1);
-    design.updatePixels();
   }
+  design.updatePixels();
+  println(rule());
 }
 
-void keyReleased() {
-  switch(key) {
-  case 'j':
-    jam = false;
-    break;
-  }
-}
+
 
 void keyPressed() {
   switch(key) {
+  case 'n':
+    colorMode=!colorMode;
+    break;
   case 'v':
     generatePalette(0);
     break;
@@ -241,6 +236,26 @@ void keyPressed() {
   case']':
     rules.shiftRight(rules.data[1]^rules.data[0]);
     break;
+  case'_':
+    if (scale > 1) scale--;
+    break;
+  case'+':
+    scale++;
+    break;
+  }
+  switch(keyCode) {
+  case 37: //left
+    xoffset+=50;
+    break;
+  case 38: //up
+    yoffset+=50;
+    break; 
+  case 39: //right
+    xoffset-=50;
+    break; 
+  case 40: //down
+    yoffset-=50;
+    break;
   }
   redraw();
 }
@@ -284,8 +299,11 @@ void shiftRegisterToRow() {
 void drawRow(int _y) {
   int[] states = countNeighbors();
   for (int x = 0; x < design.width; x++) {
-    design.pixels[_y * design.width+x] = color(255*int(row[x]));
-//    design.pixels[_y * design.width+x] = colors[states[x]];
+    if (colorMode) {
+      design.pixels[_y * design.width+x] = color(255*int(row[x]));
+    } else {
+      design.pixels[_y * design.width+x] = colors[states[x]];
+    }
   }
 }
 
