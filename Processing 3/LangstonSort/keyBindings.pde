@@ -14,7 +14,7 @@ void keyPressed() {
     }
     break;
   case 'g':
-    generateRules();
+    controls.randomizeTurns();
     break;
   case RETURN:
     play = !play;

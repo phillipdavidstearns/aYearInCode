@@ -4,8 +4,6 @@ class ControlFrame extends PApplet {
   PApplet parent;
   ControlP5 cp5;
 
-
-
   public ControlFrame(PApplet _parent, int _w, int _h, String _name) {
     super();   
     parent = _parent;
@@ -18,7 +16,6 @@ class ControlFrame extends PApplet {
     size(w, h);
   }
 
-
   public void setup() {
     surface.setLocation(10, 10);
     cp5 = new ControlP5(this);
@@ -27,18 +24,25 @@ class ControlFrame extends PApplet {
 
       for (int e = 0; e < 3; e++) {
         String name = "o"+o+"e"+e;
-        buttons[o][e] = cp5.addRadioButton(name)
+        buttons[o][e] = cp5.addRadioButton(name+"B")
           .setSize(20, 20)
           .setItemsPerRow(3)
-          .setSpacingColumn(10)
+          .setSpacingColumn(20)
           .setSpacingRow(1)
-          .setPosition(10, 10+(e*30)+(o*110))
-          .addItem(name+"L", 0)
-          .addItem(name+"R", 1)
-          .addItem(name+"S", 2)
+          .setPosition(10, 10+(e*25)+(o*110))
+          .addItem("L"+o+e, 0)
+          .addItem("R"+o+e, 1)
+          .addItem("S"+o+e, 2)
           .activate(turn[o][e])
           ;
-
+          
+          toggles[o][e] = cp5.addToggle(name+"T")
+          .setLabel("SW"+o+e)
+          .setSize(20, 20)
+          .setPosition(160, 10+(e*25)+(o*110))
+          .setValue(swap[o][e])
+          ;
+          
         println();
       }
     }
@@ -50,7 +54,7 @@ class ControlFrame extends PApplet {
     for ( int o = 0; o < 8; o++) {
       for (int e = 0; e < 3; e++) {
         turn[o][e] = int(buttons[o][e].getValue());
-        buttons[o][e].activate(turn[o][e]);
+        swap[o][e] = boolean(int(toggles[o][e].getValue()));
       }
     }
   }
@@ -60,15 +64,8 @@ class ControlFrame extends PApplet {
     for ( int o = 0; o < 8; o++) {
       for (int e = 0; e < 3; e++) {
         buttons[o][e].activate(turn[o][e]);
+        toggles[o][e].setValue(swap[o][e]);
       }
-    }
-  }
-
-  void keyPressed() {
-    switch(key) {
-      case 'q':
-      randomizeTurns();
-      break;
     }
   }
 }

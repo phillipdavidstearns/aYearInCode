@@ -1,7 +1,7 @@
 
 import controlP5.*;
 RadioButton[][] buttons = new RadioButton[8][3];
-
+Toggle[][] toggles = new Toggle[8][3];
 PImage input;
 PImage buffer;
 PImage output;
@@ -9,7 +9,7 @@ PImage output;
 boolean play;
 boolean visible;
 
-int iterations = 100;
+int iterations = 1000;
 
 int[][] turn = new int[8][3];
 boolean[][] swap = new boolean[8][3];
@@ -17,14 +17,14 @@ boolean[][] swap = new boolean[8][3];
 ControlFrame controls;
 
 
-Ant[] ants = new Ant[5000];
+Ant[] ants = new Ant[10000];
 
 void settings() {
   size(400, 400);
 }
 
 void setup() {
-  
+
   controls = new ControlFrame(this, 400, 1200, "Controls");
   surface.setLocation(420, 10);
   play = false;
@@ -36,15 +36,16 @@ void setup() {
 }
 
 void draw() {
-
   stroke(255);
   if (buffer != null) {
     image(buffer, 0, 0);
     for (int j = 0; j < iterations; j++) {
       for (int i = 0; i < ants.length; i++) {
         ants[i].update(buffer);
-        if(visible)point(ants[i].x, ants[i].y);
       }
+    }
+    for (int i = 0; i < ants.length; i++) {
+      if (visible)point(ants[i].x, ants[i].y);
     }
   }
 }
@@ -56,7 +57,6 @@ void generateRules() {
       turn[i][j] = int(random(3));
       swap[i][j] = boolean(int(random(2)));
     }
-    println();
   }
 }
 
