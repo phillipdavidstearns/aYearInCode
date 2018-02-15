@@ -1,24 +1,33 @@
-
 import controlP5.*;
-RadioButton[][] buttons = new RadioButton[8][3];
-Toggle[][] toggles = new Toggle[8][3];
+
 PImage input;
 PImage buffer;
 PImage output;
 
 boolean play;
+boolean record;
 boolean visible;
 
-int iterations = 1000;
+int iterations = 10;
+int orientations = 8; // UP, DOWN, LEFT, RIGHT
+int evaluations = 3;  // <, >, ==
+int directions = 3;    // Left, Right, Straight
 
-int[][] turn = new int[8][3];
-boolean[][] swap = new boolean[8][3];
+String recordPath;
+int frameCounter;
+
+//for the rule set
+int[][] turn = new int[orientations][evaluations];
+boolean[][] swap = new boolean[orientations][evaluations];
 
 ControlFrame controls;
 
+RadioButton[][] buttons = new RadioButton[orientations][evaluations];
+Toggle[][] toggles = new Toggle[orientations][evaluations];
 
-Ant[] ants = new Ant[10000];
-
+//Ant[] ants = new Ant[1000];
+int qtyAnts = 1000;
+ArrayList<Ant> ants = new ArrayList<Ant>();
 void settings() {
   size(400, 400);
 }
@@ -28,33 +37,58 @@ void setup() {
   controls = new ControlFrame(this, 400, 1200, "Controls");
   surface.setLocation(420, 10);
   play = false;
+  record=false;
   visible = false;
-  for (int i = 0; i < ants.length; i++) {
-    ants[i] = new Ant();
+
+  for (int i = 0; i < qtyAnts; i++) {
+    ants.add(new Ant());
   }
+
   generateRules();
 }
 
 void draw() {
+
   stroke(255);
+
   if (buffer != null) {
     image(buffer, 0, 0);
-    for (int j = 0; j < iterations; j++) {
-      for (int i = 0; i < ants.length; i++) {
-        ants[i].update(buffer);
+    updateAntList();
+    if (play) {
+      for (int j = 0; j < iterations; j++) {
+        for (Ant a : ants) {
+          a.update(buffer);
+        }
       }
-    }
-    for (int i = 0; i < ants.length; i++) {
-      if (visible)point(ants[i].x, ants[i].y);
+      if (visible) {
+        for (Ant a : ants) {
+          point(a.x, a.y);
+        }
+      }
+      if (record) {
+        recordOutput();
+      }
     }
   }
 }
 
+void recordOutput() {
+  buffer.save(recordPath+"_"+nf(frameCounter, 4)+".png");
+  frameCounter++;
+}
+
+void updateAntList() {
+
+  while (ants.size() > qtyAnts) ants.remove(ants.size()-1);
+  while (ants.size() < qtyAnts) ants.add(new Ant());
+}
+
+
 
 void generateRules() {
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 3; j++) {
-      turn[i][j] = int(random(3));
+  for (int i = 0; i < orientations; i++) {
+    for (int j = 0; j < evaluations; j++) {
+      turn[i][j] = int(random(directions));
       swap[i][j] = boolean(int(random(2)));
     }
   }
@@ -70,4 +104,14 @@ PImage swapPixel(PImage _src, int _x1, int _y1, int _x2, int _y2) {
 
 color getPixel(PImage _src, int _x, int _y) {
   return _src.pixels[_y*width+_x];
+}
+
+PImage resetBuffer() {
+  return buffer=input.copy();
+}
+
+void randomizeAnts() {
+  for (Ant a : ants) {
+    a.randomize();
+  }
 }

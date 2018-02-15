@@ -1,26 +1,24 @@
 void keyPressed() {
   switch(key) {
   case 'o':
-    selectInput("Select a file to read:", "inputSelected");
+    openImage();
     break;
   case 's':
-    selectOutput("Select a file to write to:", "outputSelected");
+    saveImage();
     break;
   case 'r':
     if (ants!=null) {
-      for (int i = 0; i < ants.length; i++) {
-        ants[i].randomize();
-      }
+      randomizeAnts();
     }
     break;
   case 'g':
-    controls.randomizeTurns();
+    controls.generateNewRules();
     break;
   case RETURN:
     play = !play;
     break;
   case 'f':
-    buffer=input.copy();
+    resetBuffer();
     break;
     case 'v':
     visible = !visible;
