@@ -16,16 +16,15 @@ int directions = 3;    // Left, Right, Straight
 String recordPath;
 int frameCounter;
 
+ControlFrame controls;
+
 //for the rule set
 int[][] turn = new int[orientations][evaluations];
 boolean[][] swap = new boolean[orientations][evaluations];
 
-ControlFrame controls;
-
 RadioButton[][] buttons = new RadioButton[orientations][evaluations];
 Toggle[][] toggles = new Toggle[orientations][evaluations];
 
-//Ant[] ants = new Ant[1000];
 int qtyAnts = 1000;
 ArrayList<Ant> ants = new ArrayList<Ant>();
 void settings() {
