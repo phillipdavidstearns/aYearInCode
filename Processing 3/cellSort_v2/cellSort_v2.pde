@@ -6,6 +6,7 @@ PImage output;
 boolean play;
 boolean record;
 boolean wrap;
+boolean checkCurrent;
 
 String recordPath;
 
@@ -31,6 +32,8 @@ void setup() {
   surface.setLocation(0, 0);
   play = false;
   record = false;
+  wrap = false;
+  checkCurrent = true;
   initRules();
 }
 
@@ -50,8 +53,8 @@ PImage cellSort(PImage _image) {
   Pixel neighbor;
   Pixel swap;
 
-  for (int y = 0; y < _image.height; y++) {
-    for (int x = 0; x < _image.width; x++) {
+  for (int x = 0; x < _image.width; x++) {
+    for (int y = 0; y < _image.height; y++) {
 
       current = new Pixel(x, y, _image.pixels[y*_image.width+x]);
       neighbor = current;
@@ -62,32 +65,40 @@ PImage cellSort(PImage _image) {
       for (int x2 = 0; x2 < 3; x2 ++) {
         for (int y2 = 0; y2 < 3; y2 ++) {
 
-          int xn = x + (x2-1);
-          int yn = y + (y2-1);
 
-          if (wrap) {
-            xn = (xn + _image.width) % _image.width;
-            yn = (yn + _image.height) % _image.height;
-          }
+          if (rules[x2][y2]) {
 
-          if ( /*(x2!=1 && y2!=1) &&*/ rules[x2][y2]) {
+            int xn = x + (x2-1);
+            int yn = y + (y2-1);
+
+            if (wrap) {
+              xn = (xn + _image.width) % _image.width;
+              yn = (yn + _image.height) % _image.height;
+            }
+
 
             if ( isInBounds(_image, xn, yn) ) {
 
               neighbor = new Pixel(xn, yn, _image.pixels[yn*_image.width+xn]);
-              if (threshold(current, min, max, thresholdMode)) {
-                if (compare(current, neighbor, compareMode)) {
-                  if (compare(swap, neighbor, compareMode)) {
-                    swap = neighbor;
-                    change=true;
-                  }
-                }
+              boolean thresholdPixel = false;
+              
+              if (checkCurrent) {
+                thresholdPixel = threshold(current, min, max, thresholdMode);
+              } else {
+                thresholdPixel = threshold(neighbor, min, max, thresholdMode);
+              }
+
+              if (compare(current, neighbor, compareMode) && thresholdPixel) {
+                //if (compare(swap, neighbor, compareMode)) {
+                  swap = neighbor;
+                  change=true;
+                //}
               }
             }
           }
         }
       }
-      if (change) swapPixels(_image, current, swap);
+      if(change)swapPixels(_image, current, swap);
     }
   }
   _image.updatePixels();
@@ -98,35 +109,35 @@ boolean isInBounds(PImage _image, int _x, int _y) {
   return _x < _image.width && _x >= 0 && _y < _image.height && _y >= 0;
 }
 
-boolean threshold(Pixel _px, int _min, int _max, String _mode) {
+boolean threshold(Pixel _px, color _min, color _max, String _mode) {
   switch(_mode) {
-  case "RGB": //pixel value is 
+  case "<RGB>": //pixel value is 
     return _px.isGreater(_min) && !_px.isGreater(_max);
-  case "!RGB":
+  case ">RGB<":
     return  !(_px.isGreater(_min) && !_px.isGreater(_max));
-  case "HUE":
+  case "<HUE>":
     return _px.hIsGreater(_min) && !_px.hIsGreater(_max);
-  case "!HUE":
+  case ">HUE<":
     return !(_px.hIsGreater(_min) && !_px.hIsGreater(_max));
-  case "SAT":
+  case "<SAT>":
     return _px.sIsGreater(_min) && !_px.sIsGreater(_max);
-  case "!SAT":
+  case ">SAT<":
     return !(_px.sIsGreater(_min) && !_px.sIsGreater(_max));
-  case "VAL":
+  case "<VAL>":
     return _px.vIsGreater(_min) && !_px.vIsGreater(_max);
-  case "!VAL":
+  case ">VAL<":
     return !(_px.vIsGreater(_min) && !_px.vIsGreater(_max));
-  case "RED":
+  case "<RED>":
     return _px.rIsGreater(_min) && !_px.rIsGreater(_max);
-  case "!RED":
+  case ">RED<":
     return !(_px.rIsGreater(_min) && !_px.rIsGreater(_max));
-  case "GRN":
+  case "<GRN>":
     return _px.gIsGreater(_min) && !_px.gIsGreater(_max);
-  case "!GRN":
+  case ">GRN<":
     return !(_px.gIsGreater(_min) && !_px.gIsGreater(_max));
-  case "BLU":
+  case "<BLU>":
     return _px.bIsGreater(_min) && !_px.bIsGreater(_max);
-  case "!BLU":
+  case ">BLU<":
     return !(_px.bIsGreater(_min) && !_px.bIsGreater(_max));
   default:
     return false;
@@ -136,31 +147,31 @@ boolean threshold(Pixel _px, int _min, int _max, String _mode) {
 boolean compare(Pixel _px1, Pixel _px2, String _mode) {
   switch(_mode) {
   case "RGB<":
-    return !(_px1.isGreater(_px2));
+    return _px2.isGreater(_px1);
   case "RGB>":
     return _px1.isGreater(_px2);
   case "HUE<":
-    return !(_px1.hIsGreater(_px2));
+    return _px2.hIsGreater(_px1);
   case "HUE>":
     return _px1.hIsGreater(_px2);
   case "SAT<":
-    return !(_px1.sIsGreater(_px2));
+    return _px2.sIsGreater(_px1);
   case "SAT>":
     return _px1.sIsGreater(_px2);
   case "VAL<":
-    return !(_px1.vIsGreater(_px2));
+    return _px2.vIsGreater(_px1);
   case "VAL>":
     return _px1.vIsGreater(_px2);
   case "RED<":
-    return !(_px1.rIsGreater(_px2));
+    return _px2.rIsGreater(_px1);
   case "RED>":
     return _px1.rIsGreater(_px2);
   case "GRN<":
-    return !(_px1.gIsGreater(_px2));
+    return _px2.gIsGreater(_px1);
   case "GRN>":
     return _px1.gIsGreater(_px2);
   case "BLU<":
-    return !(_px1.bIsGreater(_px2));
+    return _px2.bIsGreater(_px1);
   case "BLU>":
     return _px1.bIsGreater(_px2);
   default:

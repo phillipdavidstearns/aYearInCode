@@ -197,46 +197,46 @@ public class ControlFrame extends PApplet {
   public void threshold(int _mode) {
     switch(int(_mode)) {
     case 0:
-      thresholdMode = "RGB";
+      thresholdMode = "<RGB>";
       break;
     case 1:
-      thresholdMode = "!RGB";
+      thresholdMode = ">RGB<";
       break;
     case 2:
-      thresholdMode = "HUE";
+      thresholdMode = "<HUE>";
       break;
     case 3:
-      thresholdMode = "!HUE";
+      thresholdMode = ">HUE<";
       break;
     case 4:
-      thresholdMode = "SAT";
+      thresholdMode = "<SAT>";
       break;
     case 5:
-      thresholdMode = "!SAT";
+      thresholdMode = ">SAT<";
       break;
     case 6:
-      thresholdMode = "VAL";
+      thresholdMode = "<VAL>";
       break;
     case 7:
-      thresholdMode = "!VAL";
+      thresholdMode = ">VAL<";
       break;
     case 8:
-      thresholdMode = "RED";
+      thresholdMode = "<RED>";
       break;
     case 9:
-      thresholdMode = "!RED";
+      thresholdMode = ">RED<";
       break;
     case 10:
-      thresholdMode = "GRN";
+      thresholdMode = "<GRN>";
       break;
     case 11:
-      thresholdMode = "!GRN";
+      thresholdMode = ">GRN<";
       break;
     case 12:
-      thresholdMode = "BLU";
+      thresholdMode = "<BLU>";
       break;
     case 13:
-      thresholdMode = "!BLU";
+      thresholdMode = ">BLU<";
       break;
     }
     println("thresholdMode: "+ thresholdMode);
