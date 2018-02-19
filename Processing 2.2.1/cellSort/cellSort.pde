@@ -27,7 +27,6 @@ String recordPath;
 int frameCounter;
 
 void loadinput() {
-
   image(input, 0, 0);
 }
 
@@ -45,7 +44,7 @@ void setup() {
 void draw() {
 
   if (play) {
-    output = cellSort(input);
+    cellSort(output);
     image(output, 0, 0);
     if (record) output.save(recordPath);
     iterations++;
@@ -142,6 +141,9 @@ void keyPressed() {
   case '>':
     logic++;
     logic %= 3;
+    break;
+  case 'e':
+    resetOutput();
     break;
   }
 }

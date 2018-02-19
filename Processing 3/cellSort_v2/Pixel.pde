@@ -14,24 +14,15 @@ class Pixel {
   }
   
   boolean hIsGreater(Pixel _px){
-    colorMode(HSB);
-    boolean val = hue(c) > hue(_px.c);
-    colorMode(RGB);
-    return val;
+    return hue(c) > hue(_px.c);
   }
   
   boolean sIsGreater(Pixel _px){
-    colorMode(HSB);
-    boolean val = saturation(c) > saturation(_px.c);
-    colorMode(RGB);
-    return val;
+    return saturation(c) > saturation(_px.c);
   }
   
   boolean vIsGreater(Pixel _px){
-    colorMode(HSB);
-    boolean val = brightness(c) > brightness(_px.c);
-    colorMode(RGB);
-    return val;
+   return brightness(c) > brightness(_px.c);
   }
   
   boolean rIsGreater(Pixel _px){
@@ -51,24 +42,15 @@ class Pixel {
   }
   
   boolean hIsGreater(color _c){
-    colorMode(HSB);
-    boolean val = hue(c) > hue(_c);
-    colorMode(RGB);
-    return val;
+    return hue(c) > hue(_c);
   }
   
   boolean sIsGreater(color _c){
-    colorMode(HSB);
-    boolean val = saturation(c) > saturation(_c);
-    colorMode(RGB);
-    return val;
+    return saturation(c) > saturation(_c);
   }
   
   boolean vIsGreater(color _c){
-    colorMode(HSB);
-    boolean val = brightness(c) > brightness(_c);
-    colorMode(RGB);
-    return val;
+    return brightness(c) > brightness(_c);
   }
   
   boolean rIsGreater(color _c){

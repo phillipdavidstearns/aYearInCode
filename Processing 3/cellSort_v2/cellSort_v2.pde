@@ -9,8 +9,8 @@ boolean wrap;
 
 String recordPath;
 
-color min = color(63);
-color max = color(191);
+color min = color(110);
+color max = color(190);
 
 String compareMode = new String();
 String thresholdMode = new String();
@@ -38,21 +38,24 @@ void setup() {
 void draw() {
   if (output != null) {
     image(output, 0, 0);
+    ruleToggles();
     cellSort(output);
-    for (int x = 0; x < 3; x++) {
-      for (int y = 0; y < 3; y++) {
-        if (!(x==1 && y==1)) rules[x][y] = neighborToggles[x][y].getState();
-      }
-    }
   }
 }
 
+
 PImage cellSort(PImage _image) {
+
+  Pixel current ;
+  Pixel neighbor;
+  Pixel swap;
+
   for (int y = 0; y < _image.height; y++) {
     for (int x = 0; x < _image.width; x++) {
-      Pixel current = new Pixel(x, y, _image.pixels[y*_image.width+x]);
-      Pixel neighbor = current;
-      Pixel swap = current;
+
+      current = new Pixel(x, y, _image.pixels[y*_image.width+x]);
+      neighbor = current;
+      swap = current;
 
       boolean change = false;
 
@@ -67,12 +70,12 @@ PImage cellSort(PImage _image) {
             yn = (yn + _image.height) % _image.height;
           }
 
-          if (rules[x2][y2]) {
+          if ( /*(x2!=1 && y2!=1) &&*/ rules[x2][y2]) {
 
             if ( isInBounds(_image, xn, yn) ) {
 
               neighbor = new Pixel(xn, yn, _image.pixels[yn*_image.width+xn]);
-              if (/*threshold(neighbor, min, max, thresholdMode) &&*/ threshold(current, min, max, thresholdMode)) {
+              if (threshold(current, min, max, thresholdMode)) {
                 if (compare(current, neighbor, compareMode)) {
                   if (compare(swap, neighbor, compareMode)) {
                     swap = neighbor;
@@ -87,6 +90,7 @@ PImage cellSort(PImage _image) {
       if (change) swapPixels(_image, current, swap);
     }
   }
+  _image.updatePixels();
   return _image;
 }
 
@@ -97,7 +101,7 @@ boolean isInBounds(PImage _image, int _x, int _y) {
 boolean threshold(Pixel _px, int _min, int _max, String _mode) {
   switch(_mode) {
   case "RGB": //pixel value is 
-    return _px.isGreater(_min) && (!_px.isGreater(_max));
+    return _px.isGreater(_min) && !_px.isGreater(_max);
   case "!RGB":
     return  !(_px.isGreater(_min) && !_px.isGreater(_max));
   case "HUE":
@@ -165,10 +169,8 @@ boolean compare(Pixel _px1, Pixel _px2, String _mode) {
 }
 
 PImage swapPixels(PImage _image, Pixel _px1, Pixel _px2) {
-  //_image.loadPixels();
   _image.pixels[_px1.y*_image.width+_px1.x] = _px2.c;
   _image.pixels[_px2.y*_image.width+_px2.x] = _px1.c;
-  _image.updatePixels();
   return _image;
 }
 
@@ -176,6 +178,14 @@ void initRules() {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
       rules[i][j]=false;
+    }
+  }
+}
+
+void ruleToggles() {
+  for (int x = 0; x < 3; x++) {
+    for (int y = 0; y < 3; y++) {
+      if (!(x==1 && y==1)) rules[x][y] = neighborToggles[x][y].getState();
     }
   }
 }
