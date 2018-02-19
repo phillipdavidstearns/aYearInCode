@@ -52,14 +52,14 @@ class ControlFrame extends PApplet {
     cp5.addSlider("iterationSlider")
      .setPosition(200,yPadding)
      .setRange(1,1000)
-     .setSize(100,20)
+     .setSize(300,20)
      .setValue(iterations);
      ;
      
      cp5.addSlider("qtyAntsSlider")
      .setPosition(200,yPadding+(1*25))
      .setRange(1,10000)
-     .setSize(100,20)
+     .setSize(300,20)
      .setValue(qtyAnts);
      ;
      
