@@ -1,3 +1,4 @@
+//Opening and image
 void openImage() {
   selectInput("Select an image to open:", "inputSelected");
 }
@@ -19,6 +20,7 @@ void loadInput(String path) {
   surface.setSize(input.width, input.height);
 }
 
+//savings an image
 void saveImage() {
   selectOutput("Save to file:", "outputSelected");
 }
@@ -38,7 +40,7 @@ void saveOutput(String path) {
   saveFrame(path);
 }
 
-
+//setting up to record
 void selectRecordPath(){
   selectOutput("Save to file:", "recordPathSelected");
 }

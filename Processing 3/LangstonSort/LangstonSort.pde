@@ -77,12 +77,9 @@ void recordOutput() {
 }
 
 void updateAntList() {
-
   while (ants.size() > qtyAnts) ants.remove(ants.size()-1);
   while (ants.size() < qtyAnts) ants.add(new Ant());
 }
-
-
 
 void generateRules() {
   for (int i = 0; i < orientations; i++) {

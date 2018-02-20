@@ -1,25 +1,31 @@
 import controlP5.*;
 
+//input and output image objects
 PImage input;
 PImage output;
 
+//sortlogic controls
 boolean play;
 boolean record;
 boolean wrap;
-boolean checkCurrent;
+boolean pixelCheck; //used for checking either the current or neighbor pixel against the threshold
 
-String recordPath;
-
-color min = color(110);
-color max = color(190);
-
+//sort logic selectors
 String compareMode = new String();
 String thresholdMode = new String();
 
-Toggle[][] neighborToggles = new Toggle[3][3];
+String recordPath; //string that holds the save path and filename for recorded fram sequences
 
-boolean[][] rules = new boolean[3][3];
+int iterations = 1; // how many times the sort is run before the window is updated.
+long iterationCount = 0;
+color min = color(random(256), random(256), random(256));
+color max = color(random(256), random(256), random(256));
 
+Toggle[][] neighborToggles = new Toggle[3][3]; //holds GUI cp5 Toggle objects for cell logic
+
+boolean[][] rules = new boolean[3][3]; //used to enable checking current cell against specific neighbor cells
+
+//GUI WINDOW
 ControlFrame controls;
 
 void settings() {
@@ -27,28 +33,35 @@ void settings() {
 }
 
 void setup() {
-  controls = new ControlFrame(this, 1200, 400, "Controls");
 
+  controls = new ControlFrame(this, 1100, 400, "Controls"); //initializes the GUI window
   surface.setLocation(0, 0);
+
   play = false;
   record = false;
   wrap = false;
-  checkCurrent = true;
+  pixelCheck = true;
+
   initRules();
 }
 
 
 void draw() {
+
   if (output != null) {
     image(output, 0, 0);
-    ruleToggles();
-    cellSort(output);
+    if (play) {
+      ruleToggles();
+      for (int i = 0; i < iterations; i++) {
+        cellSort(output);
+      }
+    }
   }
 }
 
 
 PImage cellSort(PImage _image) {
-
+  boolean finished = true;
   Pixel current ;
   Pixel neighbor;
   Pixel swap;
@@ -61,46 +74,54 @@ PImage cellSort(PImage _image) {
       swap = current;
 
       boolean change = false;
-
-      for (int x2 = 0; x2 < 3; x2 ++) {
-        for (int y2 = 0; y2 < 3; y2 ++) {
-
-
-          if (rules[x2][y2]) {
-
-            int xn = x + (x2-1);
-            int yn = y + (y2-1);
-
-            if (wrap) {
-              xn = (xn + _image.width) % _image.width;
-              yn = (yn + _image.height) % _image.height;
-            }
+      if (threshold(current, min, max, thresholdMode)) {
+        
+        for (int x2 = 0; x2 < 3; x2 ++) {
+          for (int y2 = 0; y2 < 3; y2 ++) {
 
 
-            if ( isInBounds(_image, xn, yn) ) {
+            if (rules[x2][y2]) {
 
-              neighbor = new Pixel(xn, yn, _image.pixels[yn*_image.width+xn]);
-              boolean thresholdPixel = false;
-              
-              if (checkCurrent) {
-                thresholdPixel = threshold(current, min, max, thresholdMode);
-              } else {
-                thresholdPixel = threshold(neighbor, min, max, thresholdMode);
+              int xn = x + (x2-1);
+              int yn = y + (y2-1);
+
+              if (wrap) {
+                xn = (xn + _image.width) % _image.width;
+                yn = (yn + _image.height) % _image.height;
               }
 
-              if (compare(current, neighbor, compareMode) && thresholdPixel) {
-                //if (compare(swap, neighbor, compareMode)) {
-                  swap = neighbor;
-                  change=true;
-                //}
+
+              if ( isInBounds(_image, xn, yn) ) {
+
+                neighbor = new Pixel(xn, yn, _image.pixels[yn*_image.width+xn]);
+
+                if (compare(current, neighbor, compareMode) && threshold(neighbor, min, max, thresholdMode)) {
+                  if (compare(swap, neighbor, compareMode)) {
+                    swap = neighbor;
+                    change=true;  
+                  }
+                }
               }
             }
           }
         }
+        if (change){
+          finished = false;
+          swapPixels(_image, current, swap);
+        }
       }
-      if(change)swapPixels(_image, current, swap);
     }
   }
+  
+  if(finished){
+    controls.playToggle(false);
+    controls.recordToggle(false);
+    println("Sorting Complete! "+iterationCount);
+    _image.updatePixels();
+    return _image;
+  }
+  
+  iterationCount++;
   _image.updatePixels();
   return _image;
 }
@@ -111,9 +132,9 @@ boolean isInBounds(PImage _image, int _x, int _y) {
 
 boolean threshold(Pixel _px, color _min, color _max, String _mode) {
   switch(_mode) {
-  case "<RGB>": //pixel value is 
+  case "<RGB>": //RGB pixel value is > min and < max
     return _px.isGreater(_min) && !_px.isGreater(_max);
-  case ">RGB<":
+  case ">RGB<": //RGB pixel value is < min and > max
     return  !(_px.isGreater(_min) && !_px.isGreater(_max));
   case "<HUE>":
     return _px.hIsGreater(_min) && !_px.hIsGreater(_max);
@@ -202,5 +223,6 @@ void ruleToggles() {
 }
 
 PImage resetOutput() {
+  iterationCount=0;
   return output=input.copy();
 }

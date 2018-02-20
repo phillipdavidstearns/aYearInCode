@@ -4,6 +4,14 @@ public class ControlFrame extends PApplet {
   PApplet parent;
   ControlP5 cp5;
 
+  int toggleW = 30;
+  int toggleH = 30;
+  int toggleSpacing = 20;
+
+  int buttonW = 30;
+  int buttonH = 30;
+  int buttonSpacing = 20;
+
   int neighborToggleX=10;
   int neighborToggleY=10;
   int neighborToggleSpacing = 20;
@@ -20,7 +28,8 @@ public class ControlFrame extends PApplet {
   int thresholdSlidersY = 10;
   int thresholdSlidersW = 255;
   int thresholdSlidersH = 30;
-  int thresholdSlidersSpacing = 20;
+  int thresholdSlidersSpacingX = 30;
+  int thresholdSlidersSpacingY = 20;
 
   public ControlFrame(PApplet _parent, int _w, int _h, String _name) {
     super();   
@@ -37,6 +46,8 @@ public class ControlFrame extends PApplet {
   public void setup() {
     surface.setLocation(0, 400);
     cp5 = new ControlP5(this);
+
+    //toggles to enable/disable checking of specific neighbor cells.
     for (int x = 0; x < 3; x++) {
       for (int y = 0; y < 3; y++) {
         int id = y * 3 + x;
@@ -50,6 +61,7 @@ public class ControlFrame extends PApplet {
       }
     }
 
+    //radio controls for the compare and threshold logic 
     cp5.addRadio("compare")
       .setSize(radiosW, radiosH)
       .setPosition(radiosX, radiosY)
@@ -91,8 +103,46 @@ public class ControlFrame extends PApplet {
       .addItem("!BLU", 13)
       ;
 
+    //togles and buttons for the penultimate row
+    cp5.addToggle("playToggle")
+      .setLabel("PLAY")
+      .setSize(toggleW, toggleH)
+      .setPosition(10+(toggleSpacing+toggleW)*0, 300+(buttonSpacing+buttonH)*0)
+      .setValue(play)
+      ;
+    cp5.addToggle("recordToggle")
+      .setLabel("REC")
+      .setSize(toggleW, toggleH)
+      .setPosition(10+(toggleSpacing+toggleW)*1, 300+(buttonSpacing+buttonH)*0)
+      .setValue(record)
+      ;
+    cp5.addButton("openButton")
+      .setLabel("OPEN")
+      .setSize(buttonW, buttonH)
+      .setPosition(10+(buttonSpacing+buttonW)*2, 300+(buttonSpacing+buttonH)*0)
+      ;
+    cp5.addButton("saveButton")
+      .setLabel("SAVE")
+      .setSize(buttonW, buttonH)
+      .setPosition(10+(buttonSpacing+buttonW)*3, 300+(buttonSpacing+buttonH)*0)
+      ;
+
+    //togles and buttons for the bottom row
+    cp5.addToggle("wrapToggle")
+      .setLabel("WRAP")
+      .setSize(toggleW, toggleH)
+      .setPosition(10+(toggleSpacing+toggleW)*0, 300+(toggleSpacing+toggleH)*1)
+      .setValue(wrap)
+      ;
+    cp5.addButton("resetButton")
+      .setLabel("RESET")
+      .setSize(buttonW, buttonH)
+      .setPosition(10+(buttonSpacing+buttonW)*1, 300+(buttonSpacing+buttonH)*1)
+      ;
+
+    //Sliders for the threshold Min + Max  
     cp5.addSlider("rMin")
-      .setPosition(thresholdSlidersX, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*0)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*0, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*0)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
@@ -100,7 +150,7 @@ public class ControlFrame extends PApplet {
       ;
 
     cp5.addSlider("gMin")
-      .setPosition(thresholdSlidersX, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*1)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*0, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*1)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
@@ -108,7 +158,7 @@ public class ControlFrame extends PApplet {
       ;
 
     cp5.addSlider("bMin")
-      .setPosition(thresholdSlidersX, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*2)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*0, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*2)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
@@ -116,7 +166,7 @@ public class ControlFrame extends PApplet {
       ;
 
     cp5.addSlider("rMax")
-      .setPosition(thresholdSlidersX+thresholdSlidersW+thresholdSlidersSpacing, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*0)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*1, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*0)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
@@ -124,7 +174,7 @@ public class ControlFrame extends PApplet {
       ;
 
     cp5.addSlider("gMax")
-      .setPosition(thresholdSlidersX+thresholdSlidersW+thresholdSlidersSpacing, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*1)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*1, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*1)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
@@ -132,18 +182,61 @@ public class ControlFrame extends PApplet {
       ;
 
     cp5.addSlider("bMax")
-      .setPosition(thresholdSlidersX+thresholdSlidersW+thresholdSlidersSpacing, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacing)*2)
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*1, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*2)
       .setSize(thresholdSlidersW, thresholdSlidersH)
       .setMin(0)
       .setMax(255)
+      .setValue(blue(max))
+      ;
+      
+      cp5.addSlider("iterationSlider")
+      .setLabel("Iterations")
+      .setPosition(thresholdSlidersX+(thresholdSlidersW+thresholdSlidersSpacingX)*2, thresholdSlidersY+(thresholdSlidersH+thresholdSlidersSpacingY)*1)
+      .setSize(thresholdSlidersW, thresholdSlidersH)
+      .setMin(1)
+      .setMax(256*2-1)
       .setValue(blue(max))
       ;
   }
 
   void draw() {
     background(0);
-    min = color(cp5.getValue("rMin"),cp5.getValue("gMin"),cp5.getValue("bMin"));
-    max = color(cp5.getValue("rMax"),cp5.getValue("gMax"),cp5.getValue("bMax"));
+    min = color(cp5.getValue("rMin"), cp5.getValue("gMin"), cp5.getValue("bMin"));
+    max = color(cp5.getValue("rMax"), cp5.getValue("gMax"), cp5.getValue("bMax"));
+    iterations = int (cp5.getValue("iterationSlider"));
+    textAlign(LEFT, BOTTOM);
+    text("Iterations: "+nf(iterationCount), 800, 30);
+  }
+
+
+  //GUI callbacks
+  public void pixelCheck(boolean _val) {
+    pixelCheck = _val;
+    println("pixelCheck: "+pixelCheck);
+  }
+
+  public void playToggle(boolean _val) {
+    play = _val;
+  }
+
+  public void recordToggle(boolean _val) {
+    record = _val;
+  }
+
+  public void openButton() {
+    openImage();
+  }
+
+  public void saveButton() {
+    saveImage();
+  }
+
+  public void wrapToggle(boolean _val) {
+    wrap = _val;
+  }
+
+  public void resetButton() {
+    resetOutput();
   }
 
   public void compare(int _mode) {
@@ -282,29 +375,8 @@ public class ControlFrame extends PApplet {
     case 'o':
       openImage();
       break;
-    case '=': // up arrow
-      if (max < 255) max++;
-      println(max);
-      break;
-    case '-': // down arrow
-      if (max > min) {
-        max--;
-      } else {
-        min = max;
-      }
-      println(max);
-      break;
-    case '[': // up arrow
-      if (min > 0) min--;
-      println(min);
-      break;
-    case ']': // down arrow
-      if (min < max) {
-        min++;
-      } else {
-        max = min;
-      }
-      println(min);
+    case 's':
+      saveImage();
       break;
     case 'p': // play toggles animation
       play=!play;
@@ -313,13 +385,13 @@ public class ControlFrame extends PApplet {
       initRules(); 
       break;
     case 'w': // w toggles edge wrap mode
-      wrap=!wrap;
+      wrapToggle(!wrap);
       break;
     case 'e':
-      resetOutput();
+      resetButton();
       break;
     case 'r': // 
-      record=!record;
+      recordToggle(!record);
       break;
     }
   }
