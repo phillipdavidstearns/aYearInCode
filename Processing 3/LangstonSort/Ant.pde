@@ -29,6 +29,7 @@ class Ant {
     int nextY = y;
 
     //get the coordinates of our next location
+    
     if (orientations == 8) {
       switch(orientation) {
       case 0:
@@ -83,39 +84,11 @@ class Ant {
 
 
     // retrieve the pixels associated with our current and next location
-    color current = getPixel(_img, x, y); 
-    color next = getPixel(_img, nextX, nextY);
+    int eval = evaluate(evalMode, getPixel(_img, x, y), getPixel(_img, nextX, nextY) );
 
-    int eval = 0;
+if (eval > -1 && eval < 2){
+    if (swap[orientation][eval]) swapPixel(_img, x, y, nextX, nextY);
 
-
-    if (current < next) {
-      eval = 0;
-    } else if (current > next) {
-      eval = 1;
-    } else if (current == next) {
-      eval = 2;
-    } else {
-      println("something fishy going on");
-    }
-    
-    
-    if (current < next) {
-      eval = 0;
-    } else if (current > next) {
-      eval = 1;
-    } else if (current == next) {
-      eval = 2;
-    } else {
-      println("something fishy going on");
-    }
-    
-
-    if (eval!=2) {
-      if (swap[orientation][eval]) {
-        swapPixel(_img, x, y, nextX, nextY);
-      }
-    }
 
     // apply the turn direction to our orientation
     switch(turn[orientation][eval]) {
@@ -135,50 +108,78 @@ class Ant {
     //apply the new location
     x = nextX;
     y = nextY;
-
+  }
     _img.updatePixels();
   }
-  
-  //boolean compare(color _c1, color _c2, String _mode) {
-  //  switch(_mode) {
-  //  case "RGB<":
-  //    return isGreater(_c1, _c2);
-  //  case "RGB>":
-  //    return isGreater(_c2, _c1);
-  //  case "HUE<":
-  //    return hIsGreater(_c1, _c2);
-  //  case "HUE>":
-  //    return hIsGreater(_c2, _c1);
-  //  default:
-  //    return false;
-  //  }
+
+  int evaluate(String _mode, color _c1, color _c2) {
+    switch(_mode) {
+    case "RGB":
+      return evaluate(_c1, _c2);
+    case "HUE":
+      return evaluate(hue(_c1), hue(_c2));
+    case "SAT":
+      return evaluate(saturation(_c1), saturation(_c2));
+    case "RED":
+      return evaluate(red(_c1), red(_c2));
+    case "GREEN":
+      return evaluate(green(_c1), green(_c2));
+    case "BLUE":
+      return evaluate(blue(_c1), blue(_c2));
+    default:
+      return -1;
+    }
+  }
+
+  int evaluate(color _c1, color _c2) {
+    if (_c1 < _c2) {
+      return 0;
+    } else if (_c1 > _c2) {
+      return 1;
+    } else if (_c1 == _c2) {
+      return 2;
+    } else {
+      return -1;
+    }
+  }
+
+  int evaluate(float _f1, float _f2) {
+    if (_f1 < _f2) {
+      return 0;
+    } else if (_f1 > _f2) {
+      return 1;
+    } else if (_f1 == _f2) {
+      return 2;
+    } else {
+      return -1;
+    }
+  }
+
+  //boolean isGreater(color _c1, color _c2) {
+  //  return _c1 > _c2;
   //}
 
-  boolean isGreater(color _c1, color _c2) {
-    return _c1 > _c2;
-  }
+  //boolean hIsGreater(color _c1, color _c2) {
+  //  return hue(_c1) > hue(_c2);
+  //}
 
-  boolean hIsGreater(color _c1, color _c2) {
-    return hue(_c1) > hue(_c2);
-  }
+  //boolean sIsGreater(color _c1, color _c2) {
+  //  return saturation(_c1) > saturation(_c2);
+  //}
 
-  boolean sIsGreater(color _c1, color _c2) {
-    return saturation(_c1) > saturation(_c2);
-  }
+  //boolean vIsGreater(color _c1, color _c2) {
+  //  return brightness(_c1) > brightness(_c2);
+  //}
 
-  boolean vIsGreater(color _c1, color _c2) {
-    return brightness(_c1) > brightness(_c2);
-  }
+  //boolean rIsGreater(color _c1, color _c2) {
+  //  return red(_c1) > red(_c2);
+  //}
 
-  boolean rIsGreater(color _c1, color _c2) {
-    return red(_c1) > red(_c2);
-  }
+  //boolean gIsGreater(color _c1, color _c2) {
+  //  return green(_c1) > green(_c2);
+  //}
 
-  boolean gIsGreater(color _c1, color _c2) {
-    return green(_c1) > green(_c2);
-  }
-
-  boolean bIsGreater(color _c1, color _c2) {
-    return blue(_c1) > blue(_c2);
-  }
+  //boolean bIsGreater(color _c1, color _c2) {
+  //  return blue(_c1) > blue(_c2);
+  //}
 }

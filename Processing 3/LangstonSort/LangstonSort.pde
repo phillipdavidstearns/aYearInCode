@@ -1,5 +1,10 @@
 import controlP5.*;
 
+String evalMode;
+
+color min;
+color max;
+
 PImage input;
 PImage buffer;
 PImage output;
@@ -33,12 +38,14 @@ void settings() {
 
 void setup() {
 
-  controls = new ControlFrame(this, 400, 1200, "Controls");
+  controls = new ControlFrame(this, 500, 800, "Controls");
   surface.setLocation(420, 10);
   play = false;
   record=false;
   visible = false;
 
+  evalMode = new String("RGB");
+  
   for (int i = 0; i < qtyAnts; i++) {
     ants.add(new Ant());
   }
@@ -90,16 +97,15 @@ void generateRules() {
   }
 }
 
-PImage swapPixel(PImage _src, int _x1, int _y1, int _x2, int _y2) {
-  int _next = _src.pixels[_y2*width+_x2];
-  int _current = _src.pixels[_y1*width+_x1];
-  _src.pixels[_y2*width+_x2]=_current;
-  _src.pixels[_y1*width+_x1]=_next;
-  return _src;
+PImage swapPixel(PImage _image, int _x1, int _y1, int _x2, int _y2) {
+  int _swap = _image.pixels[_y2*width+_x2];
+  _image.pixels[_y2*width+_x2]=_image.pixels[_y1*width+_x1];
+  _image.pixels[_y1*width+_x1]=_swap;
+  return _image;
 }
 
-color getPixel(PImage _src, int _x, int _y) {
-  return _src.pixels[_y*width+_x];
+color getPixel(PImage _image, int _x, int _y) {
+  return _image.pixels[_y*width+_x];
 }
 
 PImage resetBuffer() {
