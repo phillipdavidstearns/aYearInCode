@@ -8,6 +8,7 @@ PImage output;
 boolean play;
 boolean record;
 boolean wrap;
+boolean visible;
 boolean pixelCheck; //used for checking either the current or neighbor pixel against the threshold
 
 //sort logic selectors
@@ -36,10 +37,11 @@ void setup() {
 
   controls = new ControlFrame(this, 1100, 400, "Controls"); //initializes the GUI window
   surface.setLocation(0, 0);
-
+  
   play = false;
   record = false;
   wrap = false;
+  visible = true;
   pixelCheck = true;
 
   initRules();
@@ -49,7 +51,7 @@ void setup() {
 void draw() {
 
   if (output != null) {
-    image(output, 0, 0);
+    if(visible) image(output, 0, 0);
     if (play) {
       ruleToggles();
       for (int i = 0; i < iterations; i++) {
@@ -113,13 +115,13 @@ PImage cellSort(PImage _image) {
     }
   }
   
-  if(finished){
-    controls.playToggle(false);
-    controls.recordToggle(false);
-    println("Sorting Complete! "+iterationCount);
-    _image.updatePixels();
-    return _image;
-  }
+  //if(finished){
+  //  controls.playToggle(false);
+  //  controls.recordToggle(false);
+  //  println("Sorting Complete! "+iterationCount);
+  //  _image.updatePixels();
+  //  return _image;
+  //}
   
   iterationCount++;
   _image.updatePixels();

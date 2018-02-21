@@ -15,6 +15,7 @@ void inputSelected(File selection) {
 }
 
 void loadInput(String path) {
+  iterationCount=0;
   input = loadImage(path);
   output=input.copy();
   surface.setSize(input.width, input.height);
