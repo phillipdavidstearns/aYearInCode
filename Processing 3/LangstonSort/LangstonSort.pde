@@ -22,6 +22,7 @@ String recordPath;
 int frameCounter;
 
 ControlFrame controls;
+color controlsBGColor = color(0);
 
 //for the rule set
 int[][] turn = new int[orientations][evaluations];
@@ -30,7 +31,7 @@ boolean[][] swap = new boolean[orientations][evaluations];
 RadioButton[][] buttons = new RadioButton[orientations][evaluations];
 Toggle[][] toggles = new Toggle[orientations][evaluations];
 
-int qtyAnts = 1000;
+int qtyAnts = 1;
 ArrayList<Ant> ants = new ArrayList<Ant>();
 void settings() {
   size(400, 400);
@@ -38,7 +39,7 @@ void settings() {
 
 void setup() {
 
-  controls = new ControlFrame(this, 500, 800, "Controls");
+  controls = new ControlFrame(this, 600, 900, "Controls");
   surface.setLocation(420, 10);
   play = false;
   record=false;

@@ -24,91 +24,35 @@ class Ant {
 
     _img.loadPixels();
 
-    //store the coordinates of our next location
-    int nextX = x; 
-    int nextY = y;
-
-    //get the coordinates of our next location
-    
-    if (orientations == 8) {
-      switch(orientation) {
-      case 0:
-        nextY--;
-        break;
-      case 1:
-        nextX++;
-        nextY--;
-        break;
-      case 2:
-        nextX++;
-        break;
-      case 3:
-        nextX++;
-        nextY++;
-        break;
-      case 4:
-        nextY++;
-        break;
-      case 5:
-        nextX--;
-        nextY++;
-        break;
-      case 6:
-        nextX--;
-        break;
-      case 7:
-        nextX--;
-        nextY--;
-        break;
-      }
-    } else if (orientations == 4) {
-      switch(orientation) {
-      case 0:
-        nextY--;
-        break;
-      case 1:
-        nextX++;
-        break;
-      case 2:
-        nextY++;
-        break;
-      case 3:
-        nextX--;
-        break;
-      }
-    }
-
-    //wrap the location to stay within the image bounds
-    nextX = (nextX + width) % width;
-    nextY = (nextY + height) % height;
-
+    //get and store and wrap the coordinates of our next location
+    int nextX = (getNextX(x) + width) % width; 
+    int nextY = (getNextY(y) + height) % height;
 
     // retrieve the pixels associated with our current and next location
     int eval = evaluate(evalMode, getPixel(_img, x, y), getPixel(_img, nextX, nextY) );
 
-if (eval > -1 && eval < 2){
-    if (swap[orientation][eval]) swapPixel(_img, x, y, nextX, nextY);
+    if (eval > -1 && eval < 2) {
+      if (swap[orientation][eval]) swapPixel(_img, x, y, nextX, nextY);
+      // apply the turn direction to our orientation
+      switch(turn[orientation][eval]) {
+      case 0:
+        orientation--;
+        break;
+      case 1:
+        orientation++;
+        break;
+      default:
+        break;
+      }
 
+      //wrap the orientation
+      orientation = (orientation + orientations) % orientations;
 
-    // apply the turn direction to our orientation
-    switch(turn[orientation][eval]) {
-    case 0:
-      orientation--;
-      break;
-    case 1:
-      orientation++;
-      break;
-    default:
-      break;
+      //apply the new location
+      x = nextX;
+      y = nextY;
     }
 
-    //wrap the orientation
-    orientation = (orientation + orientations) % orientations;
-
-    //apply the new location
-    x = nextX;
-    y = nextY;
-  }
     _img.updatePixels();
   }
 
@@ -155,31 +99,76 @@ if (eval > -1 && eval < 2){
     }
   }
 
-  //boolean isGreater(color _c1, color _c2) {
-  //  return _c1 > _c2;
-  //}
+  int getNextX(int _x) {
+    if (orientations == 8) {
+      switch(orientation) {
+        //0 = UP  
+      case 1: //1 = UP+RIGHT
+        return _x+1;
+      case 2: //2 = RIGHT
+        return _x+1;
+      case 3: //3 = RIGHT+DOWN
+        return _x+1;
+        //4= DOWN
+      case 5: //5 = DOWN + LEFT
+        return _x-1;
+      case 6: //6 = LEFT
+        return _x-1;
+      case 7: //7 = LEFT + UP
+        return _x-1;
+      default:
+        return _x;
+      }
+    } else if (orientations == 4) {
+      switch(orientation) {
+        //0 = UP
+      case 1: //1 =  RIGHT
+        return _x+1;
+        //2 =  DOWN
+      case 3: //3 =  LEFT
+        return _x-1;
+      default:
+        return _x;
+      }
+    } else {
+      return _x;
+    }
+  }
 
-  //boolean hIsGreater(color _c1, color _c2) {
-  //  return hue(_c1) > hue(_c2);
-  //}
 
-  //boolean sIsGreater(color _c1, color _c2) {
-  //  return saturation(_c1) > saturation(_c2);
-  //}
-
-  //boolean vIsGreater(color _c1, color _c2) {
-  //  return brightness(_c1) > brightness(_c2);
-  //}
-
-  //boolean rIsGreater(color _c1, color _c2) {
-  //  return red(_c1) > red(_c2);
-  //}
-
-  //boolean gIsGreater(color _c1, color _c2) {
-  //  return green(_c1) > green(_c2);
-  //}
-
-  //boolean bIsGreater(color _c1, color _c2) {
-  //  return blue(_c1) > blue(_c2);
-  //}
+  int getNextY(int _y) {
+    if (orientations == 8) {
+      switch(orientation) {
+      case 0: // UP
+        return _y-1;
+      case 1: // UP+RIGHT
+        return _y-1;
+        // 2 = // RIGHT
+      case 3: // DOWN + RIGHT
+        return _y+1;
+      case 4: // DOWN
+        return _y+1;
+      case 5: // DOWN + LEFT
+        return _y+1;
+        // 6 = LEFT
+      case 7: // UP + LEFT
+        return _y-1;
+      default:
+        return _y;
+      }
+    } else if (orientations == 4) {
+      switch(orientation) {
+      case 0: // UP
+        return _y-1;
+        //1 = RIGHT
+      case 2:// DOWN
+        return _y+1;
+        //3 = LEFT
+      default:
+        return _y;
+      }
+    } else {
+      return _y;
+    }
+  }
 }

@@ -134,7 +134,7 @@ class ControlFrame extends PApplet {
 
 
   void draw() {
-    background(190);
+    background(controlsBGColor);
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
         turn[o][e] = int(buttons[o][e].getValue());
