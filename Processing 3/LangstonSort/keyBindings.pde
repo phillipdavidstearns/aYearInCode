@@ -18,7 +18,7 @@ void keyPressed() {
     play = !play;
     break;
   case 'f':
-    resetBuffer();
+    resetoutput();
     break;
     case 'v':
     visible = !visible;

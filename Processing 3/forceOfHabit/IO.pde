@@ -18,7 +18,6 @@ void loadInput(String path) {
   input = loadImage(path);
   output=input.copy();
   surface.setSize(input.width, input.height);
-  randomizeAnts();
 }
 
 void saveImage() {

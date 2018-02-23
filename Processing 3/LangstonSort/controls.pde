@@ -115,7 +115,7 @@ class ControlFrame extends PApplet {
   }
   public void reset(){
     randomizeAnts();
-    resetBuffer();
+    resetoutput();
   }
   public void generate(){
     randomizeAnts();

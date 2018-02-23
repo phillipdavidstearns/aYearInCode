@@ -6,7 +6,6 @@ color min;
 color max;
 
 PImage input;
-PImage buffer;
 PImage output;
 
 boolean play;
@@ -58,13 +57,13 @@ void draw() {
 
   stroke(255);
 
-  if (buffer != null) {
-    image(buffer, 0, 0);
+  if (output != null) {
+    image(output, 0, 0);
     updateAntList();
     if (play) {
       for (int j = 0; j < iterations; j++) {
         for (Ant a : ants) {
-          a.update(buffer);
+          a.update(output);
         }
       }
       if (visible) {
@@ -80,7 +79,7 @@ void draw() {
 }
 
 void recordOutput() {
-  buffer.save(recordPath+"_"+nf(frameCounter, 4)+".png");
+  output.save(recordPath+"_"+nf(frameCounter, 4)+".png");
   frameCounter++;
 }
 
@@ -109,8 +108,8 @@ color getPixel(PImage _image, int _x, int _y) {
   return _image.pixels[_y*width+_x];
 }
 
-PImage resetBuffer() {
-  return buffer=input.copy();
+PImage resetoutput() {
+  return output=input.copy();
 }
 
 void randomizeAnts() {
