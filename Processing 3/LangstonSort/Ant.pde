@@ -20,19 +20,16 @@ class Ant {
     orientation = int(random(4));
   }
 
-  void update(PImage _img) {
-
-    _img.loadPixels();
+  void update(PImage _image) {
 
     //get and store and wrap the coordinates of our next location
     int nextX = (getNextX(x) + width) % width; 
     int nextY = (getNextY(y) + height) % height;
 
     // retrieve the pixels associated with our current and next location
-    int eval = evaluate(evalMode, getPixel(_img, x, y), getPixel(_img, nextX, nextY) );
+    int eval = evaluate(evalMode, getPixel(_image, x, y), getPixel(_image, nextX, nextY) );
 
     if (eval > -1 && eval < 2) {
-      if (swap[orientation][eval]) swapPixel(_img, x, y, nextX, nextY);
       // apply the turn direction to our orientation
       switch(turn[orientation][eval]) {
       case 0:
@@ -44,16 +41,19 @@ class Ant {
       default:
         break;
       }
-
+       
       //wrap the orientation
       orientation = (orientation + orientations) % orientations;
-
-      //apply the new location
-      x = nextX;
-      y = nextY;
+      
+      if (swap[orientation][eval]) {
+        swapPixel(_image, x, y, nextX, nextY); 
+      }
+      
     }
 
-    _img.updatePixels();
+    //apply the new location
+    x = nextX;
+    y = nextY;
   }
 
   int evaluate(String _mode, color _c1, color _c2) {

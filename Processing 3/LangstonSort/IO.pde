@@ -1,5 +1,4 @@
 void openImage() {
-  play=false;
   selectInput("Select an image to open:", "inputSelected");
 }
 
@@ -26,11 +25,12 @@ void saveImage() {
 }
 
 void outputSelected(File selection) {
-  String path;
+ 
   if (selection == null) {
     println("Window was closed or the user hit cancel.");
   } else {
-    path = selection.getAbsolutePath()+".png";
+    String[] temp = split(selection.getAbsolutePath(),'.');
+    String path = temp[0]+".png";
     println("User selected " + path);
     saveOutput(path);
   }
@@ -46,11 +46,12 @@ void selectRecordPath(){
 }
 
 void recordPathSelected(File selection) {
-  String path;
+
   if (selection == null) {
     println("Window was closed or the user hit cancel.");
   } else {
-    path = selection.getAbsolutePath();
+    String[] temp = split(selection.getAbsolutePath(),'.');
+    String path = temp[0];
     println("User selected " + path);
     recordPath=path;
   }
