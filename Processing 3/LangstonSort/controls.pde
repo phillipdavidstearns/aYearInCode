@@ -20,28 +20,51 @@ class ControlFrame extends PApplet {
     surface.setLocation(10, 10);
     cp5 = new ControlP5(this);
 
-    int yPadding=10;
-    int xPadding=10;
+
+    int radioX=10;
+    int radioY=140;
+    int radioW=20;
+    int radioH=20;
+    int radioSpacing=30;
+
+    int toggleW=20;
+    int toggleH=20;
+    int toggleX=180;
+    int toggleY=radioY;
+    int toggleSpacing=30;
+
+    int sliderX=10;
+    int sliderY=10;
+    int sliderW=200;
+    int sliderH=20;
+    int sliderSpacing=30;
+
+    int buttonX=10;
+    int buttonY=70;
+    int buttonW=20;
+    int buttonH=20;
+    int buttonSpacing=30;
+
 
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
         String name = "o"+o+"e"+e;
         buttons[o][e] = cp5.addRadioButton(name+"B")
-          .setSize(20, 20)
+          .setSize(radioW, radioH)
           .setItemsPerRow(3)
-          .setSpacingColumn(20)
-          .setSpacingRow(1)
-          .setPosition(xPadding, yPadding+(e*25)+(o*110))
-          .addItem("L"+o+e, 0)
-          .addItem("R"+o+e, 1)
-          .addItem("S"+o+e, 2)
+          .setSpacingColumn(radioSpacing)
+          .setSpacingRow(radioSpacing)
+          .setPosition(radioX, radioY+(e*radioSpacing)+(o*2*(radioH+radioSpacing)))
+          .addItem("CCW"+o+e, 0)
+          .addItem("CW"+o+e, 1)
+          .addItem("STR"+o+e, 2)
           .activate(turn[o][e])
           ;
         if (e<2) {
           toggles[o][e] = cp5.addToggle(name+"T")
             .setLabel("SW"+o+e)
-            .setSize(20, 20)
-            .setPosition(xPadding+150, yPadding+(e*25)+(o*110))
+            .setSize(toggleW, toggleH)
+            .setPosition(toggleX, toggleY+(e*toggleSpacing)+(o*2*(radioH+radioSpacing)))
             .setValue(swap[o][e])
             ;
         }
@@ -50,58 +73,65 @@ class ControlFrame extends PApplet {
     }
 
     cp5.addSlider("iterationSlider")
-      .setPosition(200, yPadding)
+      .setLabel("Iterations")
+      .setPosition(sliderX, sliderY+(0*sliderSpacing))
       .setRange(1, maxIterations)
-      .setSize(300, 20)
+      .setSize(sliderW, sliderH)
       .setValue(iterations);
     ;
 
     cp5.addSlider("qtyAntsSlider")
-      .setPosition(200, yPadding+(1*25))
+      .setLabel("# of Ants")
+      .setPosition(sliderX, sliderY+(1*sliderSpacing))
       .setRange(1, maxAnts)
-      .setSize(300, 20)
+      .setSize(sliderW, sliderH)
       .setValue(qtyAnts);
     ;
 
+
+    //play controls
+      
+    cp5.addButton("open")
+      .setLabel("O")
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(0*buttonSpacing), buttonY+(0*buttonSpacing))
+      ;
+    cp5.addButton("save")
+      .setLabel("S")
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(0*buttonSpacing), buttonY+(1*buttonSpacing))
+      ;
+      
     cp5.addToggle("playToggle")
       .setLabel("RUN")
-      .setSize(20, 20)
-      .setPosition(220, yPadding+(2*25))
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(1*buttonSpacing), buttonY+(0*buttonSpacing))
       ;
     cp5.addToggle("recordToggle")
       .setLabel("REC")
-      .setSize(20, 20)
-      .setPosition(220, yPadding+(3*25))
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(1*buttonSpacing), buttonY+(1*buttonSpacing))
       ;
 
     cp5.addButton("reset")
       .setLabel("RST")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(2*25))
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(2*buttonSpacing), buttonY+(0*buttonSpacing))
       ;
 
     cp5.addButton("generate")
       .setLabel("GEN")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(3*25))
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(2*buttonSpacing), buttonY+(1*buttonSpacing))
       ;
 
     cp5.addButton("randomize")
       .setLabel("RND")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(4*25))
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(3*buttonSpacing), buttonY+(0*buttonSpacing))
       ;
 
-    cp5.addButton("open")
-      .setLabel("O")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(5*25))
-      ;
-    cp5.addButton("save")
-      .setLabel("S")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(6*25))
-      ;
+
   }
 
   public void playToggle(boolean _value) {
@@ -110,13 +140,15 @@ class ControlFrame extends PApplet {
 
   public void recordToggle(boolean _value) {
     cp5.getController("playToggle").setValue(0);
-    if(_value) selectRecordPath();
+    if (_value) selectRecordPath();
     record = _value;
     frameCounter=0;
   }
   public void reset() {
-    randomizeAnts();
-    resetoutput();
+    if (output!=null) {
+      randomizeAnts();
+      resetoutput();
+    }
   }
   public void generate() {
     randomizeAnts();
@@ -153,7 +185,7 @@ class ControlFrame extends PApplet {
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
         buttons[o][e].activate(turn[o][e]);
-        if(e<2)toggles[o][e].setValue(swap[o][e]);
+        if (e<2)toggles[o][e].setValue(swap[o][e]);
       }
     }
   }

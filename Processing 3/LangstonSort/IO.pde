@@ -1,3 +1,4 @@
+// Opening an Image
 void openImage() {
   selectInput("Select an image to open:", "inputSelected");
 }
@@ -20,6 +21,7 @@ void loadInput(String path) {
   randomizeAnts();
 }
 
+//Saving an Image
 void saveImage() {
   selectOutput("Save to file:", "outputSelected");
 }
@@ -40,14 +42,14 @@ void saveOutput(String path) {
   saveFrame(path);
 }
 
-
+// Setting up a record path
 void selectRecordPath(){
   selectOutput("Save to file:", "recordPathSelected");
 }
 
 void recordPathSelected(File selection) {
-
   if (selection == null) {
+    controls.cp5.getController("recordToggle").setValue(0);
     println("Window was closed or the user hit cancel.");
   } else {
     String[] temp = split(selection.getAbsolutePath(),'.');

@@ -28,27 +28,26 @@ class Ant {
 
     // retrieve the pixels associated with our current and next location
     int eval = evaluate(evalMode, getPixel(_image, x, y), getPixel(_image, nextX, nextY) );
-
+    
+    if (swap[orientation][eval]) {
+      swapPixel(_image, x, y, nextX, nextY);
+    }
+    
     if (eval > -1 && eval < 2) {
       // apply the turn direction to our orientation
       switch(turn[orientation][eval]) {
-      case 0:
+      case 0: // counter clockwise
         orientation--;
         break;
-      case 1:
+      case 1: // clockwise
         orientation++;
         break;
       default:
         break;
       }
-       
-      //wrap the orientation
+
+      //keep the orientation in bounds
       orientation = (orientation + orientations) % orientations;
-      
-      if (swap[orientation][eval]) {
-        swapPixel(_image, x, y, nextX, nextY); 
-      }
-      
     }
 
     //apply the new location

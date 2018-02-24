@@ -15,8 +15,8 @@ boolean simple = true; //whether there are 8 or 4 orientations
 
 int iterations = 10;
 
-int maxIterations=2500;
-int maxAnts=25000;
+int maxIterations=1000;
+int maxAnts=10000;
 int orientations; // UP, DOWN, LEFT, RIGHT
 int evaluations = 3;  // <, >, ==
 int directions = 3;    // Left, Right, Straight
@@ -42,34 +42,19 @@ void settings() {
 }
 
 void setup() {
-
-  if (simple) {
-    orientations = 4;
-  } else {
-    orientations = 8;
-  }
-
-  turn = new int[orientations][evaluations];
-  swap = new boolean[orientations][evaluations];
-
-  buttons = new RadioButton[orientations][evaluations];
-  toggles = new Toggle[orientations][evaluations];
-
-
+  initializeRules();
   createControlWindow();
-
   surface.setLocation(420, 10);
+  
   play = false;
   record=false;
   visible = false;
-
   evalMode = new String("RGB");
 
   for (int i = 0; i < qtyAnts; i++) {
     ants.add(new Ant());
   }
 
-  generateRules();
 }
 
 void draw() {
@@ -85,11 +70,7 @@ void draw() {
           a.update(output);
         }
       }
-      if (visible) {
-        for (Ant a : ants) {
-          point(a.x, a.y);
-        }
-      }
+      if (visible) for (Ant a : ants) point(a.x, a.y);
       if (record) {
         recordOutput();
       }
@@ -111,7 +92,7 @@ void generateRules() {
   for (int o = 0; o < orientations; o++) {
     for (int e = 0; e < evaluations; e++) {
       turn[o][e] = int(random(directions));
-      if(e<2)swap[o][e] = boolean(int(random(2)));
+      if (e<2)swap[o][e] = boolean(int(random(2)));
     }
   }
 }
@@ -138,13 +119,31 @@ void randomizeAnts() {
     a.randomize();
   }
 }
+
+void initializeRules() {
+  
+  if (simple) {
+    orientations = 4;
+  } else {
+    orientations = 8;
+  }
+
+  turn = new int[orientations][evaluations];
+  swap = new boolean[orientations][evaluations];
+
+  buttons = new RadioButton[orientations][evaluations];
+  toggles = new Toggle[orientations][evaluations];
+ 
+  generateRules();
+}
+
 void createControlWindow() {
   int _w;
   int _h;
 
   if (simple) {
-    _w = 600;
-    _h = 450;
+    _w = 275;
+    _h = 525;
   } else {
     _w = 600;
     _h = 900;
