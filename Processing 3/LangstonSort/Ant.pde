@@ -29,9 +29,8 @@ class Ant {
     // retrieve the pixels associated with our current and next location
     int eval = evaluate(evalMode, getPixel(_image, x, y), getPixel(_image, nextX, nextY) );
     
-    if (swap[orientation][eval]) {
-      swapPixel(_image, x, y, nextX, nextY);
-    }
+    if (swap[orientation][eval]) swapPixel(_image, x, y, nextX, nextY);
+    
     
     if (eval > -1 && eval < 2) {
       // apply the turn direction to our orientation
@@ -63,11 +62,13 @@ class Ant {
       return evaluate(hue(_c1), hue(_c2));
     case "SAT":
       return evaluate(saturation(_c1), saturation(_c2));
+      case "VAL":
+      return evaluate(brightness(_c1), brightness(_c2));
     case "RED":
       return evaluate(red(_c1), red(_c2));
-    case "GREEN":
+    case "GRN":
       return evaluate(green(_c1), green(_c2));
-    case "BLUE":
+    case "BLU":
       return evaluate(blue(_c1), blue(_c2));
     default:
       return -1;
@@ -99,7 +100,7 @@ class Ant {
   }
 
   int getNextX(int _x) {
-    if (orientations == 8) {
+    if (!simple) {
       switch(orientation) {
         //0 = UP  
       case 1: //1 = UP+RIGHT
@@ -118,7 +119,7 @@ class Ant {
       default:
         return _x;
       }
-    } else if (orientations == 4) {
+    } else {
       switch(orientation) {
         //0 = UP
       case 1: //1 =  RIGHT
@@ -129,14 +130,12 @@ class Ant {
       default:
         return _x;
       }
-    } else {
-      return _x;
     }
   }
 
 
   int getNextY(int _y) {
-    if (orientations == 8) {
+    if (!simple) {
       switch(orientation) {
       case 0: // UP
         return _y-1;
@@ -155,7 +154,7 @@ class Ant {
       default:
         return _y;
       }
-    } else if (orientations == 4) {
+    } else {
       switch(orientation) {
       case 0: // UP
         return _y-1;
@@ -166,8 +165,7 @@ class Ant {
       default:
         return _y;
       }
-    } else {
-      return _y;
     }
   }
+  
 }

@@ -1,4 +1,4 @@
-class ControlFrame extends PApplet {
+public class ControlFrame extends PApplet {
 
   int w, h;
   PApplet parent;
@@ -20,18 +20,18 @@ class ControlFrame extends PApplet {
     surface.setLocation(10, 10);
     cp5 = new ControlP5(this);
 
-
+    int radioColSpacing = 220;
     int radioX=10;
-    int radioY=140;
+    int radioY=190;
     int radioW=20;
     int radioH=20;
-    int radioSpacing=30;
+    int radioSpacing=25;
 
     int toggleW=20;
     int toggleH=20;
-    int toggleX=180;
+    int toggleX=160;
     int toggleY=radioY;
-    int toggleSpacing=30;
+    int toggleSpacing=25;
 
     int sliderX=10;
     int sliderY=10;
@@ -40,21 +40,28 @@ class ControlFrame extends PApplet {
     int sliderSpacing=30;
 
     int buttonX=10;
-    int buttonY=70;
+    int buttonY=115;
     int buttonW=20;
     int buttonH=20;
-    int buttonSpacing=30;
+    int radiospacing=30;
 
+    int modeRadioX=10;
+    int modeRadioY=70;
+    int modeRadioW=20;
+    int modeRadioH=20;
+    int modeRadioSpacing=20;
 
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
+        int col=0;
+        if (o > 3) col=1;
         String name = "o"+o+"e"+e;
-        buttons[o][e] = cp5.addRadioButton(name+"B")
+        radios[o][e] = cp5.addRadioButton(name+"R")
           .setSize(radioW, radioH)
           .setItemsPerRow(3)
           .setSpacingColumn(radioSpacing)
           .setSpacingRow(radioSpacing)
-          .setPosition(radioX, radioY+(e*radioSpacing)+(o*2*(radioH+radioSpacing)))
+          .setPosition(radioX+(col*radioColSpacing), radioY+(e*radioSpacing)+((o%4)*2*(radioH+radioSpacing)))
           .addItem("CCW"+o+e, 0)
           .addItem("CW"+o+e, 1)
           .addItem("STR"+o+e, 2)
@@ -64,13 +71,29 @@ class ControlFrame extends PApplet {
           toggles[o][e] = cp5.addToggle(name+"T")
             .setLabel("SW"+o+e)
             .setSize(toggleW, toggleH)
-            .setPosition(toggleX, toggleY+(e*toggleSpacing)+(o*2*(radioH+radioSpacing)))
+            .setPosition(toggleX+(col*radioColSpacing), toggleY+(e*toggleSpacing)+((o%4)*2*(radioH+radioSpacing)))
             .setValue(swap[o][e])
             ;
         }
-        println();
       }
     }
+
+    cp5.addRadioButton("evalModeRadio")
+      .setLabel("evalMode")
+      .setSize(modeRadioW, modeRadioH)
+      .setItemsPerRow(8)
+      .setSpacingColumn(modeRadioSpacing)
+      .setSpacingRow(modeRadioSpacing)
+      .setPosition(modeRadioX, modeRadioY+(0*modeRadioSpacing)+(0*2*(modeRadioH+modeRadioSpacing)))
+      .addItem("RGB", 0)
+      .addItem("HUE", 1)
+      .addItem("SAT", 2)
+      .addItem("VAL", 3)
+      .addItem("RED", 4)
+      .addItem("GRN", 5)
+      .addItem("BLU", 6)
+      .activate(0)
+      ;
 
     cp5.addSlider("iterationSlider")
       .setLabel("Iterations")
@@ -90,74 +113,85 @@ class ControlFrame extends PApplet {
 
 
     //play controls
-      
+
     cp5.addButton("open")
       .setLabel("O")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(0*buttonSpacing), buttonY+(0*buttonSpacing))
+      .setPosition(buttonX+(0*radiospacing), buttonY+(0*radiospacing))
       ;
     cp5.addButton("save")
       .setLabel("S")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(0*buttonSpacing), buttonY+(1*buttonSpacing))
+      .setPosition(buttonX+(0*radiospacing), buttonY+(1*radiospacing))
       ;
-      
+
     cp5.addToggle("playToggle")
       .setLabel("RUN")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(1*buttonSpacing), buttonY+(0*buttonSpacing))
+      .setPosition(buttonX+(1*radiospacing), buttonY+(0*radiospacing))
       ;
     cp5.addToggle("recordToggle")
       .setLabel("REC")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(1*buttonSpacing), buttonY+(1*buttonSpacing))
+      .setPosition(buttonX+(1*radiospacing), buttonY+(1*radiospacing))
       ;
 
     cp5.addButton("reset")
       .setLabel("RST")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(2*buttonSpacing), buttonY+(0*buttonSpacing))
+      .setPosition(buttonX+(2*radiospacing), buttonY+(0*radiospacing))
       ;
 
     cp5.addButton("generate")
       .setLabel("GEN")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(2*buttonSpacing), buttonY+(1*buttonSpacing))
+      .setPosition(buttonX+(2*radiospacing), buttonY+(1*radiospacing))
       ;
 
     cp5.addButton("randomize")
       .setLabel("RND")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(3*buttonSpacing), buttonY+(0*buttonSpacing))
+      .setPosition(buttonX+(3*radiospacing), buttonY+(0*radiospacing))
       ;
-
-
+    cp5.addToggle("antVisibleToggle")
+      .setLabel("VIS")
+      .setSize(buttonW, buttonH)
+      .setPosition(buttonX+(3*radiospacing), buttonY+(1*radiospacing))
+      ;
+    //cp5.addToggle("simpleToggle")
+    //  .setLabel("4/8")
+    //  .setSize(buttonW, buttonH)
+    //  .setPosition(buttonX+(4*radiospacing), buttonY+(0*radiospacing))
+    //  ;
   }
 
-  public void playToggle(boolean _value) {
-    play = _value;
-  }
 
-  public void recordToggle(boolean _value) {
-    cp5.getController("playToggle").setValue(0);
-    if (_value) selectRecordPath();
-    record = _value;
-    frameCounter=0;
-  }
-  public void reset() {
-    if (output!=null) {
-      randomizeAnts();
-      resetoutput();
+  public void evalModeRadio(int _mode) {
+    switch(_mode) {
+    case 0: 
+      evalMode = "RGB"; 
+      break;
+    case 1: 
+      evalMode = "HUE"; 
+      break;
+    case 2: 
+      evalMode = "SAT"; 
+      break;
+    case 3: 
+      evalMode = "VAL"; 
+      break;
+    case 4: 
+      evalMode = "RED"; 
+      break;
+    case 5: 
+      evalMode = "GRN"; 
+      break;
+    case 6: 
+      evalMode = "BLU"; 
+      break;
     }
   }
-  public void generate() {
-    randomizeAnts();
-    generateNewRules();
-  }
 
-  public void randomize() {
-    randomizeAnts();
-  }
   public void open() {
     cp5.getController("playToggle").setValue(0);
     openImage();
@@ -167,13 +201,50 @@ class ControlFrame extends PApplet {
     saveImage();
   }
 
+  public void playToggle(boolean _value) {
+    play = _value;
+  }
+  public void recordToggle(boolean _value) {
+    cp5.getController("playToggle").setValue(0);
+    if (_value) selectRecordPath();
+    record = _value;
+    frameCounter=0;
+  }
+
+  public void reset() {
+    if (output!=null) {
+      randomizeAnts();
+      resetOutput();
+    }
+  }
+  public void generate() {
+    randomizeAnts();
+    generateNewRules();
+  }
+
+
+  public void randomize() {
+    randomizeAnts();
+  }
+
+  public void antVisibleToggle(boolean _value) {
+    visible = _value;
+  }
+
+  //To do: have a toggle dynamically switch between simple and complex mode, 4 and 8 directions, respectively.
+  //public void simpleToggle(int _val) {
+  //pseudocode:
+  //destroyThisControllerFrame()
+  //reinitializeRules()
+  //createNewControllerFrame()
+  //}
 
   void draw() {
     background(controlsBGColor);
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
-        turn[o][e] = int(buttons[o][e].getValue());
-        if (e<2)swap[o][e] = boolean(int(toggles[o][e].getValue()));
+        turn[o][e] = int(radios[o][e].getValue());
+        if (e<2) swap[o][e] = boolean(int(toggles[o][e].getValue()));
       }
     }
     iterations = int(cp5.getValue("iterationSlider"));
@@ -182,11 +253,38 @@ class ControlFrame extends PApplet {
 
   void generateNewRules() {
     generateRules();
+    //update radios and radios
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
-        buttons[o][e].activate(turn[o][e]);
-        if (e<2)toggles[o][e].setValue(swap[o][e]);
+        radios[o][e].activate(turn[o][e]);
+        if (e<2) toggles[o][e].setValue(swap[o][e]);
       }
+    }
+  }
+  //key bindings
+  void keyPressed() {
+    switch(key) {
+    case 'o': //open
+      openImage();
+      break;
+    case 's': //save
+      saveImage();
+      break;
+    case 'r': //randomize ant locations
+      if (ants != null) randomize();
+      break;
+    case 'g': //generate random rule set
+      controls.generateNewRules();
+      break;
+    case RETURN:
+      play = !play;
+      break;
+    case 'f': 
+      reset();
+      break;
+    case 'v':
+      cp5.getController("antVisibleToggle").setValue(int(!visible));
+      break;
     }
   }
 }
