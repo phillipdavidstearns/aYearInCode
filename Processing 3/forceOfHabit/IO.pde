@@ -15,9 +15,12 @@ void inputSelected(File selection) {
 }
 
 void loadInput(String path) {
+  output = null;
   input = loadImage(path);
-  output=input.copy();
   surface.setSize(input.width, input.height);
+  generateGrid();
+  output=input.copy();
+  image(output, 0, 0);
 }
 
 void saveImage() {

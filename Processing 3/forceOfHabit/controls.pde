@@ -20,39 +20,40 @@ class ControlFrame extends PApplet {
     surface.setLocation(10, 10);
     cp5 = new ControlP5(this);
 
-    int yPadding=10;
-    int xPadding=10;
-
+    int buttonsX=10;
+    int buttonsY=10;
+    int buttonsW=30;
+    int buttonsH=30;
+    int buttonsSpacing=50;
 
 
      
     cp5.addToggle("playToggle")
       .setLabel("RUN")
-      .setSize(20, 20)
-      .setPosition(220, yPadding+(2*25))
+      .setSize(buttonsW, buttonsH)
+      .setPosition(buttonsX+(0*buttonsSpacing),buttonsY+(0*buttonsSpacing))
       ;
       cp5.addToggle("recordToggle")
       .setLabel("REC")
-      .setSize(20, 20)
-      .setPosition(220, yPadding+(3*25))
+      .setSize(buttonsW, buttonsH)
+      .setPosition(buttonsX+(1*buttonsSpacing),buttonsY+(0*buttonsSpacing))
       ;
-
-    cp5.addButton("reset")
-      .setLabel("RST")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(2*25))
-      ;
-      
       cp5.addButton("open")
       .setLabel("O")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(3*25))
+      .setSize(buttonsW, buttonsH)
+      .setPosition(buttonsX+(0*buttonsSpacing),buttonsY+(1*buttonsSpacing))
       ;
       cp5.addButton("save")
       .setLabel("S")
-      .setSize(20, 20)
-      .setPosition(270, yPadding+(4*25))
+      .setSize(buttonsW, buttonsH)
+      .setPosition(buttonsX+(1*buttonsSpacing),buttonsY+(1*buttonsSpacing))
       ;
+      cp5.addButton("reset")
+      .setLabel("RST")
+      .setSize(buttonsW, buttonsH)
+      .setPosition(buttonsX+(0*buttonsSpacing),buttonsY+(2*buttonsSpacing))
+      ;
+      
   }
   
   public void playToggle(boolean _value){
