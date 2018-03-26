@@ -276,8 +276,8 @@ public class ControlFrame extends PApplet {
     case 'g': //generate random rule set
       controls.generateNewRules();
       break;
-    case RETURN:
-      play = !play;
+    case 'p':
+      cp5.getController("playToggle").setValue(int(!play));
       break;
     case 'f': 
       reset();

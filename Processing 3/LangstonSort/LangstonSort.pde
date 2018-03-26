@@ -13,7 +13,7 @@ boolean record;
 boolean visible;
 boolean simple = true; //whether there are 8 or 4 orientations, am trying to figure out how best to make this selectable later
 
-int iterations = 100;
+int iterations = 10;
 
 int maxIterations=1000;
 int maxAnts=10000;
@@ -35,7 +35,7 @@ boolean[][] swap = new boolean[orientations][evaluations];
 RadioButton[][] radios = new RadioButton[orientations][evaluations];
 Toggle[][] toggles = new Toggle[orientations][evaluations];
 
-int qtyAnts = 5000;
+int qtyAnts = 500;
 ArrayList<Ant> ants = new ArrayList<Ant>();
 
 void settings() {
