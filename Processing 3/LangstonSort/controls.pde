@@ -40,10 +40,10 @@ public class ControlFrame extends PApplet {
     int sliderSpacing=30;
 
     int buttonX=10;
-    int buttonY=115;
+    int buttonY=110;
     int buttonW=20;
     int buttonH=20;
-    int radiospacing=30;
+    int buttonspacing=35;
 
     int modeRadioX=10;
     int modeRadioY=70;
@@ -117,46 +117,46 @@ public class ControlFrame extends PApplet {
     cp5.addButton("open")
       .setLabel("O")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(0*radiospacing), buttonY+(0*radiospacing))
+      .setPosition(buttonX+(0*buttonspacing), buttonY+(0*buttonspacing))
       ;
     cp5.addButton("save")
       .setLabel("S")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(0*radiospacing), buttonY+(1*radiospacing))
+      .setPosition(buttonX+(0*buttonspacing), buttonY+(1*buttonspacing))
       ;
 
     cp5.addToggle("playToggle")
       .setLabel("RUN")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(1*radiospacing), buttonY+(0*radiospacing))
+      .setPosition(buttonX+(1*buttonspacing), buttonY+(0*buttonspacing))
       ;
     cp5.addToggle("recordToggle")
       .setLabel("REC")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(1*radiospacing), buttonY+(1*radiospacing))
+      .setPosition(buttonX+(1*buttonspacing), buttonY+(1*buttonspacing))
       ;
 
     cp5.addButton("reset")
       .setLabel("RST")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(2*radiospacing), buttonY+(0*radiospacing))
+      .setPosition(buttonX+(2*buttonspacing), buttonY+(0*buttonspacing))
       ;
 
     cp5.addButton("generate")
       .setLabel("GEN")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(2*radiospacing), buttonY+(1*radiospacing))
+      .setPosition(buttonX+(2*buttonspacing), buttonY+(1*buttonspacing))
       ;
 
     cp5.addButton("randomize")
       .setLabel("RND")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(3*radiospacing), buttonY+(0*radiospacing))
+      .setPosition(buttonX+(3*buttonspacing), buttonY+(0*buttonspacing))
       ;
     cp5.addToggle("antVisibleToggle")
       .setLabel("VIS")
       .setSize(buttonW, buttonH)
-      .setPosition(buttonX+(3*radiospacing), buttonY+(1*radiospacing))
+      .setPosition(buttonX+(3*buttonspacing), buttonY+(1*buttonspacing))
       ;
     //cp5.addToggle("simpleToggle")
     //  .setLabel("4/8")
