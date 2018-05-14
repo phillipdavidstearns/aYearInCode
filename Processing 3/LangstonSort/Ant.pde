@@ -26,14 +26,18 @@ class Ant {
     int nextX = (getNextX(x) + width) % width; 
     int nextY = (getNextY(y) + height) % height;
 
-    // retrieve the pixels associated with our current and next location
+    // retrieve and evaluate the pixels associated with our current and next location
     int eval = evaluate(evalMode, getPixel(_image, x, y), getPixel(_image, nextX, nextY) );
-    
+
+    //refer to the rules and swap if appropriate
     if (swap[orientation][eval]) swapPixel(_image, x, y, nextX, nextY);
-    
-    
+
+    //apply the new location
+    x = nextX;
+    y = nextY;
+
+    //update the orientation of the ant
     if (eval > -1 && eval < 2) {
-      // apply the turn direction to our orientation
       switch(turn[orientation][eval]) {
       case 0: // counter clockwise
         orientation--;
@@ -44,16 +48,12 @@ class Ant {
       default:
         break;
       }
-
-      //keep the orientation in bounds
+      //wrap the orientation value
       orientation = (orientation + orientations) % orientations;
     }
-
-    //apply the new location
-    x = nextX;
-    y = nextY;
   }
 
+  //tells us wehther the next pixel is < ,> , = the current pixel
   int evaluate(String _mode, color _c1, color _c2) {
     switch(_mode) {
     case "RGB":
@@ -62,7 +62,7 @@ class Ant {
       return evaluate(hue(_c1), hue(_c2));
     case "SAT":
       return evaluate(saturation(_c1), saturation(_c2));
-      case "VAL":
+    case "VAL":
       return evaluate(brightness(_c1), brightness(_c2));
     case "RED":
       return evaluate(red(_c1), red(_c2));
@@ -167,5 +167,4 @@ class Ant {
       }
     }
   }
-  
 }

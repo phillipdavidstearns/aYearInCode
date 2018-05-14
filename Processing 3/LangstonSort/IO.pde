@@ -2,7 +2,7 @@
 void openImage() {
   selectInput("Select an image to open:", "inputSelected");
 }
-
+//--------------------------------------------------------------------------------------------
 void inputSelected(File selection) {
   String path;
   if (selection == null) {
@@ -13,19 +13,19 @@ void inputSelected(File selection) {
     loadInput(path);
   }
 }
-
+//--------------------------------------------------------------------------------------------
 void loadInput(String path) {
   input = loadImage(path);
   output=input.copy();
   surface.setSize(input.width, input.height);
   randomizeAnts();
 }
-
+//--------------------------------------------------------------------------------------------
 //Saving an Image
 void saveImage() {
   selectOutput("Save to file:", "outputSelected");
 }
-
+//--------------------------------------------------------------------------------------------
 void outputSelected(File selection) {
  
   if (selection == null) {
@@ -37,16 +37,16 @@ void outputSelected(File selection) {
     saveOutput(path);
   }
 }
-
+//--------------------------------------------------------------------------------------------
 void saveOutput(String path) {
   saveFrame(path);
 }
-
+//--------------------------------------------------------------------------------------------
 // Setting up a record path
 void selectRecordPath(){
   selectOutput("Save to file:", "recordPathSelected");
 }
-
+//--------------------------------------------------------------------------------------------
 void recordPathSelected(File selection) {
   if (selection == null) {
     controls.cp5.getController("recordToggle").setValue(0);

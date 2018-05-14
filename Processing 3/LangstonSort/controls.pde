@@ -19,7 +19,29 @@ public class ControlFrame extends PApplet {
   public void setup() {
     surface.setLocation(10, 10);
     cp5 = new ControlP5(this);
+    
+    //positions of the basic Load, Save, Play, Etc controls
+    int buttonX=10;
+    int buttonY=10;
+    int buttonW=20;
+    int buttonH=20;
+    int buttonspacing=35;
+    
+    //iteration and quantity sliders
+    int sliderX=10;
+    int sliderY=85;
+    int sliderW=200;
+    int sliderH=20;
+    int sliderSpacing=30;
+    
+    //evaluation mode selector
+    int modeRadioX=10;
+    int modeRadioY=150;
+    int modeRadioW=20;
+    int modeRadioH=20;
+    int modeRadioSpacing=20;
 
+    //rule radios
     int radioColSpacing = 220;
     int radioX=10;
     int radioY=190;
@@ -27,29 +49,12 @@ public class ControlFrame extends PApplet {
     int radioH=20;
     int radioSpacing=25;
 
+    //swap toggles
     int toggleW=20;
     int toggleH=20;
     int toggleX=160;
     int toggleY=radioY;
     int toggleSpacing=25;
-
-    int sliderX=10;
-    int sliderY=10;
-    int sliderW=200;
-    int sliderH=20;
-    int sliderSpacing=30;
-
-    int buttonX=10;
-    int buttonY=110;
-    int buttonW=20;
-    int buttonH=20;
-    int buttonspacing=35;
-
-    int modeRadioX=10;
-    int modeRadioY=70;
-    int modeRadioW=20;
-    int modeRadioH=20;
-    int modeRadioSpacing=20;
 
     for ( int o = 0; o < orientations; o++) {
       for (int e = 0; e < evaluations; e++) {
@@ -261,6 +266,7 @@ public class ControlFrame extends PApplet {
       }
     }
   }
+  
   //key bindings
   void keyPressed() {
     switch(key) {
