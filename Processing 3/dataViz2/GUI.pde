@@ -1,20 +1,43 @@
+boolean shift = false;
+
 void keyPressed() {
   //    println(keyCode);
-  switch(keyCode) {
-  case 38: //UPARROW
-    frame_inc(screen_height-1);
-    break;
-  case 40: //DOWNARROW
-    frame_dec(screen_height-1);
-    break;
-  case 37: //LEFTARROW
-    if (bit_offset>0) bit_offset-=1;
-    ;
-    break;
-  case 39: //RIGHTARROW
-    bit_offset+=1;
-    ;
-    break;
+  if (keyCode == SHIFT) shift = true;
+
+  if (shift) {
+    switch(keyCode) {
+    case 38: //UPARROW
+      frame_inc(1);
+      break;
+    case 40: //DOWNARROW
+      frame_dec(1);
+      break;
+    case 37: //LEFTARROW
+      if (bit_offset>0) bit_offset-=1;
+      ;
+      break;
+    case 39: //RIGHTARROW
+      bit_offset+=1;
+      ;
+      break;
+    }
+  } else {
+    switch(keyCode) {
+    case 38: //UPARROW
+      frame_inc(screen_height-1);
+      break;
+    case 40: //DOWNARROW
+      frame_dec(screen_height-1);
+      break;
+    case 37: //LEFTARROW
+      if (pixel_offset>0) pixel_offset-=1;
+      ;
+      break;
+    case 39: //RIGHTARROW
+      pixel_offset+=1;
+      ;
+      break;
+    }
   }
   /*
   Key Bindings:
@@ -40,12 +63,12 @@ void keyPressed() {
   case 'O':
     save_file();
     break;
-    case '0':
+  case '0':
     mode^=0x1;
-    if (mode == 0){
-     println("color mode = RGB");
-    } else if (mode == 1){
-    println("color more = Greyscale");
+    if (mode == 0) {
+      println("color mode = RGB");
+    } else if (mode == 1) {
+      println("color more = Greyscale");
     } else {
       println("You broke the matrix.");
     }
@@ -126,30 +149,33 @@ void keyPressed() {
     if (chan3_depth > 0) set_chan3_depth(chan3_depth-1);
     println("Channel 3 Depth = "+chan3_depth);
     break;
-    case '(': //decrease greyscale bit depth
+  case '(': //decrease greyscale bit depth
     if (depth>1) depth--;
     println("Greyscale bit depth = "+depth);
     break;
-    case ')': //increase greyscale bit depth 
+  case ')': //increase greyscale bit depth 
     if (depth<24) depth++;
     println("Greyscale bit depth = "+depth);
     break;
-    case '[': //decrease window width by 1 pixel
+  case '[': //decrease window width by 1 pixel
     set_window_width(width-1);
     break;
-    case ']': //increase window width by 1 pixel
+  case ']': //increase window width by 1 pixel
     set_window_width(width+1);
     break;
-    case '{': //decrease window height by 1 pixel
+  case '{': //decrease window height by 1 pixel
     set_window_height(height-1);
     break;
-    case '}': //increase window height by 1 pixel
+  case '}': //increase window height by 1 pixel
     set_window_height(height+1);
     break;
   }
   redraw();
 }
 
+void keyReleased() {
+  if (keyCode == SHIFT) shift = false;
+}
 
 
 
