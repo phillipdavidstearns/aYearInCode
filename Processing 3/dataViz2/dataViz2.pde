@@ -25,8 +25,8 @@ boolean red_invert_pre=false;
 boolean green_invert_pre=false;
 boolean blue_invert_pre=false;
 
-int screen_width = 768/2;
-int screen_height = 1000/2;
+int screen_width = 768/4;
+int screen_height = 1000/4;
 
 void setup() {
   size(10, 10);
@@ -79,7 +79,13 @@ void loadData(String thePath) {
   raw_bytes = loadBytes(thePath);
   raw_bits = new byte[raw_bytes.length*8];
   bytes_to_bits();
+<<<<<<< HEAD
   init();
+=======
+  bit_offset = 0; // skips bits 
+  pixel_offset = 0; // skips pixels
+
+>>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e
   redraw();
 }
 
@@ -210,3 +216,13 @@ void bits_to_pixels() {
   }
   updatePixels();
 }
+<<<<<<< HEAD
+=======
+ 
+
+
+
+
+
+  
+>>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e
