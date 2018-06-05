@@ -2,10 +2,10 @@ void keyPressed() {
   //    println(keyCode);
   switch(keyCode) {
   case 38: //UPARROW
-    frame_inc(screen_height-1);
+    frame_inc(height/4);
     break;
   case 40: //DOWNARROW
-    frame_dec(screen_height-1);
+    frame_dec(height/4);
     break;
   case 37: //LEFTARROW
     if (bit_offset>0) bit_offset-=1;
@@ -99,8 +99,8 @@ void keyPressed() {
     println("blue_invert_pre = "+blue_invert_pre);
     break;
   case 'z':
-    invert=!invert;
-    println("invert = "+invert);
+    bw_invert=!bw_invert;
+    println("invert = "+bw_invert);
     break;
   case 'r': //incrase red channel bit depth
     if (chan1_depth < 8) set_chan1_depth(chan1_depth+1);
@@ -127,12 +127,12 @@ void keyPressed() {
     println("Channel 3 Depth = "+chan3_depth);
     break;
     case '(': //decrease greyscale bit depth
-    if (depth>1) depth--;
-    println("Greyscale bit depth = "+depth);
+    if (bw_depth>1) bw_depth--;
+    println("Greyscale bit depth = "+bw_depth);
     break;
     case ')': //increase greyscale bit depth 
-    if (depth<24) depth++;
-    println("Greyscale bit depth = "+depth);
+    if (bw_depth<24) bw_depth++;
+    println("Greyscale bit depth = "+bw_depth);
     break;
     case '[': //decrease window width by 1 pixel
     set_window_width(width-1);
@@ -180,8 +180,6 @@ void outputSelection(File output) {
   }
 }
 
-
-
 public void set_window_width(int _width) {
   if (int(_width) != 0) {
     setScreenSize(_width, height);
@@ -221,7 +219,7 @@ public void mode(int value) {
 }
 
 public void depth(int value) {
-  depth = value;
+  bw_depth = value;
   if (mode == 1) {
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
   }
