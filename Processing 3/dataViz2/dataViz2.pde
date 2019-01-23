@@ -3,9 +3,6 @@
  * revised 2017
  */
 
-
-
-
 byte[] raw_bytes, raw_bits;
 
 int mode=0; // 0 = RGB , 1 = Greyscale
@@ -79,13 +76,9 @@ void loadData(String thePath) {
   raw_bytes = loadBytes(thePath);
   raw_bits = new byte[raw_bytes.length*8];
   bytes_to_bits();
-<<<<<<< HEAD
-  init();
-=======
+
   bit_offset = 0; // skips bits 
   pixel_offset = 0; // skips pixels
-
->>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e
   redraw();
 }
 
@@ -216,13 +209,3 @@ void bits_to_pixels() {
   }
   updatePixels();
 }
-<<<<<<< HEAD
-=======
- 
-
-
-
-
-
-  
->>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e

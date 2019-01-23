@@ -2,7 +2,7 @@ boolean shift = false;
 
 void keyPressed() {
   //    println(keyCode);
-<<<<<<< HEAD
+
   switch(keyCode) {
   case 38: //UPARROW
     frame_inc(height/4);
@@ -18,7 +18,8 @@ void keyPressed() {
     bit_offset+=1;
     ;
     break;
-=======
+  }
+
   if (keyCode == SHIFT) shift = true;
 
   if (shift) {
@@ -55,7 +56,6 @@ void keyPressed() {
       ;
       break;
     }
->>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e
   }
   /*
   Key Bindings:
@@ -167,24 +167,13 @@ void keyPressed() {
     if (chan3_depth > 0) set_chan3_depth(chan3_depth-1);
     println("Channel 3 Depth = "+chan3_depth);
     break;
-<<<<<<< HEAD
-    case '(': //decrease greyscale bit depth
+  case '(': //decrease greyscale bit depth
     if (bw_depth>1) bw_depth--;
     println("Greyscale bit depth = "+bw_depth);
     break;
-    case ')': //increase greyscale bit depth 
+  case ')': //increase greyscale bit depth 
     if (bw_depth<24) bw_depth++;
     println("Greyscale bit depth = "+bw_depth);
-=======
-  case '(': //decrease greyscale bit depth
-    if (depth>1) depth--;
-    println("Greyscale bit depth = "+depth);
-    break;
-  case ')': //increase greyscale bit depth 
-    if (depth<24) depth++;
-    println("Greyscale bit depth = "+depth);
->>>>>>> 24a9ba2775543f0d6d5fde24695da860a5fba17e
-    break;
   case '[': //decrease window width by 1 pixel
     set_window_width(width-1);
     break;
