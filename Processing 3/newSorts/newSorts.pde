@@ -15,12 +15,13 @@ void setup() {
 }
 
 void draw() {
-  image(enlarge(noise,1,1), 0, 0);
+  image(enlarge(noise,10,10), 0, 0);
   if (!pause) {
     noise.pixels = mySort(noise);
   }
 }
 
+// scales the pixels of a PImage by integer multiples
 PImage enlarge(PImage image, int multx, int multy) {
   PImage temp = createImage(image.width*multx, image.height*multy, RGB);
   for(int y1 = 0; y1 <  image.height ; y1++){
@@ -32,8 +33,10 @@ PImage enlarge(PImage image, int multx, int multy) {
       }
     }
   }
+  return temp;
 }
 
+// key bindings
 void keyPressed() {
 
   switch(key) {
@@ -42,6 +45,7 @@ void keyPressed() {
     selectInput("Select a file to process:", "loadImage");
     break;
   }
+  
 }
 
 void loadImage(File selection) {
@@ -55,6 +59,7 @@ void loadImage(File selection) {
   pause=false;
 }
 
+// sort all of the pixels
 int[] mySort(PImage img) {
   img.loadPixels();
   for (int i = 0; i < img.pixels.length-1; i++) {
@@ -66,6 +71,7 @@ int[] mySort(PImage img) {
   return img.pixels;
 }
 
+// swap two values in an array
 int[] swap(int[] array, int index1, int index2) {
   int temp = array[index1];
   array[index1] = array[index2];

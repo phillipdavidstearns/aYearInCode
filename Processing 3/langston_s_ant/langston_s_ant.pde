@@ -32,6 +32,8 @@ void setup() {
   states = new int[width*height];
 
   initStates();
+  
+  welcomeMessage();
 
 }
 
@@ -160,4 +162,14 @@ class Ant {
     x = (x + width) % width;
     y = (y + height) % height;
   }
-} 
+}
+
+void welcomeMessage(){
+  println("INSTRUNCTIONS:");
+  println("");
+  println("Key:    Action:");
+  println("--------------------");
+  println("r       randomize rules governing Ant motion");
+  println("c       randomize Ant color palette");
+  println("e       reinitialize Ant states");
+}

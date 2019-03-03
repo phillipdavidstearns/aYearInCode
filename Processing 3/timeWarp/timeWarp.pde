@@ -1,3 +1,6 @@
+// this sketch is a time displacement tool for moving image
+// needs documentation
+
 PImage[] sequence, displacement;
 int[] displacementMatrix;
 PImage frame;
