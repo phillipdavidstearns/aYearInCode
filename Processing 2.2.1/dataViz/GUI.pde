@@ -28,204 +28,204 @@ public class ControlFrame extends PApplet {
     // controls for skipping bits 
     cp5.addSlider("bit_offset")
       .plugTo(parent, "bit_offset")
-        .setRange(0, 24)
-          .setSize(100, 20)
-            .setPosition(10, 160)
-              .setNumberOfTickMarks(25)
-                ;
+      .setRange(0, 24)
+      .setSize(100, 20)
+      .setPosition(10, 160)
+      .setNumberOfTickMarks(25)
+      ;
 
     // controls for skipping pixels     
     cp5.addSlider("pixel_offset")
       .setPosition(10, 190)
-        .setRange(0, raw_bits.length)
-          .setSize(400, 20)
-            ;
+      .setRange(0, raw_bits.length)
+      .setSize(400, 20)
+      ;
     //step forward a pixel  
     cp5.addBang("pixel_inc")
       .setPosition(175, 140)
-        .setSize(20, 20)
-          .setLabel("px+")
-            ;
+      .setSize(20, 20)
+      .setLabel("px+")
+      ;
     //jump back a pixel
     cp5.addBang("pixel_dec")
       .setPosition(205, 140)
-        .setSize(20, 20)
-          .setLabel("px-")
-            ;
+      .setSize(20, 20)
+      .setLabel("px-")
+      ;
     //step forward a line  
     cp5.addBang("line_inc")
       .setPosition(235, 140)
-        .setSize(20, 20)
-          .setLabel("ln+")
-            ;
+      .setSize(20, 20)
+      .setLabel("ln+")
+      ;
     //jump back a line 
     cp5.addBang("line_dec")
       .setPosition(265, 140)
-        .setSize(20, 20)
-          .setLabel("ln-")
-            ;
+      .setSize(20, 20)
+      .setLabel("ln-")
+      ;
     //specify how many lines to skip  
     cp5.addNumberbox("line_multiplier")
       //.plugTo(parent, "line_multiplier")
       .setPosition(295, 140)
-        .setSize(20, 20)
-          .setRange(-100, 100)
-            .setValue(1)
-              .setDirection(0)
-                .setLabel("ln*")
-                  ;
+      .setSize(20, 20)
+      .setRange(-100, 100)
+      .setValue(1)
+      .setDirection(0)
+      .setLabel("ln*")
+      ;
 
     // exits program       
     cp5.addBang("quit")
       .setPosition(470, 140)
-        .setSize(20, 20)
-          .setLabel("EXIT")
-            ;
+      .setSize(20, 20)
+      .setLabel("EXIT")
+      ;
 
     cp5.addRadioButton("swap_mode")
       .setPosition(10, 10)
-        .setSize(20, 20)
-          .setItemsPerRow(2)
-            .setSpacingColumn(30)
-              .setSpacingRow(1)
-                .addItem("RGB", 0)
-                  .addItem("GBR", 1)
-                    .addItem("BRG", 2)
-                      .addItem("BGR", 3)
-                        .addItem("GRB", 4)
-                          .addItem("RBG", 5)
-                            ;
+      .setSize(20, 20)
+      .setItemsPerRow(2)
+      .setSpacingColumn(30)
+      .setSpacingRow(1)
+      .addItem("RGB", 0)
+      .addItem("GBR", 1)
+      .addItem("BRG", 2)
+      .addItem("BGR", 3)
+      .addItem("GRB", 4)
+      .addItem("RBG", 5)
+      ;
 
     // controls for color channel depth
     cp5.addSlider("chan1_depth")
       .setPosition(120, 10)
-        .setSize(50, 20)
-          .setRange(0, 8)
-            .setValue(1)
-              .setNumberOfTickMarks(9)
-                ;
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
 
     cp5.addSlider("chan2_depth")
       .setPosition(120, 45)
-        .setSize(50, 20)
-          .setRange(0, 8)
-            .setValue(1)
-              .setNumberOfTickMarks(9)
-                ;
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
 
     cp5.addSlider("chan3_depth")
       .setPosition(120, 80)
-        .setSize(50, 20)
-          .setRange(0, 8)
-            .setValue(1)
-              .setNumberOfTickMarks(9)
-                ; 
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ; 
 
     cp5.addSlider("depth")
       .setPosition(400, 45)
-        .setSize(50, 20)
-          .setRange(0, 8)
-            .setValue(1)
-              .setNumberOfTickMarks(9)
-                ;
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
 
     cp5.addToggle("mode")
       .setPosition(400, 10)
-        .setSize(20, 20)
-          .setLabel("GRAY")
-            ;
+      .setSize(20, 20)
+      .setLabel("GRAY")
+      ;
 
     cp5.addToggle("R_INV_PRE")
       .setPosition(10+(0*30), 75)
-        .setSize(20, 20)
-          .plugTo(parent, "red_invert_pre")
-            .setLabel("PRE")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "red_invert_pre")
+      .setLabel("PRE")
+      ;
 
     cp5.addToggle("G_INV_PRE")
       .setPosition(10+(1*30), 75)
-        .setSize(20, 20)
-          .plugTo(parent, "green_invert_pre")
-            .setLabel("PRE")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "green_invert_pre")
+      .setLabel("PRE")
+      ;
 
     cp5.addToggle("B_INV_PRE")
       .setPosition(10+(2*30), 75)
-        .setSize(20, 20)
-          .plugTo(parent, "blue_invert_pre")
-            .setLabel("PRE")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "blue_invert_pre")
+      .setLabel("PRE")
+      ;
 
     cp5.addToggle("R_INV")
       .setPosition(10+(0*30), 120)
-        .setSize(20, 20)
-          .plugTo(parent, "red_invert")
-            .setLabel("!R")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "red_invert")
+      .setLabel("!R")
+      ;
 
     cp5.addToggle("G_INV")
       .setPosition(10+(1*30), 120)
-        .setSize(20, 20)
-          .plugTo(parent, "green_invert")
-            .setLabel("!G")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "green_invert")
+      .setLabel("!G")
+      ;
 
     cp5.addToggle("B_INV")
       .setPosition(10+(2*30), 120)
-        .setSize(20, 20)
-          .plugTo(parent, "blue_invert")
-            .setLabel("!B")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "blue_invert")
+      .setLabel("!B")
+      ;
 
     cp5.addToggle("INV")
       .setPosition(430, 10)
-        .setSize(20, 20)
-          .plugTo(parent, "invert")
-            .setLabel("!")
-              ;
+      .setSize(20, 20)
+      .plugTo(parent, "invert")
+      .setLabel("!")
+      ;
 
     //controls for changing the screen size
     cp5.addNumberbox("window_width")
       .setPosition(240, 10)
-        .setSize(50, 20)
-          .setMin(1)
-            .setValue(384)
-              .setDirection(Controller.HORIZONTAL)
-                .setLabel("width")
-                  ; 
+      .setSize(50, 20)
+      .setMin(1)
+      .setValue(384)
+      .setDirection(Controller.HORIZONTAL)
+      .setLabel("width")
+      ; 
     cp5.addNumberbox("window_height")
       .setPosition(240, 45)
-        .setSize(50, 20)
-          .setMin(1)
-            .setValue(512)
-              .setDirection(Controller.HORIZONTAL)
-                .setLabel("height")
-                  ; 
+      .setSize(50, 20)
+      .setMin(1)
+      .setValue(512)
+      .setDirection(Controller.HORIZONTAL)
+      .setLabel("height")
+      ; 
 
     cp5.addTextfield("set_window_width")
       .setPosition(300, 10)
-        .setSize(50, 20)
-          .setValue(384)
-            .setLabel("enter width")
-              ; 
+      .setSize(50, 20)
+      .setValue(384)
+      .setLabel("enter width")
+      ; 
     cp5.addTextfield("set_window_height")
       .setPosition(300, 45)
-        .setSize(50, 20)
-          .setValue(512)
-            .setLabel("enter height")
-              ;
+      .setSize(50, 20)
+      .setValue(512)
+      .setLabel("enter height")
+      ;
 
     cp5.addButton("open_file")
       .setPosition(350, 140)
-        .setSize(40, 20)
-          .setLabel("open")
-            ;
+      .setSize(40, 20)
+      .setLabel("open")
+      ;
 
     cp5.addButton("save_file")
       .setPosition(400, 140)
-        .setSize(40, 20)
-          .setLabel("save")
-            ;
+      .setSize(40, 20)
+      .setLabel("save")
+      ;
   }
 
   public void draw() {
@@ -234,7 +234,7 @@ public class ControlFrame extends PApplet {
 
   void keyPressed() {
     //    println(keyCode);
-    
+
     switch(key) {
     case '>':
       frame_inc(screen_height-1);
@@ -242,12 +242,12 @@ public class ControlFrame extends PApplet {
     case '<':
       frame_dec(screen_height-1);
       break;
-      case ',':
+    case ',':
       cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()-1);
       ;
       break;
     case '.':
-    cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()+1);
+      cp5.getController("bit_offset").setValue(cp5.getController("bit_offset").getValue()+1);
       ;
       break;
     }
@@ -394,4 +394,3 @@ public class ControlFrame extends PApplet {
     return cp5;
   }
 }
-
