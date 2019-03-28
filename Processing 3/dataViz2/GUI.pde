@@ -1,314 +1,368 @@
-boolean shift = false;
+//////////////////////////////////////////////
+// GUI
 
-void keyPressed() {
-  //    println(keyCode);
+public class ControlFrame extends PApplet {
 
-  switch(keyCode) {
-  case 38: //UPARROW
-    frame_inc(height/4);
-    break;
-  case 40: //DOWNARROW
-    frame_dec(height/4);
-    break;
-  case 37: //LEFTARROW
-    if (bit_offset>0) bit_offset-=1;
-    ;
-    break;
-  case 39: //RIGHTARROW
-    bit_offset+=1;
-    ;
-    break;
+  int w, h, x, y;
+  PApplet parent;
+  ControlP5 cp5;
+
+  public ControlFrame(PApplet _parent, int _x, int _y, int _w, int _h, String _name) {
+    super();   
+    parent = _parent;
+    w=_w;
+    h=_h;
+    x=_x;
+    y=_y;
+    PApplet.runSketch(new String[]{this.getClass().getName()}, this);
+  }
+  
+   public ControlP5 control() {
+    return cp5;
   }
 
-  if (keyCode == SHIFT) shift = true;
+  public void settings() {
 
-  if (shift) {
-    switch(keyCode) {
-    case 38: //UPARROW
-      frame_inc(1);
-      break;
-    case 40: //DOWNARROW
-      frame_dec(1);
-      break;
-    case 37: //LEFTARROW
-      if (bit_offset>0) bit_offset-=1;
-      ;
-      break;
-    case 39: //RIGHTARROW
-      bit_offset+=1;
-      ;
-      break;
-    }
-  } else {
-    switch(keyCode) {
-    case 38: //UPARROW
-      frame_inc(screen_height-1);
-      break;
-    case 40: //DOWNARROW
-      frame_dec(screen_height-1);
-      break;
-    case 37: //LEFTARROW
-      if (pixel_offset>0) pixel_offset-=1;
-      ;
-      break;
-    case 39: //RIGHTARROW
-      pixel_offset+=1;
-      ;
-      break;
-    }
+    size(w, h);
   }
-  /*
-  Key Bindings:
-   o
-   O
-   1-6
-   q
-   w
-   e
-   a
-   s
-   d
-   z
-   UPARROW
-   DOWNARROW
-   LEFTARROW
-   RIGHTARROW
-   */
-  switch(key) {
-  case 'o':
-    open_file();
-    break;
-  case 'O':
-    save_file();
-    break;
-  case '0':
-    mode^=0x1;
-    if (mode == 0) {
-      println("color mode = RGB");
-    } else if (mode == 1) {
-      println("color more = Greyscale");
+
+  public void setup() {
+
+    background(0);
+
+    surface.setLocation(x, y);
+
+    cp5 = new ControlP5(this);
+
+    // controls for skipping bits 
+    cp5.addSlider("bit_offset")
+      .plugTo(parent, "bit_offset")
+      .setRange(0, 24)
+      .setSize(100, 20)
+      .setPosition(10, 160)
+      .setNumberOfTickMarks(25)
+      ;
+
+    // controls for skipping pixels     
+    cp5.addSlider("pixel_offset")
+      .setPosition(10, 190)
+      .setSize(400, 20)
+      .plugTo(parent, "pixel_offset");
+      ;
+    //step forward a pixel  
+    cp5.addBang("pixel_inc")
+      .setPosition(175, 140)
+      .setSize(20, 20)
+      .setLabel("px+")
+      ;
+    //jump back a pixel
+    cp5.addBang("pixel_dec")
+      .setPosition(205, 140)
+      .setSize(20, 20)
+      .setLabel("px-")
+      ;
+    //step forward a line  
+    cp5.addBang("line_inc")
+      .setPosition(235, 140)
+      .setSize(20, 20)
+      .setLabel("ln+")
+      ;
+    //jump back a line 
+    cp5.addBang("line_dec")
+      .setPosition(265, 140)
+      .setSize(20, 20)
+      .setLabel("ln-")
+      ;
+    //specify how many lines to skip  
+    cp5.addNumberbox("line_multiplier")
+      //.plugTo(parent, "line_multiplier")
+      .setPosition(295, 140)
+      .setSize(20, 20)
+      .setRange(-100, 100)
+      .setValue(1)
+      .setDirection(0)
+      .setLabel("ln*")
+      ;
+
+    // exits program       
+    cp5.addBang("quit")
+      .setPosition(470, 140)
+      .setSize(20, 20)
+      .setLabel("EXIT")
+      ;
+
+    cp5.addRadioButton("swap_mode")
+      .setPosition(10, 10)
+      .setSize(20, 20)
+      .setItemsPerRow(2)
+      .setSpacingColumn(30)
+      .setSpacingRow(1)
+      .addItem("RGB", 0)
+      .addItem("GBR", 1)
+      .addItem("BRG", 2)
+      .addItem("BGR", 3)
+      .addItem("GRB", 4)
+      .addItem("RBG", 5)
+      ;
+
+    // controls for color channel depth
+    cp5.addSlider("chan1_depth")
+      .setPosition(120, 10)
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
+
+    cp5.addSlider("chan2_depth")
+      .setPosition(120, 45)
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
+
+    cp5.addSlider("chan3_depth")
+      .setPosition(120, 80)
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ; 
+
+    cp5.addSlider("depth")
+      .setPosition(400, 45)
+      .setSize(50, 20)
+      .setRange(0, 8)
+      .setValue(1)
+      .setNumberOfTickMarks(9)
+      ;
+
+    cp5.addToggle("mode")
+      .setPosition(400, 10)
+      .setSize(20, 20)
+      .setLabel("GRAY")
+      ;
+
+    cp5.addToggle("R_INV_PRE")
+      .setPosition(10+(0*30), 75)
+      .setSize(20, 20)
+      .plugTo(parent, "red_invert_pre")
+      .setLabel("PRE")
+      ;
+
+    cp5.addToggle("G_INV_PRE")
+      .setPosition(10+(1*30), 75)
+      .setSize(20, 20)
+      .plugTo(parent, "green_invert_pre")
+      .setLabel("PRE")
+      ;
+
+    cp5.addToggle("B_INV_PRE")
+      .setPosition(10+(2*30), 75)
+      .setSize(20, 20)
+      .plugTo(parent, "blue_invert_pre")
+      .setLabel("PRE")
+      ;
+
+    cp5.addToggle("R_INV")
+      .setPosition(10+(0*30), 120)
+      .setSize(20, 20)
+      .plugTo(parent, "red_invert")
+      .setLabel("!R")
+      ;
+
+    cp5.addToggle("G_INV")
+      .setPosition(10+(1*30), 120)
+      .setSize(20, 20)
+      .plugTo(parent, "green_invert")
+      .setLabel("!G")
+      ;
+
+    cp5.addToggle("B_INV")
+      .setPosition(10+(2*30), 120)
+      .setSize(20, 20)
+      .plugTo(parent, "blue_invert")
+      .setLabel("!B")
+      ;
+
+    cp5.addToggle("INV")
+      .setPosition(430, 10)
+      .setSize(20, 20)
+      .plugTo(parent, "bw_invert")
+      .setLabel("!")
+      ;
+
+    //controls for changing the screen size
+    cp5.addNumberbox("window_width")
+      .setPosition(240, 10)
+      .setSize(50, 20)
+      .setMin(1)
+      .setValue(screen_width)
+      .setDirection(Controller.HORIZONTAL)
+      .setLabel("width")
+      ; 
+    cp5.addNumberbox("window_height")
+      .setPosition(240, 45)
+      .setSize(50, 20)
+      .setMin(1)
+      .setValue(screen_height)
+      .setDirection(Controller.HORIZONTAL)
+      .setLabel("height")
+      ; 
+
+    cp5.addTextfield("set_window_width")
+      .setPosition(300, 10)
+      .setSize(50, 20)
+      .setLabel("enter width")
+      ; 
+    cp5.addTextfield("set_window_height")
+      .setPosition(300, 45)
+      .setSize(50, 20)
+      .setLabel("enter height")
+      ;
+
+    cp5.addButton("open_file")
+      .setPosition(350, 140)
+      .setSize(40, 20)
+      .setLabel("open")
+      ;
+
+    cp5.addButton("save_file")
+      .setPosition(400, 140)
+      .setSize(40, 20)
+      .setLabel("save")
+      ;
+  }
+
+  void draw() {
+    background(0);
+  }
+
+  public void open_file() {
+    selectInput("Select a file to process:", "inputSelection");
+  }
+
+  public void inputSelection(File input) {
+    if (input == null) {
+      println("Window was closed or the user hit cancel.");
     } else {
-      println("You broke the matrix.");
+      println("User selected " + input.getAbsolutePath());
+      loadData(input.getAbsolutePath());
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
     }
-    break;
-  case '1':
-    swap_mode=0;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case '2':
-    swap_mode=1;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case '3':
-    swap_mode=2;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case '4':
-    swap_mode=3;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case '5':
-    swap_mode=4;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case '6':
-    swap_mode=5;
-    println("channel swap mode: "+swap_mode);
-    break;
-  case 'q':
-    red_invert=!red_invert;
-    println("red_invert = "+red_invert);
-    break;
-  case 'w':
-    green_invert=!green_invert;
-    println("green_invert = "+green_invert);
-    break;
-  case 'e':
-    blue_invert=!blue_invert;
-    println("blue_invert = "+blue_invert);
-    break;
-  case 'a':
-    red_invert_pre=!red_invert_pre;
-    println("red_invert_pre = "+red_invert_pre);
-    break;
-  case 's':
-    green_invert_pre=!green_invert_pre;
-    println("green_invert_pre = "+green_invert_pre);
-    break;
-  case 'd':
-    blue_invert_pre=!blue_invert_pre;
-    println("blue_invert_pre = "+blue_invert_pre);
-    break;
-  case 'z':
-    bw_invert=!bw_invert;
-    println("invert = "+bw_invert);
-    break;
-  case 'r': //incrase red channel bit depth
-    if (chan1_depth < 8) set_chan1_depth(chan1_depth+1);
-    println("Channel 1 Depth = "+chan1_depth);
-    break;
-  case 'R': //decrease red channel bit depth
-    if (chan1_depth > 0) set_chan1_depth(chan1_depth-1);
-    println("Channel 1 Depth = "+chan1_depth);
-    break;
-  case 'g': //increase green channel bit depth
-    if (chan2_depth < 8) set_chan2_depth(chan2_depth+1);
-    println("Channel 2 Depth = "+chan2_depth);
-    break;
-  case 'G': //decrease green channel bit depth
-    if (chan2_depth > 0) set_chan2_depth(chan2_depth-1);
-    println("Channel 2 Depth = "+chan2_depth);
-    break;
-  case 'b': //increase blue channel bit depth
-    if (chan3_depth < 8) set_chan3_depth(chan3_depth+1);
-    println("Channel 3 Depth = "+chan3_depth);
-    break;
-  case 'B': //decrease blue channel bit depth 
-    if (chan3_depth > 0) set_chan3_depth(chan3_depth-1);
-    println("Channel 3 Depth = "+chan3_depth);
-    break;
-  case '(': //decrease greyscale bit depth
-    if (bw_depth>1) bw_depth--;
-    println("Greyscale bit depth = "+bw_depth);
-    break;
-  case ')': //increase greyscale bit depth 
-    if (bw_depth<24) bw_depth++;
-    println("Greyscale bit depth = "+bw_depth);
-  case '[': //decrease window width by 1 pixel
-    set_window_width(width-1);
-    break;
-  case ']': //increase window width by 1 pixel
-    set_window_width(width+1);
-    break;
-  case '{': //decrease window height by 1 pixel
-    set_window_height(height-1);
-    break;
-  case '}': //increase window height by 1 pixel
-    set_window_height(height+1);
-    break;
   }
-  redraw();
-}
 
-void keyReleased() {
-  if (keyCode == SHIFT) shift = false;
-}
-
-
-
-public void open_file() {
-  selectInput("Select a file to process:", "inputSelection");
-}
-
-void inputSelection(File input) {
-  if (input == null) {
-    println("Window was closed or the user hit cancel.");
-  } else {
-    println("User selected " + input.getAbsolutePath());
-    loadData(input.getAbsolutePath());
+  public void save_file() {
+    selectOutput("Select a file to process:", "outputSelection");
   }
-}
 
-
-public void save_file() {
-  selectOutput("Select a file to process:", "outputSelection");
-}
-
-void outputSelection(File output) {
-  if (output == null) {
-    println("Window was closed or the user hit cancel.");
-  } else {
-    println("User selected " + output.getAbsolutePath());
-    saveData(output.getAbsolutePath());
+  public void outputSelection(File output) {
+    if (output == null) {
+      println("Window was closed or the user hit cancel.");
+    } else {
+      println("User selected " + output.getAbsolutePath());
+      saveData(output.getAbsolutePath());
+    }
   }
-}
 
-public void set_window_width(int _width) {
-  if (int(_width) != 0) {
-    setScreenSize(_width, height);
+  public void set_window_width(String theValue) {
+    if (int(theValue) != 0) {
+      cp5.get(Numberbox.class, "window_width").setValue(int(theValue));
+    }
   }
-}
 
-public void set_window_height(int _height) {
-  if (int(_height) != 0) {
-    setScreenSize(width, _height);
+  public void set_window_height(String theValue) {
+    if (int(theValue) != 0) {
+      cp5.get(Numberbox.class, "window_height").setValue(int(theValue));
+    }
   }
-}
 
-public void set_window_size(int _width, int _height) {
-  if (_height != 0 && _width != 0) {
-    setScreenSize(_width, _height);
+  public void window_height(int value) {
+    screen_height = value;
+    setScreenSize(screen_width, screen_height);
   }
-}
+  public void window_width(int value) {
+    screen_width = value;
+    setScreenSize(screen_width, screen_height);
+  }
 
-
-void set_chan1_depth(int _value) {
-  chan1_depth = _value;
-  pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-}
-
-public void set_chan2_depth(int _value) {
-  chan2_depth = _value;
-  pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-}
-
-public void set_chan3_depth(int _value) {
-  chan3_depth = _value;
-  pixel_depth = chan1_depth + chan2_depth + chan3_depth;
-}
-
-public void mode(int value) {
-  mode = value;
-}
-
-public void depth(int value) {
-  bw_depth = value;
-  if (mode == 1) {
+  public void chan1_depth(int value) {
+    chan1_depth = value;
     pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    }
   }
-  if (pixel_depth != 0) {
-    pixel_offset=raw_bits.length/pixel_depth;
+
+  public void chan2_depth(int value) {
+    chan2_depth = value;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    }
   }
-}
 
-public void swap_mode(int id) {
-  if (id!= -1) {
-    swap_mode = id;
+  public void chan3_depth(int value) {
+    chan3_depth = value;
+    pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    }
   }
-}
 
-public void quit() {
-  exit();
-}
-
-public void pixel_offset(int value) {
-  pixel_offset = value;
-}
-
-public void pixel_inc() {
-  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=1;
-}
-
-public void pixel_dec() {
-  if (pixel_offset > 0) {
-    pixel_offset-=1;
+  public void mode(int value) {
+    mode = value;
   }
-}
 
-public void line_inc() {
-  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=screen_width*line_multiplier;
-}
+  public void depth(int value) {
+    bw_depth = value;
+    if (mode == 1) {
+      pixel_depth = chan1_depth + chan2_depth + chan3_depth;
+    }
+    if (pixel_depth != 0) {
+      cp5.get(Slider.class, "pixel_offset").setRange(0, raw_bits.length/pixel_depth);
+    }
+  }
 
-public void frame_inc(int _lines) {
-  if (pixel_offset < raw_bits.length/pixel_depth) pixel_offset+=screen_width*_lines;
-}
+  public void swap_mode(int id) {
+    if (id!= -1) {
+      swap_mode = id;
+    }
+  }
 
-public void line_dec() {
-  if (pixel_offset>0) pixel_offset-=screen_width*line_multiplier;
-  if (pixel_offset<0) pixel_offset=0;
-}
+  public void quit() {
+    exit();
+  }
+  
+  public void pixel_inc() {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+1);
+  }
 
-public void frame_dec(int _lines) {
-  if (pixel_offset>0) pixel_offset-=screen_width*_lines;
-  if (pixel_offset<0) pixel_offset=0;
+  public void pixel_dec() {
+    if (pixel_offset > 0) {
+      cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-1);
+    }
+  }
+
+  public void line_inc() {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*cp5.getController("line_multiplier").getValue()));
+  }
+
+  public void frame_inc(int _lines) {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()+(screen_width*_lines));
+  }
+
+  public void line_dec() {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*cp5.getController("line_multiplier").getValue()));
+  }
+
+  public void frame_dec(int _lines) {
+    cp5.getController("pixel_offset").setValue(cp5.getController("pixel_offset").getValue()-(screen_width*_lines));
+  }
+  
+  public void mouseReleased(){
+    parent.redraw();
+  }
+  
 }

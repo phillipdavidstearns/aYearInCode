@@ -1,7 +1,7 @@
 PImage image;
 boolean pause = false;
 boolean done = false;
-int lowerLimit = 0xFF000000;
+int lowerLimit = 0xFF999999;
 int upperLimit = 0xFFFFFFFF;
 
 
@@ -11,7 +11,7 @@ void setup() {
   image = createImage(width, height, RGB);
   image.loadPixels();
   for (int i = 0; i < image.pixels.length; i++) {
-    image.pixels[i] = int(random(0xFFFFFF))|0xFF000000;
+    image.pixels[i] = int(random(0xFFFFFF)) | 0xFF000000;
   }
   image.updatePixels();
   frameRate(30);
@@ -48,7 +48,7 @@ void keyPressed() {
 
 PImage sortPImage(PImage img) {
   for (int y = 0; y < img.height; y++) {
-    int[] temp = mySort(row(img, y), 1);
+    int[] temp = mySort(row(img, y), 0);
     for (int x = 0; x < img.width; x++) {
       img.pixels[y*img.width+x]=temp[x];
     }
@@ -122,13 +122,13 @@ int[] swap(int[] array, int index1, int index2) {
 }
 
 
-void loadImage(File selection) {
-  if (selection == null) {
+void loadImage(File _selection) {
+  if (_selection == null) {
     println("Window was closed or the user hit cancel.");
   } else {
-    println("User selected " + selection.getAbsolutePath());
+    println("User selected " + _selection.getAbsolutePath());
   }
-  image = loadImage(selection.getAbsolutePath());
+  image = loadImage(_selection.getAbsolutePath());
   surface.setSize(image.width, image.height);
   pause=false;
   redraw();
