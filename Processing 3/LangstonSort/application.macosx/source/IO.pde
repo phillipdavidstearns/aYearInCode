@@ -15,9 +15,8 @@ void inputSelected(File selection) {
 }
 //--------------------------------------------------------------------------------------------
 void loadInput(String path) {
-  background(0);
   input = loadImage(path);
-  output=input.get();
+  output=input.copy();
   surface.setSize(input.width, input.height);
   randomizeAnts();
 }
@@ -40,7 +39,7 @@ void outputSelected(File selection) {
 }
 //--------------------------------------------------------------------------------------------
 void saveOutput(String path) {
-  output.save(path);
+  saveFrame(path);
 }
 //--------------------------------------------------------------------------------------------
 // Setting up a record path

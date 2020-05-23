@@ -45,10 +45,11 @@ void setup() {
   design = createImage(designWidth, designHeight, RGB);
 
   rules = new ShiftRegister(qty_neighbor_combinations);
+  
   for (int i = 0; i < rules.data.length; i++) {
-    if (initial_rule.charAt(rules.data.length-1-i) == 48) {
+    if (initial_rule.charAt(rules.data.length-1-i) == '0') {
       rules.data[i] = false;
-    } else if (initial_rule.charAt(rules.data.length-1-i) == 49) {
+    } else if (initial_rule.charAt(rules.data.length-1-i) == '1') {
       rules.data[i] = true;
     }
   }
@@ -60,7 +61,6 @@ void setup() {
   register.reset();
   shiftRegisterToRow();
   updateDesign();
-
 
   noSmooth();
   noLoop();
@@ -75,9 +75,7 @@ void draw() {
 void generatePalette(int mode) {
   colors = new color[qty_neighbor_combinations];
   switch(mode) {
-
   case 0:
-
     color colorA = color(random(256), random(256), random(256));
     color colorB = color(random(256), random(256), random(256));
     for (int i = 0; i < colors.length; i++) {
@@ -353,62 +351,70 @@ class ShiftRegister {
   boolean[] data;
 
   ShiftRegister(int _length) {
-    data = new boolean[_length];
-    for (int i = 0; i < data.length; i++) {
+    this.data = new boolean[_length];
+    this.init();
+  }
+  
+  void init(){
+    for (int i = 0; i < this.data.length; i++) {
       if (i == 0) { 
-        data[0] = true ;
+        this.data[0] = true ;
       } else {
-        data[i] = false;
+        this.data[i] = false;
       }
     }
   }
 
   void load(boolean[] _input) {
-    for (int i = 0; i < data.length; i++) {
-      data[i] = _input[i];
+    for (int i = 0; i < this.data.length; i++) {
+      this.data[i] = _input[i];
     }
   }
 
   void shiftLeft(boolean _input) {
-    for (int i = data.length-1; i > 0; i--) {
-      data[i] = data[i-1];
+    for (int i = this.data.length-1; i > 0; i--) {
+      this.data[i] = this.data[i-1];
     }
-    data[0] = _input;
+    this.data[0] = _input;
   }
 
   void shiftLeft() {
-    for (int i = data.length-1; i > 0; i--) {
-      data[i] = data[i-1];
+    for (int i = this.data.length-1; i > 0; i--) {
+      this.data[i] = this.data[i-1];
     }
-    data[0] = false;
+    this.data[0] = false;
   }
 
   void shiftRight(boolean _input) {
-    for (int i = 0; i < data.length-1; i++) {
-      data[i] = data[i+1];
+    for (int i = 0; i < this.data.length-1; i++) {
+      this.data[i] = this.data[i+1];
     }
-    data[data.length-1] = _input;
+    this.data[this.data.length-1] = _input;
   }
 
   void shiftRight() {
-    for (int i = 0; i < data.length-1; i++) {
-      data[i] = data[i+1];
+    for (int i = 0; i < this.data.length-1; i++) {
+      this.data[i] = this.data[i+1];
     }
-    data[data.length-1] = false;
+    this.data[this.data.length-1] = false;
   }
 
   void reset() {
-    for (int i = 0; i < data.length; i++) {
-      data[i] = false;
+      this.init();
+  }
+  
+  void clear(){
+    for (int i = 0; i < this.data.length; i++) {
+        this.data[i] = false;
     }
   }
 
   void randomize() {
-    for (int i = 0; i < data.length; i++) {
-      if (random(1) < random(1)) {
-        data[i]=true;
+    for (int i = 0; i < this.data.length; i++) {
+      if (random(1) < 0.5) {
+        this.data[i]=true;
       } else {
-        data[i]=false;
+        this.data[i]=false;
       }
     }
   }

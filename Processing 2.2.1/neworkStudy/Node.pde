@@ -15,19 +15,19 @@ class Node {
   
   float m, r;  
   int ID;
-  PVector location, velocity, acceleration;
+  PVector position, velocity, acceleration;
 
   Node(float _x, float _y, float _m, float _r, int _ID) {
-    location.x = _x;
-    location.y = _y;
+    position.x = _x;
+    position.y = _y;
     m = _m;
     r = _r;
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
   }
 
-  Node(PVector _location, float _m, float _r, int _ID) {
-    location = _location;
+  Node(PVector _position, float _m, float _r, int _ID) {
+    position = _position;
     m = _m;
     r = _r;
     velocity = new PVector(0, 0);
@@ -35,9 +35,9 @@ class Node {
   }
   
   Node(float _x, float _y, int _ID) {
-    location = new PVector(0, 0);
-    location.x = _x ;
-    location.y = _y ;
+    position = new PVector(0, 0);
+    position.x = _x ;
+    position.y = _y ;
     m = 50;
     r = 5;
     ID= _ID;
@@ -48,7 +48,7 @@ class Node {
   Node(int _ID) {
     ID = _ID;
     
-    location = new PVector(random(width), random(height));
+    position = new PVector(random(width), random(height));
     m = 50;
     r = 1;
     velocity = new PVector(random(-1, 1), random(-1, 1));
@@ -74,10 +74,10 @@ class Node {
     PVector force = new PVector(0, 0);
     for (int i = 0; i < _nodes.size (); i++) {
       Node n = _nodes.get(i);
-      float dist = location.dist(n.location);
+      float dist = position.dist(n.position);
       if (dist != 0) {
-        force = PVector.sub(n.location, location);
-        force.setMag(g*n.m/(pow(location.dist(n.location), 2)));
+        force = PVector.sub(n.position, position);
+        force.setMag(g*n.m/(pow(position.dist(n.position), 2)));
         applyForce(force);
       }
     }
@@ -99,11 +99,11 @@ class Node {
     acceleration.add(_force);
   }
 
-  // Method to update location
+  // Method to update position
   void update() {  
     velocity.add(acceleration);
     //velocity.limit(maxspeed);
-    location.add(velocity);
+    position.add(velocity);
     acceleration.mult(0);
   }
 
@@ -112,47 +112,46 @@ class Node {
     stroke(0);
     strokeWeight(1);
     noFill();
-    ellipse(location.x, location.y, 2*r, 2*r);
+    ellipse(position.x, position.y, 2*r, 2*r);
 
   }
 
   void boundaryCollision() {
-    if (location.x < 0  + r ) {
+    if (position.x < 0  + r ) {
       velocity.x *= -1;
-      location.x = + r;
+      position.x = + r;
     }
-    if (location.x > width - r) {
+    if (position.x > width - r) {
       velocity.x *= -1;
-      location.x = width-r;
+      position.x = width-r;
     }
-    if (location.y < 0 + r ) {
+    if (position.y < 0 + r ) {
       velocity.y *= -1;
-      location.y = + r;
+      position.y = + r;
     }
-    if (location.y > height - r) {
+    if (position.y > height - r) {
       velocity.y *= -1;
-      location.y = height-r;
+      position.y = height-r;
     }
   }
   
   void boundaryWrap() {
-    if (location.x < 0) {
+    if (position.x < 0) {
       
-      location.x = width + location.x;
+      position.x = width + position.x;
     }
-    if (location.x > width) {
+    if (position.x > width) {
       
-      location.x %= width;
+      position.x %= width;
     }
-    if (location.y < 0) {
+    if (position.y < 0) {
       
-      location.y = height + location.y;
+      position.y = height + position.y;
     }
-    if (location.y > height) {
+    if (position.y > height) {
       
-      location.y %= height;
+      position.y %= height;
     }
   }
 
 }
-

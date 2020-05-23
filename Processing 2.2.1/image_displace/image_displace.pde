@@ -6,7 +6,9 @@ int block_size = 128;
 PVector click_location;
 PVector displacement;
 void setup() {
+  size(10, 10);
   src = loadImage("input/david.jpg");
+  surface.setSize(src.width, src.height);
   buffer = createImage(src.width, src.height, RGB);
   size(src.width, src.height);
   image(src, 0, 0);

@@ -96,7 +96,7 @@ void setup() {
   initializeRules();
   createControlWindow();
   surface.setLocation(420, 10);
-
+  
   play = false;
   record=false;
   visible = false;
@@ -105,25 +105,24 @@ void setup() {
   for (int i = 0; i < qtyAnts; i++) {
     ants.add(new Ant());
   }
+
 }
 //--------------------------------------------------------------------------------------------
 void draw() {
   stroke(255);
   if (output != null) {
-    background(0);
     image(output, 0, 0);
     updateAntList();
     if (play) {
       for (int j = 0; j < iterations; j++) for (Ant a : ants) a.update(output);
       if (visible) for (Ant a : ants) point(a.x, a.y);
-      if (record) recordOutput();
+      if (record)recordOutput();
     }
   }
 }
-
 //--------------------------------------------------------------------------------------------
 void recordOutput() {
-  output.save(recordPath+"-"+nf(frameCounter, 4)+".png");
+  output.save(recordPath+"_"+nf(frameCounter, 4)+".png");
   frameCounter++;
 }
 //--------------------------------------------------------------------------------------------
@@ -156,7 +155,7 @@ void randomizeAnts() {
 }
 //--------------------------------------------------------------------------------------------
 void initializeRules() {
-
+  
   if (simple) {
     orientations = 4;
   } else {
@@ -168,7 +167,7 @@ void initializeRules() {
 
   radios = new RadioButton[orientations][evaluations];
   toggles = new Toggle[orientations][evaluations];
-
+ 
   generateRules();
 }
 //--------------------------------------------------------------------------------------------
@@ -192,6 +191,6 @@ void createControlWindow() {
     _w = 420;
     _h = 550;
   }
-
+  
   controls = new ControlFrame(this, _w, _h, "Langston's Ant Controls");
 }
